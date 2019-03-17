@@ -2,6 +2,7 @@ package frontEnd;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,24 +15,34 @@ public class RoomsWindow extends JFrame
 	private static final int WIDTH = 1000;	
 	private static final int HEIGHT = 1000;
 	
+	ArrayList<RoomPanel> panels = new ArrayList<RoomPanel>();
+	
 	public RoomsWindow()
 	{
 		super();
 		this.setSize(new Dimension(WIDTH, HEIGHT));
-	}
-	
-	public static void main(String[] args)
-	{
-		RoomsWindow window = new RoomsWindow();
 		JPanel innerPanel = new JPanel();
 		innerPanel.setLayout(new GridLayout(2, 3));
 		
 		for (int i = 0; i < 6; i++)
 		{
-			innerPanel.add(new RoomPanel());
+			RoomPanel roomPanel = new RoomPanel();
+			this.panels.add(roomPanel);
+			innerPanel.add(roomPanel);
 		}
-		
-		window.add(innerPanel);
+		this.add(innerPanel);
+	}
+	
+	public void updatePanel(int index, String text)
+	{
+		RoomPanel roomPanel = this.panels.get(index);
+		roomPanel.setText(text);
+	}
+	
+	public static void main(String[] args)
+	{
+		RoomsWindow window = new RoomsWindow();
+		window.updatePanel(0, "TEST");
 		window.showWindow();
 	}
 	

@@ -12,5 +12,6 @@ public class RoomPanel extends JTextArea
 	{
 		super();
 		this.setBorder(BorderFactory.createLineBorder(Color.black));
+		this.setEditable(false);
 	}
 }
