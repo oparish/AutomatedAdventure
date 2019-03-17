@@ -2,7 +2,11 @@ package frontEnd;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ComponentListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,11 +19,13 @@ public class RoomsWindow extends JFrame
 	private static final int WIDTH = 1000;	
 	private static final int HEIGHT = 1000;
 	
+	int checkInterval;
 	ArrayList<RoomPanel> panels = new ArrayList<RoomPanel>();
 	
-	public RoomsWindow()
+	public RoomsWindow(int checkInterval)
 	{
 		super();
+		this.checkInterval = checkInterval;
 		this.setSize(new Dimension(WIDTH, HEIGHT));
 		JPanel innerPanel = new JPanel();
 		innerPanel.setLayout(new GridLayout(2, 3));
@@ -31,6 +37,31 @@ public class RoomsWindow extends JFrame
 			innerPanel.add(roomPanel);
 		}
 		this.add(innerPanel);
+		this.addOnCloseListener();
+	}
+	
+	public void startLoop()
+	{
+		while(true)
+		{
+			this.mainLoop();
+			try
+			{
+				Thread.sleep(this.checkInterval);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void addOnCloseListener()
+	{	
+		this.addWindowListener(new WindowAdapter() {  
+            public void windowClosing(WindowEvent e) {  
+                System.exit(0);  
+            }});
 	}
 	
 	public void updatePanel(int index, String text)
@@ -39,11 +70,17 @@ public class RoomsWindow extends JFrame
 		roomPanel.setText(text);
 	}
 	
+	private void mainLoop()
+	{	
+
+	}
+	
 	public static void main(String[] args)
 	{
-		RoomsWindow window = new RoomsWindow();
+		RoomsWindow window = new RoomsWindow(1000);
 		window.updatePanel(0, "TEST");
 		window.showWindow();
+		window.startLoop();
 	}
 	
 	public void showWindow()
