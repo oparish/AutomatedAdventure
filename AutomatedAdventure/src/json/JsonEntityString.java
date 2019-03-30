@@ -8,4 +8,10 @@ public class JsonEntityString implements JsonEntity
 	{
 		this.value = value;
 	}
+
+	@Override
+	public String renderAsString()
+	{
+		return this.value;
+	}
 }

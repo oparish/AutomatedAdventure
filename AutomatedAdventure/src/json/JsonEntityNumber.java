@@ -8,4 +8,10 @@ public class JsonEntityNumber implements JsonEntity
 	{
 		this.value = value;
 	}
+
+	@Override
+	public String renderAsString()
+	{
+		return String.valueOf(this.value);
+	}
 }

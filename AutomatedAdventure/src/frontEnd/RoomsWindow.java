@@ -2,11 +2,9 @@ package frontEnd;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;

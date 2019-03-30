@@ -2,39 +2,49 @@ package json;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+
+import json.restrictions.Restriction;
+import json.restrictions.RestrictionPointer;
+import json.restrictions.RestrictionType;
 
 public class RestrictedJson implements JsonEntity
 {
 	HashMap<String, JsonEntity> contents = new HashMap<String, JsonEntity>();
 	
-	protected RestrictedJson(JsonObject json, Restriction restriction)
+	protected RestrictedJson(JsonObject json, Class<? extends RestrictionPointer> restrictionPointerType)
 	{
-		for (JsonPair jsonPair : restriction.getPairs())
+		for (RestrictionPointer restrictionPointer : restrictionPointerType.getEnumConstants())
 		{
 			JsonEntity jsonEntity = null;
+			Restriction restriction = restrictionPointer.getRestriction();
+			String restrictionName = restriction.getName();
+			JsonType jsonType = restriction.getJsonType();
 			
-			if (jsonPair instanceof JsonArrayPair)
+			if (restriction.getJsonDim() == JsonDim.ARRAY)
 			{
 				ArrayList<JsonEntity> entityList = new ArrayList<JsonEntity>();
-				JsonArray jsonArray = json.getJsonArray(jsonPair.key);
-				if (jsonPair.type instanceof Restriction)
+				JsonArray jsonArray = json.getJsonArray(restrictionName);
+
+				if (jsonType instanceof RestrictionType)
 				{
 					for (int i = 0; i < jsonArray.size(); i++)
 					{
-						entityList.add(new RestrictedJson(jsonArray.getJsonObject(i), (Restriction) jsonPair.type));
+						RestrictionType restrictionType = (RestrictionType) jsonType;
+						entityList.add(new RestrictedJson(jsonArray.getJsonObject(i), restrictionType.getClazz()));
 					}
 				}
-				else if (jsonPair.type == CoreJsonType.STRING)
+				else if (jsonType == CoreJsonType.STRING)
 				{
 					for (int i = 0; i < jsonArray.size(); i++)
 					{
 						entityList.add(new JsonEntityString(jsonArray.getString(i)));
 					}
 				}
-				else if (jsonPair.type == CoreJsonType.NUMBER)
+				else if (jsonType == CoreJsonType.NUMBER)
 				{
 					for (int i = 0; i < jsonArray.size(); i++)
 					{
@@ -44,20 +54,44 @@ public class RestrictedJson implements JsonEntity
 				
 				jsonEntity = new JsonEntityArray(entityList);
 			}
-			else if (jsonPair.type instanceof Restriction)
+			else if (jsonType instanceof RestrictionType)
 			{
-				jsonEntity = new RestrictedJson(json.getJsonObject(jsonPair.key), (Restriction) jsonPair.type);
+				RestrictionType restrictionType = (RestrictionType) jsonType;
+				jsonEntity = new RestrictedJson(json.getJsonObject(restrictionName), restrictionType.getClazz());
 			}
-			else if (jsonPair.type == CoreJsonType.STRING)
+			else if (jsonType == CoreJsonType.STRING)
 			{
-				jsonEntity = new JsonEntityString(json.getString(jsonPair.key));
+				jsonEntity = new JsonEntityString(json.getString(restrictionName));
 			}
-			else if (jsonPair.type == CoreJsonType.NUMBER)
+			else if (jsonType == CoreJsonType.NUMBER)
 			{
-				jsonEntity = new JsonEntityNumber(json.getInt(jsonPair.key));
+				jsonEntity = new JsonEntityNumber(json.getInt(restrictionName));
 			}					
 			
-			this.contents.put(jsonPair.key, jsonEntity);
+			this.contents.put(restrictionName, jsonEntity);
 		}
+	}
+
+	@Override
+	public String renderAsString()
+	{
+		boolean first = true;
+		StringBuilder stringBuilder = new StringBuilder("{");
+		for (Entry<String, JsonEntity> entry : this.contents.entrySet())
+		{
+			if (first)
+			{
+				first = false;
+			}
+			else
+			{
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(entry.getKey());
+			stringBuilder.append(":");
+			stringBuilder.append(entry.getValue().renderAsString());
+		}
+		stringBuilder.append("}");
+		return stringBuilder.toString();
 	}
 }

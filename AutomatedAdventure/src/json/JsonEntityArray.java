@@ -10,4 +10,25 @@ public class JsonEntityArray implements JsonEntity
 	{
 		this.entityList = entityList;
 	}
+
+	@Override
+	public String renderAsString()
+	{
+		boolean first = true;
+		StringBuilder stringBuilder = new StringBuilder("[");
+		for(JsonEntity jsonEntity : this.entityList)
+		{
+			if (first)
+			{
+				first = false;
+			}
+			else
+			{
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(jsonEntity.renderAsString());
+		}
+		stringBuilder.append("]");
+		return stringBuilder.toString();
+	}
 }
