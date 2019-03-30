@@ -11,11 +11,11 @@ import json.restrictions.Restriction;
 import json.restrictions.RestrictionPointer;
 import json.restrictions.RestrictionType;
 
-public class RestrictedJson implements JsonEntity
+public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 {
 	HashMap<String, JsonEntity> contents = new HashMap<String, JsonEntity>();
 	
-	protected RestrictedJson(JsonObject json, Class<? extends RestrictionPointer> restrictionPointerType)
+	protected RestrictedJson(JsonObject json, Class<R> restrictionPointerType)
 	{
 		for (RestrictionPointer restrictionPointer : restrictionPointerType.getEnumConstants())
 		{
@@ -70,6 +70,11 @@ public class RestrictedJson implements JsonEntity
 			
 			this.contents.put(restrictionName, jsonEntity);
 		}
+	}
+	
+	public JsonEntity getChild(R r)
+	{
+		return this.contents.get(r);
 	}
 
 	@Override
