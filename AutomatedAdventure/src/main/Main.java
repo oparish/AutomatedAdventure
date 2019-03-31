@@ -28,7 +28,7 @@ public class Main
 	
 	public static JsonObject openJsonFile(Component parent)
 	{
-		JFileChooser fileChooser = new JFileChooser();
+		JFileChooser fileChooser = new JFileChooser(".");
 		fileChooser.showOpenDialog(parent);
 		File file = fileChooser.getSelectedFile();
 		try {
