@@ -13,7 +13,7 @@ import json.restrictions.RestrictionType;
 
 public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 {
-	HashMap<String, JsonEntity> contents = new HashMap<String, JsonEntity>();
+	HashMap<Restriction, JsonEntity> contents = new HashMap<Restriction, JsonEntity>();
 	
 	protected RestrictedJson(JsonObject json, Class<R> restrictionPointerType)
 	{
@@ -68,13 +68,13 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 				jsonEntity = new JsonEntityNumber(json.getInt(restrictionName));
 			}					
 			
-			this.contents.put(restrictionName, jsonEntity);
+			this.contents.put(restriction, jsonEntity);
 		}
 	}
 	
 	public JsonEntity getChild(R r)
 	{
-		return this.contents.get(r);
+		return this.contents.get(r.getRestriction());
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 	{
 		boolean first = true;
 		StringBuilder stringBuilder = new StringBuilder("{");
-		for (Entry<String, JsonEntity> entry : this.contents.entrySet())
+		for (Entry<Restriction, JsonEntity> entry : this.contents.entrySet())
 		{
 			if (first)
 			{
@@ -92,7 +92,7 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 			{
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(entry.getKey());
+			stringBuilder.append(entry.getKey().getName());
 			stringBuilder.append(":");
 			stringBuilder.append(entry.getValue().renderAsString());
 		}

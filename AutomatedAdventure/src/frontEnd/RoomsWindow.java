@@ -44,6 +44,11 @@ public class RoomsWindow extends JFrame
             }});
 	}
 	
+	public RoomPanel getRoomPanel(int index)
+	{
+		return this.panels.get(index);
+	}
+	
 	public void updatePanel(int index, String text)
 	{
 		RoomPanel roomPanel = this.panels.get(index);

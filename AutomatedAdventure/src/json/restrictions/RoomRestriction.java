@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum RoomRestriction implements RestrictionPointer
 {
-	TEMPLATES(Restriction.TEMPLATES);
+	TEMPLATES(Restriction.TEMPLATES), NAME(Restriction.NAME);
 	
 	private Restriction restriction;
 	

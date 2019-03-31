@@ -10,6 +10,11 @@ public class JsonEntityArray implements JsonEntity
 	{
 		this.entityList = entityList;
 	}
+	
+	public JsonEntity getEntityAt(int index)
+	{
+		return this.entityList.get(index);
+	}
 
 	@Override
 	public String renderAsString()
