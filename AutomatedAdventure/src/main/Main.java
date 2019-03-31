@@ -12,8 +12,12 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.swing.JFileChooser;
 
+import frontEnd.RoomsWindow;
+
 public class Main
 {
+	int checkInterval = 1000;
+	
 	public static Dimension findScreenCentre()
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -36,6 +40,40 @@ public class Main
 		{
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	public static void main(String[] args)
+	{
+		Main main = new Main();
+	}
+	
+	public Main()
+	{
+		RoomsWindow window = new RoomsWindow();
+		window.updatePanel(0, "TEST");
+		window.showWindow();
+		this.startLoop();
+	}
+	
+	private void mainLoop()
+	{	
+
+	}
+	
+	private void startLoop()
+	{
+		while(true)
+		{
+			this.mainLoop();
+			try
+			{
+				Thread.sleep(this.checkInterval);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 }

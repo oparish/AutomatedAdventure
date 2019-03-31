@@ -17,13 +17,11 @@ public class RoomsWindow extends JFrame
 	private static final int WIDTH = 1000;	
 	private static final int HEIGHT = 1000;
 	
-	int checkInterval;
 	ArrayList<RoomPanel> panels = new ArrayList<RoomPanel>();
 	
-	public RoomsWindow(int checkInterval)
+	public RoomsWindow()
 	{
 		super();
-		this.checkInterval = checkInterval;
 		this.setSize(new Dimension(WIDTH, HEIGHT));
 		JPanel innerPanel = new JPanel();
 		innerPanel.setLayout(new GridLayout(2, 3));
@@ -38,22 +36,6 @@ public class RoomsWindow extends JFrame
 		this.addOnCloseListener();
 	}
 	
-	public void startLoop()
-	{
-		while(true)
-		{
-			this.mainLoop();
-			try
-			{
-				Thread.sleep(this.checkInterval);
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	private void addOnCloseListener()
 	{	
 		this.addWindowListener(new WindowAdapter() {  
@@ -66,19 +48,6 @@ public class RoomsWindow extends JFrame
 	{
 		RoomPanel roomPanel = this.panels.get(index);
 		roomPanel.setText(text);
-	}
-	
-	private void mainLoop()
-	{	
-
-	}
-	
-	public static void main(String[] args)
-	{
-		RoomsWindow window = new RoomsWindow(1000);
-		window.updatePanel(0, "TEST");
-		window.showWindow();
-		window.startLoop();
 	}
 	
 	public void showWindow()
