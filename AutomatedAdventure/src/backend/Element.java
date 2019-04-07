@@ -33,6 +33,11 @@ public class Element
 		}
 	}
 
+	public String getName()
+	{
+		return this.elementJson.getJsonEntityString(ElementRestriction.NAME).renderAsString();
+	}
+	
 	public ElementInstance getInstance(int index)
 	{
 		return this.instances.get(index);
@@ -45,6 +50,28 @@ public class Element
 		private ElementInstance(ArrayList<Integer> values)
 		{
 			this.values = values;
+		}
+		
+		public String getValue(int index)
+		{
+			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
+			RestrictedJson<ElementDataRestriction> elementData = elementJson.getRestrictedJson(index, ElementDataRestriction.class);
+			JsonEntityArray<JsonEntityString> options = elementData.getStringArray(ElementDataRestriction.OPTIONS);				
+			JsonEntityString value = options.getJsonEntityString(this.values.get(index));
+			return value.renderAsString();
+		}
+		
+		public String getValueByName(String dataName)
+		{
+			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
+			for (int i = 0; i < values.size(); i++)
+			{
+				RestrictedJson<ElementDataRestriction> elementData = elementJson.getRestrictedJson(i, ElementDataRestriction.class);
+				JsonEntityString name = elementData.getJsonEntityString(ElementDataRestriction.NAME);
+				if (dataName.equals(name.renderAsString()))
+					return this.getValue(i);
+			}
+			return null;
 		}
 		
 		public String renderAsString()
