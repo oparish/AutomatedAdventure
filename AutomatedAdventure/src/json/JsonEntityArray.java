@@ -2,11 +2,11 @@ package json;
 
 import java.util.ArrayList;
 
-public class JsonEntityArray implements JsonEntity
+public class JsonEntityArray<J extends JsonEntity> implements JsonEntity
 {
-	ArrayList<JsonEntity> entityList;
+	ArrayList<J> entityList;
 	
-	public JsonEntityArray(ArrayList<JsonEntity> entityList)
+	public JsonEntityArray(ArrayList<J> entityList)
 	{
 		this.entityList = entityList;
 	}
