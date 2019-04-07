@@ -1,21 +1,12 @@
 package backend;
 
-import java.security.cert.PKIXRevocationChecker.Option;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
-
 import javax.json.JsonObject;
-
-import frontEnd.RoomPanel;
-import frontEnd.RoomsWindow;
 import json.JsonEntityArray;
 import json.JsonEntityString;
 import json.RestrictedJson;
 import json.restrictions.ElementDataRestriction;
 import json.restrictions.ElementRestriction;
-import json.restrictions.RestrictionType;
-import json.restrictions.RoomRestriction;
 import json.restrictions.ScenarioRestriction;
 import main.Main;
 
@@ -31,12 +22,11 @@ public class Element
 		{
 			ArrayList<Integer> values = new ArrayList<Integer>();
 			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementData = 
-					(JsonEntityArray<RestrictedJson<ElementDataRestriction>>) this.elementJson.getChild(ElementRestriction.ELEMENT_DATA);
+					this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
 			for (int j = 0; j < elementData.getLength(); j++)
 			{
-				RestrictedJson<ElementDataRestriction> elementDetail = (RestrictedJson<ElementDataRestriction>) elementData.getEntityAt(i);
-				JsonEntityArray<JsonEntityString> options = (JsonEntityArray<JsonEntityString>) elementDetail.getChild(ElementDataRestriction.OPTIONS);
-				String name = ((JsonEntityString) elementDetail.getChild(ElementDataRestriction.NAME)).renderAsString();
+				RestrictedJson<ElementDataRestriction> elementDetail = elementData.getRestrictedJson(j, ElementDataRestriction.class);
+				JsonEntityArray<JsonEntityString> options = elementDetail.getStringArray(ElementDataRestriction.OPTIONS);
 				values.add(options.getRandomIndex());			
 			}	
 			this.instances.add(new ElementInstance(values));
@@ -59,15 +49,14 @@ public class Element
 		
 		public String renderAsString()
 		{
-			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementJson = 
-					(JsonEntityArray<RestrictedJson<ElementDataRestriction>>) Element.this.elementJson.getChild(ElementRestriction.ELEMENT_DATA);
+			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
 			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < values.size(); i++)
 			{
-				RestrictedJson<ElementDataRestriction> elementData = (RestrictedJson<ElementDataRestriction>) elementJson.getEntityAt(i);
+				RestrictedJson<ElementDataRestriction> elementData = elementJson.getRestrictedJson(i, ElementDataRestriction.class);
 				JsonEntityString name = (JsonEntityString) elementData.getChild(ElementDataRestriction.NAME);
-				JsonEntityArray<JsonEntityString> options = (JsonEntityArray<JsonEntityString>) elementData.getChild(ElementDataRestriction.OPTIONS);				
-				JsonEntityString value = (JsonEntityString) options.getEntityAt(this.values.get(i));
+				JsonEntityArray<JsonEntityString> options = elementData.getStringArray(ElementDataRestriction.OPTIONS);				
+				JsonEntityString value = options.getJsonEntityString(this.values.get(i));
 				
 				stringBuilder.append(name.renderAsString() + " : " + value.renderAsString() + "\r\n");
 			}	
@@ -79,8 +68,8 @@ public class Element
 	{
 		JsonObject jsonObject = Main.openJsonFile(null);
 		RestrictedJson<ScenarioRestriction> scenarioJson = new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
-		JsonEntityArray<RestrictedJson<ElementRestriction>> elements = (JsonEntityArray<RestrictedJson<ElementRestriction>> ) scenarioJson.getChild(ScenarioRestriction.ELEMENTS);
-		RestrictedJson<ElementRestriction> elementJson = (RestrictedJson<ElementRestriction>) elements.getEntityAt(0);
+		JsonEntityArray<RestrictedJson<ElementRestriction>> elements = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ELEMENTS, ElementRestriction.class);
+		RestrictedJson<ElementRestriction> elementJson = elements.getRestrictedJson(0, ElementRestriction.class);
 		Element element = new Element(elementJson, 1);
 		System.out.println(element.getInstance(0).renderAsString());
 	}

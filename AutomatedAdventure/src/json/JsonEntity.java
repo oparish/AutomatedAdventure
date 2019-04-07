@@ -18,9 +18,9 @@ public interface JsonEntity
 	{
 		JsonObject jsonObject = Main.openJsonFile(null);
 		RestrictedJson<ScenarioRestriction> scenarioJson = new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
-		JsonEntityArray jsonEntityArray = (JsonEntityArray) scenarioJson.getChild(ScenarioRestriction.ROOMS);
+		JsonEntityArray<RestrictedJson<RoomRestriction>> jsonEntityArray = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ROOMS, RoomRestriction.class);
 		System.out.println(jsonEntityArray.renderAsString());
-		RestrictedJson<RoomRestriction> roomJson = (RestrictedJson<RoomRestriction>) jsonEntityArray.getEntityAt(0);
+		RestrictedJson<RoomRestriction> roomJson = (RestrictedJson<RoomRestriction>) jsonEntityArray.getRestrictedJson(0, RoomRestriction.class);
 		JsonEntityString name = (JsonEntityString) roomJson.getChild(RoomRestriction.NAME);
 		RoomsWindow roomsWindow = new RoomsWindow();
 		RoomPanel roomPanel = roomsWindow.getRoomPanel(0);

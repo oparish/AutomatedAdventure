@@ -24,35 +24,38 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 			String restrictionName = restriction.getName();
 			JsonType jsonType = restriction.getJsonType();
 			
-			if (restriction.getJsonDim() == JsonDim.ARRAY)
+			if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType instanceof RestrictionType)
 			{
-				ArrayList<JsonEntity> entityList = new ArrayList<JsonEntity>();
+				ArrayList<RestrictedJson<? extends RestrictionPointer>> entityList = new ArrayList<RestrictedJson<? extends RestrictionPointer>>();
 				JsonArray jsonArray = json.getJsonArray(restrictionName);
+				for (int i = 0; i < jsonArray.size(); i++)
+				{
+					RestrictionType restrictionType = (RestrictionType) jsonType;
+					entityList.add(new RestrictedJson(jsonArray.getJsonObject(i), restrictionType.getClazz()));
+				}	
+				jsonEntity = new JsonEntityArray<RestrictedJson<? extends RestrictionPointer>>(entityList);
+			}
+			else if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType == CoreJsonType.STRING)
+			{
+				JsonArray jsonArray = json.getJsonArray(restrictionName);
+				ArrayList<JsonEntityString> entityList = new ArrayList<JsonEntityString>();
+				for (int i = 0; i < jsonArray.size(); i++)
+				{
+					entityList.add(new JsonEntityString(jsonArray.getString(i)));
 
-				if (jsonType instanceof RestrictionType)
-				{
-					for (int i = 0; i < jsonArray.size(); i++)
-					{
-						RestrictionType restrictionType = (RestrictionType) jsonType;
-						entityList.add(new RestrictedJson(jsonArray.getJsonObject(i), restrictionType.getClazz()));
-					}
 				}
-				else if (jsonType == CoreJsonType.STRING)
+				jsonEntity = new JsonEntityArray<JsonEntityString>(entityList);
+			}
+			else if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType == CoreJsonType.NUMBER)
+			{
+				JsonArray jsonArray = json.getJsonArray(restrictionName);
+				ArrayList<JsonEntityNumber> entityList = new ArrayList<JsonEntityNumber>();
+				for (int i = 0; i < jsonArray.size(); i++)
 				{
-					for (int i = 0; i < jsonArray.size(); i++)
-					{
-						entityList.add(new JsonEntityString(jsonArray.getString(i)));
-					}
+					entityList.add(new JsonEntityNumber(jsonArray.getInt(i)));
+
 				}
-				else if (jsonType == CoreJsonType.NUMBER)
-				{
-					for (int i = 0; i < jsonArray.size(); i++)
-					{
-						entityList.add(new JsonEntityNumber(jsonArray.getInt(i)));
-					}
-				}
-				
-				jsonEntity = new JsonEntityArray(entityList);
+				jsonEntity = new JsonEntityArray<JsonEntityNumber>(entityList);
 			}
 			else if (jsonType instanceof RestrictionType)
 			{
@@ -75,6 +78,21 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 	public JsonEntity getChild(R r)
 	{
 		return this.contents.get(r.getRestriction());
+	}
+	
+	public <J extends RestrictionPointer> RestrictedJson<J> getRestrictedJson(R r, Class<J> j)
+	{
+		return (RestrictedJson<J>) this.contents.get(r.getRestriction());
+	}
+	
+	public <J extends RestrictionPointer> JsonEntityArray<RestrictedJson<J>> getRestrictedJsonArray(R r, Class<J> j)
+	{
+		return (JsonEntityArray<RestrictedJson<J>>) this.contents.get(r.getRestriction());
+	}
+	
+	public JsonEntityArray<JsonEntityString> getStringArray(R r)
+	{
+		return (JsonEntityArray<JsonEntityString>) this.contents.get(r.getRestriction());
 	}
 
 	@Override

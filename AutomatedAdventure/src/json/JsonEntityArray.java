@@ -2,20 +2,16 @@ package json;
 
 import java.util.ArrayList;
 
+import json.restrictions.RestrictionPointer;
 import main.Main;
 
-public class JsonEntityArray<J extends JsonEntity> implements JsonEntity
+public class JsonEntityArray<E extends JsonEntity> implements JsonEntity
 {
-	ArrayList<J> entityList;
+	ArrayList<E> entityList;
 	
-	public JsonEntityArray(ArrayList<J> entityList)
+	public JsonEntityArray(ArrayList<E> entityList)
 	{
 		this.entityList = entityList;
-	}
-	
-	public JsonEntity getEntityAt(int index)
-	{
-		return this.entityList.get(index);
 	}
 	
 	public int getLength()
@@ -23,7 +19,7 @@ public class JsonEntityArray<J extends JsonEntity> implements JsonEntity
 		return this.entityList.size();
 	}
 	
-	public J getRandomMember()
+	public E getRandomMember()
 	{
 		int rndm = Main.getRndm(this.entityList.size());
 		return this.entityList.get(rndm);
@@ -33,6 +29,16 @@ public class JsonEntityArray<J extends JsonEntity> implements JsonEntity
 	{
 		int rndm = Main.getRndm(this.entityList.size());
 		return rndm;
+	}
+	
+	public <J extends RestrictionPointer> RestrictedJson<J> getRestrictedJson(int index, Class<J> j)
+	{
+		return (RestrictedJson<J>) this.entityList.get(index);
+	}
+	
+	public JsonEntityString getJsonEntityString(int index)
+	{
+		return (JsonEntityString) this.entityList.get(index);
 	}
 
 	@Override
