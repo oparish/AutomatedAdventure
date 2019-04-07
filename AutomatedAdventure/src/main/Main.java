@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Random;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -16,6 +17,7 @@ import frontEnd.RoomsWindow;
 
 public class Main
 {
+	private static Random random = new Random();
 	int checkInterval = 1000;
 	
 	public static Dimension findScreenCentre()
@@ -24,6 +26,11 @@ public class Main
 		int width = (int) screenSize.getWidth()/2;
 		int height = (int) screenSize.getHeight()/2;
 		return new Dimension(width, height);
+	}
+	
+	public static int getRndm(int range)
+	{
+		return Main.random.nextInt(range);
 	}
 	
 	public static JsonObject openJsonFile(Component parent)

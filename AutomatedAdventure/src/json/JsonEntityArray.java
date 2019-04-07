@@ -2,6 +2,8 @@ package json;
 
 import java.util.ArrayList;
 
+import main.Main;
+
 public class JsonEntityArray<J extends JsonEntity> implements JsonEntity
 {
 	ArrayList<J> entityList;
@@ -14,6 +16,23 @@ public class JsonEntityArray<J extends JsonEntity> implements JsonEntity
 	public JsonEntity getEntityAt(int index)
 	{
 		return this.entityList.get(index);
+	}
+	
+	public int getLength()
+	{
+		return this.entityList.size();
+	}
+	
+	public J getRandomMember()
+	{
+		int rndm = Main.getRndm(this.entityList.size());
+		return this.entityList.get(rndm);
+	}
+	
+	public int getRandomIndex()
+	{
+		int rndm = Main.getRndm(this.entityList.size());
+		return rndm;
 	}
 
 	@Override

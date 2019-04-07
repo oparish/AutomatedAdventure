@@ -1,12 +1,12 @@
 package json.restrictions;
 
-public enum ElementRestriction implements RestrictionPointer
+public enum ElementDataRestriction implements RestrictionPointer
 {
-	NAME(Restriction.NAME), ELEMENT_DATA(Restriction.ELEMENT_DATA);
+	NAME(Restriction.NAME), OPTIONS(Restriction.OPTIONS);
 	
 	private Restriction restriction;
 	
-	private ElementRestriction(Restriction restriction)
+	private ElementDataRestriction(Restriction restriction)
 	{
 		this.restriction = restriction;
 	}

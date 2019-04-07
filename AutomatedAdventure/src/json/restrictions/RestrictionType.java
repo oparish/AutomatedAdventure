@@ -4,6 +4,7 @@ import json.JsonType;
 
 public enum RestrictionType implements JsonType
 {
+	ELEMENTDATA(ElementDataRestriction.class),
 	ELEMENT(ElementRestriction.class),
 	INTERVAL(IntervalRestriction.class),
 	RULE(RuleRestriction.class),

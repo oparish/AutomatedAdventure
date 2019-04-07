@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum ScenarioRestriction implements RestrictionPointer
 {
-	ROOMS(Restriction.ROOMS), STATES(Restriction.STATES), INTERVALS(Restriction.INTERVALS);
+	ROOMS(Restriction.ROOMS), STATES(Restriction.STATES), INTERVALS(Restriction.INTERVALS), ELEMENTS(Restriction.ELEMENTS);
 	
 	private Restriction restriction;
 	

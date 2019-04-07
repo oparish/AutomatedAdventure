@@ -15,7 +15,7 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 {
 	HashMap<Restriction, JsonEntity> contents = new HashMap<Restriction, JsonEntity>();
 	
-	protected RestrictedJson(JsonObject json, Class<R> restrictionPointerType)
+	public RestrictedJson(JsonObject json, Class<R> restrictionPointerType)
 	{
 		for (RestrictionPointer restrictionPointer : restrictionPointerType.getEnumConstants())
 		{
