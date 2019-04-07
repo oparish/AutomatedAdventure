@@ -54,7 +54,7 @@ public class Element
 			for (int i = 0; i < values.size(); i++)
 			{
 				RestrictedJson<ElementDataRestriction> elementData = elementJson.getRestrictedJson(i, ElementDataRestriction.class);
-				JsonEntityString name = (JsonEntityString) elementData.getChild(ElementDataRestriction.NAME);
+				JsonEntityString name = elementData.getJsonEntityString(ElementDataRestriction.NAME);
 				JsonEntityArray<JsonEntityString> options = elementData.getStringArray(ElementDataRestriction.OPTIONS);				
 				JsonEntityString value = options.getJsonEntityString(this.values.get(i));
 				

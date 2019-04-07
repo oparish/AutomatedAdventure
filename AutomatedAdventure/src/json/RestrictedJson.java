@@ -75,11 +75,6 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 		}
 	}
 	
-	public JsonEntity getChild(R r)
-	{
-		return this.contents.get(r.getRestriction());
-	}
-	
 	public <J extends RestrictionPointer> RestrictedJson<J> getRestrictedJson(R r, Class<J> j)
 	{
 		return (RestrictedJson<J>) this.contents.get(r.getRestriction());
@@ -93,6 +88,11 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 	public JsonEntityArray<JsonEntityString> getStringArray(R r)
 	{
 		return (JsonEntityArray<JsonEntityString>) this.contents.get(r.getRestriction());
+	}
+	
+	public JsonEntityString getJsonEntityString(R r)
+	{
+		return (JsonEntityString) this.contents.get(r.getRestriction());
 	}
 
 	@Override
