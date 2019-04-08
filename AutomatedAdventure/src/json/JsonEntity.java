@@ -24,7 +24,7 @@ public interface JsonEntity
 		JsonEntityString name = roomJson.getJsonEntityString(RoomRestriction.NAME);
 		RoomsWindow roomsWindow = new RoomsWindow();
 		RoomPanel roomPanel = roomsWindow.getRoomPanel(0);
-		Room room = new Room();
+		Room room = new Room(roomJson);
 		room.setRoomPanel(roomPanel);
 		room.setName(name.renderAsString());
 		roomsWindow.setVisible(true);
