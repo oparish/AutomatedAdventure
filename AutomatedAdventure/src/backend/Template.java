@@ -45,13 +45,13 @@ public class Template
 		JsonObject jsonObject = Main.openJsonFile(null);
 		RestrictedJson<ScenarioRestriction> scenarioJson = new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
 		JsonEntityArray<RestrictedJson<RoomRestriction>> rooms = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ROOMS, RoomRestriction.class);
-		RestrictedJson<RoomRestriction> room = rooms.getRestrictedJson(0, RoomRestriction.class);
+		RestrictedJson<RoomRestriction> room = rooms.getMemberAt(0);
 		JsonEntityArray<JsonEntityString> templates = room.getStringArray(RoomRestriction.TEMPLATES);
-		JsonEntityString templateString = templates.getJsonEntityString(0);
+		JsonEntityString templateString = templates.getMemberAt(0);
 		Template template = new Template(templateString.renderAsString());
 		
 		JsonEntityArray<RestrictedJson<ElementRestriction>> elements = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ELEMENTS, ElementRestriction.class);
-		RestrictedJson<ElementRestriction> elementJson = elements.getRestrictedJson(0, ElementRestriction.class);
+		RestrictedJson<ElementRestriction> elementJson = elements.getMemberAt(0);
 		Element element = new Element(elementJson, 1);
 		
 		HashMap<String, ElementInstance> instances = new HashMap<String, ElementInstance>();

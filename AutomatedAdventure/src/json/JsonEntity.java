@@ -20,7 +20,7 @@ public interface JsonEntity
 		RestrictedJson<ScenarioRestriction> scenarioJson = new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
 		JsonEntityArray<RestrictedJson<RoomRestriction>> jsonEntityArray = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ROOMS, RoomRestriction.class);
 		System.out.println(jsonEntityArray.renderAsString());
-		RestrictedJson<RoomRestriction> roomJson = (RestrictedJson<RoomRestriction>) jsonEntityArray.getRestrictedJson(0, RoomRestriction.class);
+		RestrictedJson<RoomRestriction> roomJson = (RestrictedJson<RoomRestriction>) jsonEntityArray.getMemberAt(0);
 		JsonEntityString name = roomJson.getJsonEntityString(RoomRestriction.NAME);
 		RoomsWindow roomsWindow = new RoomsWindow();
 		RoomPanel roomPanel = roomsWindow.getRoomPanel(0);

@@ -31,14 +31,9 @@ public class JsonEntityArray<E extends JsonEntity> implements JsonEntity
 		return rndm;
 	}
 	
-	public <J extends RestrictionPointer> RestrictedJson<J> getRestrictedJson(int index, Class<J> j)
+	public E getMemberAt(int index)
 	{
-		return (RestrictedJson<J>) this.entityList.get(index);
-	}
-	
-	public JsonEntityString getJsonEntityString(int index)
-	{
-		return (JsonEntityString) this.entityList.get(index);
+		return this.entityList.get(index);
 	}
 
 	@Override

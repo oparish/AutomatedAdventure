@@ -25,7 +25,7 @@ public class Element
 					this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
 			for (int j = 0; j < elementData.getLength(); j++)
 			{
-				RestrictedJson<ElementDataRestriction> elementDetail = elementData.getRestrictedJson(j, ElementDataRestriction.class);
+				RestrictedJson<ElementDataRestriction> elementDetail = elementData.getMemberAt(j);
 				JsonEntityArray<JsonEntityString> options = elementDetail.getStringArray(ElementDataRestriction.OPTIONS);
 				values.add(options.getRandomIndex());			
 			}	
@@ -55,9 +55,9 @@ public class Element
 		public String getValue(int index)
 		{
 			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
-			RestrictedJson<ElementDataRestriction> elementData = elementJson.getRestrictedJson(index, ElementDataRestriction.class);
+			RestrictedJson<ElementDataRestriction> elementData = elementJson.getMemberAt(index);
 			JsonEntityArray<JsonEntityString> options = elementData.getStringArray(ElementDataRestriction.OPTIONS);				
-			JsonEntityString value = options.getJsonEntityString(this.values.get(index));
+			JsonEntityString value = options.getMemberAt(this.values.get(index));
 			return value.renderAsString();
 		}
 		
@@ -66,7 +66,7 @@ public class Element
 			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
 			for (int i = 0; i < values.size(); i++)
 			{
-				RestrictedJson<ElementDataRestriction> elementData = elementJson.getRestrictedJson(i, ElementDataRestriction.class);
+				RestrictedJson<ElementDataRestriction> elementData = elementJson.getMemberAt(i);
 				JsonEntityString name = elementData.getJsonEntityString(ElementDataRestriction.NAME);
 				if (dataName.equals(name.renderAsString()))
 					return this.getValue(i);
@@ -80,10 +80,10 @@ public class Element
 			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < values.size(); i++)
 			{
-				RestrictedJson<ElementDataRestriction> elementData = elementJson.getRestrictedJson(i, ElementDataRestriction.class);
+				RestrictedJson<ElementDataRestriction> elementData = elementJson.getMemberAt(i);
 				JsonEntityString name = elementData.getJsonEntityString(ElementDataRestriction.NAME);
 				JsonEntityArray<JsonEntityString> options = elementData.getStringArray(ElementDataRestriction.OPTIONS);				
-				JsonEntityString value = options.getJsonEntityString(this.values.get(i));
+				JsonEntityString value = options.getMemberAt(this.values.get(i));
 				
 				stringBuilder.append(name.renderAsString() + " : " + value.renderAsString() + "\r\n");
 			}	
@@ -96,7 +96,7 @@ public class Element
 		JsonObject jsonObject = Main.openJsonFile(null);
 		RestrictedJson<ScenarioRestriction> scenarioJson = new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
 		JsonEntityArray<RestrictedJson<ElementRestriction>> elements = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ELEMENTS, ElementRestriction.class);
-		RestrictedJson<ElementRestriction> elementJson = elements.getRestrictedJson(0, ElementRestriction.class);
+		RestrictedJson<ElementRestriction> elementJson = elements.getMemberAt(0);
 		Element element = new Element(elementJson, 1);
 		System.out.println(element.getInstance(0).renderAsString());
 	}

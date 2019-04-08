@@ -22,7 +22,7 @@ public class Scenario
 				this.scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ROOMS, RoomRestriction.class);
 		for (int i = 0; i < roomJsonArray.getLength(); i++)
 		{
-			RestrictedJson<RoomRestriction> roomJson = roomJsonArray.getRestrictedJson(i, RoomRestriction.class);
+			RestrictedJson<RoomRestriction> roomJson = roomJsonArray.getMemberAt(i);
 			this.rooms.add(new Room(roomJson));
 		}
 		
@@ -31,7 +31,7 @@ public class Scenario
 		
 		for (int i = 0; i < elementJsonArray.getLength(); i++)
 		{
-			RestrictedJson<ElementRestriction> elementJson = elementJsonArray.getRestrictedJson(i, ElementRestriction.class);
+			RestrictedJson<ElementRestriction> elementJson = elementJsonArray.getMemberAt(i);
 			this.elements.add(new Element(elementJson, 1));
 		}
 		
