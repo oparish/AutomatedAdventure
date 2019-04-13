@@ -17,8 +17,10 @@ import main.Main;
 
 public class Template
 {
+	private static final String ELEMENT = "element"; 
+	
 	String templateString;
-	Pattern elementPattern = Pattern.compile("\\[(.*?):(.*?)\\]");
+	Pattern replacePattern = Pattern.compile("\\[(.*?):(.*?):(.*?)\\]");
 	
 	public Template(String templateString)
 	{
@@ -28,16 +30,24 @@ public class Template
 	public String getAlteredTemplateString(HashMap<String, ElementInstance> elementInstances)
 	{
 		String alteredTemplateString = this.templateString;
-		Matcher matcher = elementPattern.matcher(alteredTemplateString);
+		Matcher matcher = replacePattern.matcher(alteredTemplateString);
 		while(matcher.find())
 		{
-			String elementType = matcher.group(1);
-			String elementData = matcher.group(2);
-			ElementInstance elementInstance = elementInstances.get(elementType);
-			String replacement = elementInstance.getValueByName(elementData);
-			alteredTemplateString = alteredTemplateString.replace(matcher.group(0), replacement);
+			if (matcher.group(1).equals(ELEMENT))
+			{
+				String replacement = this.getElementReplacement(matcher.group(2), matcher.group(3), elementInstances);
+				alteredTemplateString = alteredTemplateString.replace(matcher.group(0), replacement);
+			}
+
 		}
 		return alteredTemplateString;
+	}
+	
+	private String getElementReplacement(String elementType, String elementData, HashMap<String, ElementInstance> elementInstances)
+	{
+		ElementInstance elementInstance = elementInstances.get(elementType);
+		String replacement = elementInstance.getValueByName(elementData);
+		return replacement;
 	}
 	
 	public static void main(String[] args)
