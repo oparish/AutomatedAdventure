@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum StateRestriction implements RestrictionPointer
 {
-	NAME(Restriction.NAME), RULES(Restriction.RULES);
+	NAME(Restriction.NAME), VARIATIONS(Restriction.VARIATIONS);
 	
 	private Restriction restriction;
 	

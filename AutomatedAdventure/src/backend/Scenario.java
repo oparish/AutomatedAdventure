@@ -1,6 +1,7 @@
 package backend;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import json.JsonEntityArray;
 import json.RestrictedJson;
@@ -13,6 +14,7 @@ public class Scenario
 	RestrictedJson<ScenarioRestriction> scenarioJson;
 	ArrayList<Room> rooms = new ArrayList<Room>();
 	ArrayList<Element> elements = new ArrayList<Element>();
+	HashMap<String, State> states = new HashMap<String, State>();
 	
 	public Scenario(RestrictedJson<ScenarioRestriction> scenarioJson)
 	{

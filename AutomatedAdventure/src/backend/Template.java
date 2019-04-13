@@ -13,33 +13,36 @@ import json.RestrictedJson;
 import json.restrictions.ElementRestriction;
 import json.restrictions.RoomRestriction;
 import json.restrictions.ScenarioRestriction;
+import json.restrictions.StateRestriction;
 import main.Main;
 
 public class Template
 {
-	private static final String ELEMENT = "element"; 
-	
 	String templateString;
-	Pattern replacePattern = Pattern.compile("\\[(.*?):(.*?):(.*?)\\]");
+	Pattern elementPattern = Pattern.compile("\\[element:(.*?):(.*?)\\]");
+	Pattern statePattern = Pattern.compile("\\[state:(.*?)\\]");
 	
 	public Template(String templateString)
 	{
 		this.templateString = templateString;
 	}
 	
-	public String getAlteredTemplateString(HashMap<String, ElementInstance> elementInstances)
+	public String getAlteredTemplateString(HashMap<String, ElementInstance> elementInstances, HashMap<String, State> states)
 	{
 		String alteredTemplateString = this.templateString;
-		Matcher matcher = replacePattern.matcher(alteredTemplateString);
-		while(matcher.find())
+		Matcher elementMatcher = elementPattern.matcher(alteredTemplateString);
+		while(elementMatcher.find())
 		{
-			if (matcher.group(1).equals(ELEMENT))
-			{
-				String replacement = this.getElementReplacement(matcher.group(2), matcher.group(3), elementInstances);
-				alteredTemplateString = alteredTemplateString.replace(matcher.group(0), replacement);
-			}
-
+				String replacement = this.getElementReplacement(elementMatcher.group(1), elementMatcher.group(2), elementInstances);
+				alteredTemplateString = alteredTemplateString.replace(elementMatcher.group(0), replacement);
 		}
+		Matcher stateMatcher = statePattern.matcher(alteredTemplateString);
+		while(stateMatcher.find())
+		{
+				String replacement = this.getStateReplacement(stateMatcher.group(1), states);
+				alteredTemplateString = alteredTemplateString.replace(stateMatcher.group(0), replacement);
+		}
+
 		return alteredTemplateString;
 	}
 	
@@ -47,6 +50,13 @@ public class Template
 	{
 		ElementInstance elementInstance = elementInstances.get(elementType);
 		String replacement = elementInstance.getValueByName(elementData);
+		return replacement;
+	}
+	
+	private String getStateReplacement(String stateName, HashMap<String, State> states)
+	{
+		State state = states.get(stateName);
+		String replacement = state.getValue();
 		return replacement;
 	}
 	
@@ -67,7 +77,14 @@ public class Template
 		HashMap<String, ElementInstance> instances = new HashMap<String, ElementInstance>();
 		instances.put(element.getName(), element.getInstance(0));
 		
-		String result = template.getAlteredTemplateString(instances);
+		JsonEntityArray<RestrictedJson<StateRestriction>> states = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.STATES, StateRestriction.class);
+		RestrictedJson<StateRestriction> stateJson = states.getMemberAt(0);
+		State state = new State(stateJson, 0);
+		HashMap<String, State> stateMap = new HashMap<String, State>();
+		JsonEntityString nameJson = stateJson.getJsonEntityString(StateRestriction.NAME);
+		stateMap.put(nameJson.renderAsString(), state);
+		
+		String result = template.getAlteredTemplateString(instances, stateMap);
 		System.out.println(result);
 	}
 }

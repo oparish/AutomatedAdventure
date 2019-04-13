@@ -15,7 +15,7 @@ public enum Restriction
 	TIME("time", NUMBER, JsonDim.MONO),
 	INTERVAL_NAME("interval", STRING, JsonDim.MONO),
 	CHANCE("chance", NUMBER, JsonDim.MONO),
-	RULES("rules", RestrictionType.RULE, JsonDim.ARRAY),
+	VARIATIONS("variations", STRING, JsonDim.ARRAY),
 	TEMPLATES("templates", STRING, JsonDim.ARRAY),
 	ROOMS("rooms", RestrictionType.ROOM, JsonDim.ARRAY),
 	STATES("states", RestrictionType.STATE, JsonDim.ARRAY),
