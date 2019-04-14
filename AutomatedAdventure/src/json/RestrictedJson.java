@@ -19,60 +19,72 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 	{
 		for (RestrictionPointer restrictionPointer : restrictionPointerType.getEnumConstants())
 		{
-			JsonEntity jsonEntity = null;
-			Restriction restriction = restrictionPointer.getRestriction();
-			String restrictionName = restriction.getName();
-			JsonType jsonType = restriction.getJsonType();
-			
-			if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType instanceof RestrictionType)
+			try
 			{
-				ArrayList<RestrictedJson<? extends RestrictionPointer>> entityList = new ArrayList<RestrictedJson<? extends RestrictionPointer>>();
-				JsonArray jsonArray = json.getJsonArray(restrictionName);
-				for (int i = 0; i < jsonArray.size(); i++)
-				{
-					RestrictionType restrictionType = (RestrictionType) jsonType;
-					entityList.add(new RestrictedJson(jsonArray.getJsonObject(i), restrictionType.getClazz()));
-				}	
-				jsonEntity = new JsonEntityArray<RestrictedJson<? extends RestrictionPointer>>(entityList);
+				this.loadJson(json, restrictionPointer);
 			}
-			else if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType == CoreJsonType.STRING)
+			catch(Exception e)
 			{
-				JsonArray jsonArray = json.getJsonArray(restrictionName);
-				ArrayList<JsonEntityString> entityList = new ArrayList<JsonEntityString>();
-				for (int i = 0; i < jsonArray.size(); i++)
-				{
-					entityList.add(new JsonEntityString(jsonArray.getString(i)));
-
-				}
-				jsonEntity = new JsonEntityArray<JsonEntityString>(entityList);
+				new Exception("Error loading " + restrictionPointer + " for " + restrictionPointerType.getName(), e).printStackTrace();;
 			}
-			else if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType == CoreJsonType.NUMBER)
-			{
-				JsonArray jsonArray = json.getJsonArray(restrictionName);
-				ArrayList<JsonEntityNumber> entityList = new ArrayList<JsonEntityNumber>();
-				for (int i = 0; i < jsonArray.size(); i++)
-				{
-					entityList.add(new JsonEntityNumber(jsonArray.getInt(i)));
-
-				}
-				jsonEntity = new JsonEntityArray<JsonEntityNumber>(entityList);
-			}
-			else if (jsonType instanceof RestrictionType)
+		}
+	}
+	
+	private void loadJson(JsonObject json, RestrictionPointer restrictionPointer)
+	{
+		JsonEntity jsonEntity = null;
+		Restriction restriction = restrictionPointer.getRestriction();
+		String restrictionName = restriction.getName();
+		JsonType jsonType = restriction.getJsonType();
+		
+		if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType instanceof RestrictionType)
+		{
+			ArrayList<RestrictedJson<? extends RestrictionPointer>> entityList = new ArrayList<RestrictedJson<? extends RestrictionPointer>>();
+			JsonArray jsonArray = json.getJsonArray(restrictionName);
+			for (int i = 0; i < jsonArray.size(); i++)
 			{
 				RestrictionType restrictionType = (RestrictionType) jsonType;
-				jsonEntity = new RestrictedJson(json.getJsonObject(restrictionName), restrictionType.getClazz());
-			}
-			else if (jsonType == CoreJsonType.STRING)
-			{
-				jsonEntity = new JsonEntityString(json.getString(restrictionName));
-			}
-			else if (jsonType == CoreJsonType.NUMBER)
-			{
-				jsonEntity = new JsonEntityNumber(json.getInt(restrictionName));
-			}					
-			
-			this.contents.put(restriction, jsonEntity);
+				entityList.add(new RestrictedJson(jsonArray.getJsonObject(i), restrictionType.getClazz()));
+			}	
+			jsonEntity = new JsonEntityArray<RestrictedJson<? extends RestrictionPointer>>(entityList);
 		}
+		else if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType == CoreJsonType.STRING)
+		{
+			JsonArray jsonArray = json.getJsonArray(restrictionName);
+			ArrayList<JsonEntityString> entityList = new ArrayList<JsonEntityString>();
+			for (int i = 0; i < jsonArray.size(); i++)
+			{
+				entityList.add(new JsonEntityString(jsonArray.getString(i)));
+
+			}
+			jsonEntity = new JsonEntityArray<JsonEntityString>(entityList);
+		}
+		else if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType == CoreJsonType.NUMBER)
+		{
+			JsonArray jsonArray = json.getJsonArray(restrictionName);
+			ArrayList<JsonEntityNumber> entityList = new ArrayList<JsonEntityNumber>();
+			for (int i = 0; i < jsonArray.size(); i++)
+			{
+				entityList.add(new JsonEntityNumber(jsonArray.getInt(i)));
+
+			}
+			jsonEntity = new JsonEntityArray<JsonEntityNumber>(entityList);
+		}
+		else if (jsonType instanceof RestrictionType)
+		{
+			RestrictionType restrictionType = (RestrictionType) jsonType;
+			jsonEntity = new RestrictedJson(json.getJsonObject(restrictionName), restrictionType.getClazz());
+		}
+		else if (jsonType == CoreJsonType.STRING)
+		{
+			jsonEntity = new JsonEntityString(json.getString(restrictionName));
+		}
+		else if (jsonType == CoreJsonType.NUMBER)
+		{
+			jsonEntity = new JsonEntityNumber(json.getInt(restrictionName));
+		}					
+		
+		this.contents.put(restriction, jsonEntity);
 	}
 	
 	public <J extends RestrictionPointer> RestrictedJson<J> getRestrictedJson(R r, Class<J> j)
