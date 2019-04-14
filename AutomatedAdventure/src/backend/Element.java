@@ -38,6 +38,12 @@ public class Element
 		return this.elementJson.getJsonEntityString(ElementRestriction.NAME).renderAsString();
 	}
 	
+	public ElementInstance getRandomInstance()
+	{
+		int randomIndex = Main.getRndm(this.instances.size());
+		return this.instances.get(randomIndex);
+	}
+	
 	public ElementInstance getInstance(int index)
 	{
 		return this.instances.get(index);
@@ -50,6 +56,11 @@ public class Element
 		private ElementInstance(ArrayList<Integer> values)
 		{
 			this.values = values;
+		}
+		
+		public Element getElement()
+		{
+			return Element.this;
 		}
 		
 		public String getValue(int index)

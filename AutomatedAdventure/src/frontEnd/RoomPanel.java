@@ -51,10 +51,10 @@ public class RoomPanel extends JPanel
 		this.add(this.textArea, textAreaConstraints);
 	}
 	
-	public void update(HashMap<String, ElementInstance> elementInstances, HashMap<String, State> states)
+	public void update(HashMap<String, State> states)
 	{	
 		Template template = this.room.getRandomTemplate();
-		String text = template.getAlteredTemplateString(elementInstances, states);
+		String text = template.getAlteredTemplateString(this.room.getElementInstances(), states);
 		this.textArea.setText(text);
 	}
 	

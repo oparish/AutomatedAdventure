@@ -30,9 +30,9 @@ public class Scenario
 	public Scenario(RestrictedJson<ScenarioRestriction> scenarioJson)
 	{
 		this.scenarioJson = scenarioJson;
-		this.loadRooms();
 		this.loadElements();
-		this.loadStates();	
+		this.loadStates();
+		this.loadRooms();
 	}
 	
 	public int getCheckTime()
@@ -47,7 +47,12 @@ public class Scenario
 		for (int i = 0; i < roomJsonArray.getLength(); i++)
 		{
 			RestrictedJson<RoomRestriction> roomJson = roomJsonArray.getMemberAt(i);
-			this.rooms.add(new Room(roomJson));
+			HashMap<String, ElementInstance> elementInstances = new HashMap<String, ElementInstance>();
+			for (Element element : this.elements)
+			{
+				elementInstances.put(element.getName(), element.getRandomInstance());
+			}
+			this.rooms.add(new Room(roomJson, elementInstances));
 		}
 	}
 	
@@ -59,20 +64,8 @@ public class Scenario
 		for (int i = 0; i < elementJsonArray.getLength(); i++)
 		{
 			RestrictedJson<ElementRestriction> elementJson = elementJsonArray.getMemberAt(i);
-			this.elements.add(new Element(elementJson, 1));
+			this.elements.add(new Element(elementJson, 10));
 		}
-	}
-	
-	public HashMap<String, ElementInstance> getElementInstances()
-	{
-		HashMap<String, ElementInstance> elementInstanceMap = new HashMap<String, ElementInstance>();
-		for (Element element : this.elements)
-		{
-			String elementName = element.getName();
-			ElementInstance instance = element.getInstance(0);
-			elementInstanceMap.put(elementName, instance);
-		}
-		return elementInstanceMap;
 	}
 	
 	public ArrayList<Room> getRooms()

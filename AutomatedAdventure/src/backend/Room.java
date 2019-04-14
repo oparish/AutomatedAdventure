@@ -1,7 +1,9 @@
 package backend;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import backend.Element.ElementInstance;
 import frontEnd.RoomPanel;
 import json.JsonEntityArray;
 import json.JsonEntityString;
@@ -13,10 +15,16 @@ public class Room
 {
 	private RestrictedJson<RoomRestriction> roomJson;
 	private ArrayList<Template> templates = new ArrayList<Template>();
+	HashMap<String, ElementInstance> elementInstances = new HashMap<String, ElementInstance>();
 	
-	public Room(RestrictedJson<RoomRestriction> roomJson)
+	public HashMap<String, ElementInstance> getElementInstances() {
+		return elementInstances;
+	}
+
+	public Room(RestrictedJson<RoomRestriction> roomJson, HashMap<String, ElementInstance> elementInstances)
 	{
 		this.roomJson = roomJson;
+		this.elementInstances = elementInstances;
 		this.loadTemplates();
 	}
 	
@@ -28,6 +36,16 @@ public class Room
 			String templateString = templateJson.getMemberAt(i).renderAsString();
 			this.templates.add(new Template(templateString));
 		}
+	}
+	
+	public ElementInstance getElementInstance(Element element)
+	{
+		return this.getElementInstance(element);
+	}
+	
+	public void setElementInstance(Element element, ElementInstance elementInstance)
+	{
+		this.elementInstances.put(element.getName(), elementInstance);
 	}
 	
 	public Template getRandomTemplate()

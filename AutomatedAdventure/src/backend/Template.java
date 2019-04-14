@@ -21,6 +21,7 @@ public class Template
 	String templateString;
 	Pattern elementPattern = Pattern.compile("\\[element:(.*?):(.*?)\\]");
 	Pattern statePattern = Pattern.compile("\\[state:(.*?)\\]");
+	Pattern changeElementPattern = Pattern.compile("\\[changeElement:(.*?)\\]");
 	
 	public Template(String templateString)
 	{
@@ -30,19 +31,45 @@ public class Template
 	public String getAlteredTemplateString(HashMap<String, ElementInstance> elementInstances, HashMap<String, State> states)
 	{
 		String alteredTemplateString = this.templateString;
+		alteredTemplateString = this.checkForElementChanges(elementInstances, alteredTemplateString);
+		alteredTemplateString = this.checkForElements(elementInstances, alteredTemplateString);
+		alteredTemplateString = this.checkForStates(states, alteredTemplateString);
+		return alteredTemplateString;
+	}
+	
+	private String checkForElementChanges(HashMap<String, ElementInstance> elementInstances, String alteredTemplateString)
+	{
+		Matcher changeElementMatcher = changeElementPattern.matcher(alteredTemplateString);
+		while(changeElementMatcher.find())
+		{
+			String elementName = changeElementMatcher.group(1);
+			ElementInstance elementInstance = elementInstances.get(elementName);
+			Element element = elementInstance.getElement();
+			elementInstances.put(element.getName(), element.getRandomInstance());
+			alteredTemplateString = alteredTemplateString.replace(changeElementMatcher.group(0), "");
+		}
+		return alteredTemplateString;
+	}
+	
+	private String checkForElements(HashMap<String, ElementInstance> elementInstances, String alteredTemplateString)
+	{
 		Matcher elementMatcher = elementPattern.matcher(alteredTemplateString);
 		while(elementMatcher.find())
 		{
 				String replacement = this.getElementReplacement(elementMatcher.group(1), elementMatcher.group(2), elementInstances);
 				alteredTemplateString = alteredTemplateString.replace(elementMatcher.group(0), replacement);
 		}
+		return alteredTemplateString;
+	}
+	
+	private String checkForStates(HashMap<String, State> states, String alteredTemplateString)
+	{
 		Matcher stateMatcher = statePattern.matcher(alteredTemplateString);
 		while(stateMatcher.find())
 		{
 				String replacement = this.getStateReplacement(stateMatcher.group(1), states);
 				alteredTemplateString = alteredTemplateString.replace(stateMatcher.group(0), replacement);
 		}
-
 		return alteredTemplateString;
 	}
 	
