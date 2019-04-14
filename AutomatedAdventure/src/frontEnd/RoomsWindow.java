@@ -5,10 +5,15 @@ import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import backend.Room;
+import backend.Scenario;
+import backend.State;
+import backend.Element.ElementInstance;
 import main.Main;
 
 @SuppressWarnings("serial")
@@ -17,18 +22,21 @@ public class RoomsWindow extends JFrame
 	private static final int WIDTH = 1000;	
 	private static final int HEIGHT = 1000;
 	
+	Scenario scenario;
 	ArrayList<RoomPanel> panels = new ArrayList<RoomPanel>();
 	
-	public RoomsWindow()
+	public RoomsWindow(Scenario scenario)
 	{
 		super();
 		this.setSize(new Dimension(WIDTH, HEIGHT));
 		JPanel innerPanel = new JPanel();
 		innerPanel.setLayout(new GridLayout(2, 3));
 		
-		for (int i = 0; i < 6; i++)
+		this.scenario = scenario;
+		ArrayList<Room> rooms = this.scenario.getRooms();
+		for (int i = 0; i < rooms.size(); i++)
 		{
-			RoomPanel roomPanel = new RoomPanel();
+			RoomPanel roomPanel = new RoomPanel(rooms.get(i));
 			this.panels.add(roomPanel);
 			innerPanel.add(roomPanel);
 		}
@@ -49,10 +57,13 @@ public class RoomsWindow extends JFrame
 		return this.panels.get(index);
 	}
 	
-	public void updatePanel(int index, String text)
+	public void update()
 	{
-		RoomPanel roomPanel = this.panels.get(index);
-		roomPanel.setText(text);
+		for (int i = 0; i < this.panels.size(); i++)
+		{
+			RoomPanel panel = this.panels.get(i);
+			panel.update(this.scenario.getElementInstances(), this.scenario.getStates());
+		}
 	}
 	
 	public void showWindow()

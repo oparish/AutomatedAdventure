@@ -3,6 +3,7 @@ package backend;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import backend.Element.ElementInstance;
 import json.JsonEntityArray;
 import json.JsonEntityString;
 import json.RestrictedJson;
@@ -16,14 +17,27 @@ public class Scenario
 	RestrictedJson<ScenarioRestriction> scenarioJson;
 	ArrayList<Room> rooms = new ArrayList<Room>();
 	ArrayList<Element> elements = new ArrayList<Element>();
+	public ArrayList<Element> getElements() {
+		return elements;
+	}
+
 	HashMap<String, State> states = new HashMap<String, State>();
 	
+	public HashMap<String, State> getStates() {
+		return states;
+	}
+
 	public Scenario(RestrictedJson<ScenarioRestriction> scenarioJson)
 	{
 		this.scenarioJson = scenarioJson;
 		this.loadRooms();
 		this.loadElements();
 		this.loadStates();	
+	}
+	
+	public int getCheckTime()
+	{
+		return this.scenarioJson.getJsonEntityNumber(ScenarioRestriction.CHECKTIME).getValue();
 	}
 	
 	private void loadRooms()
@@ -47,6 +61,23 @@ public class Scenario
 			RestrictedJson<ElementRestriction> elementJson = elementJsonArray.getMemberAt(i);
 			this.elements.add(new Element(elementJson, 1));
 		}
+	}
+	
+	public HashMap<String, ElementInstance> getElementInstances()
+	{
+		HashMap<String, ElementInstance> elementInstanceMap = new HashMap<String, ElementInstance>();
+		for (Element element : this.elements)
+		{
+			String elementName = element.getName();
+			ElementInstance instance = element.getInstance(0);
+			elementInstanceMap.put(elementName, instance);
+		}
+		return elementInstanceMap;
+	}
+	
+	public ArrayList<Room> getRooms()
+	{
+		return this.rooms;
 	}
 	
 	private void loadStates()

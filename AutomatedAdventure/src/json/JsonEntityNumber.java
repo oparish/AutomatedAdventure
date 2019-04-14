@@ -2,8 +2,12 @@ package json;
 
 public class JsonEntityNumber implements JsonEntity
 {
-	public int value;
+	private int value;
 	
+	public int getValue() {
+		return value;
+	}
+
 	public JsonEntityNumber(int value)
 	{
 		this.value = value;

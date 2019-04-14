@@ -13,12 +13,17 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.swing.JFileChooser;
 
+import backend.Scenario;
 import frontEnd.RoomsWindow;
+import json.RestrictedJson;
+import json.restrictions.ScenarioRestriction;
 
 public class Main
 {
 	private static Random random = new Random();
-	int checkInterval = 1000;
+	
+	private int checkTime;
+	private RoomsWindow roomsWindow;
 	
 	public static Dimension findScreenCentre()
 	{
@@ -57,15 +62,19 @@ public class Main
 	
 	public Main()
 	{
-		RoomsWindow window = new RoomsWindow();
-		window.updatePanel(0, "TEST");
-		window.showWindow();
+		JsonObject jsonObject = Main.openJsonFile(null);
+		RestrictedJson<ScenarioRestriction> scenarioJson = 
+				new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
+		Scenario scenario = new Scenario(scenarioJson);
+		this.checkTime = scenario.getCheckTime();
+		this.roomsWindow = new RoomsWindow(scenario);
+		this.roomsWindow.showWindow();
 		this.startLoop();
 	}
 	
 	private void mainLoop()
 	{	
-
+		this.roomsWindow.update();
 	}
 	
 	private void startLoop()
@@ -75,7 +84,7 @@ public class Main
 			this.mainLoop();
 			try
 			{
-				Thread.sleep(this.checkInterval);
+				Thread.sleep(this.checkTime);
 			}
 			catch (InterruptedException e)
 			{

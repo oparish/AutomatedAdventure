@@ -19,7 +19,8 @@ public enum Restriction
 	TEMPLATES("templates", STRING, JsonDim.ARRAY),
 	ROOMS("rooms", RestrictionType.ROOM, JsonDim.ARRAY),
 	STATES("states", RestrictionType.STATE, JsonDim.ARRAY),
-	INTERVALS("intervals", RestrictionType.INTERVAL, JsonDim.ARRAY);
+	INTERVALS("intervals", RestrictionType.INTERVAL, JsonDim.ARRAY),
+	CHECKTIME("checktime", NUMBER, JsonDim.MONO);
 	
 	private final JsonDim jsonDim;
 	private final JsonType jsonType;
