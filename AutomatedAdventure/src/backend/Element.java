@@ -15,10 +15,11 @@ public class Element
 	RestrictedJson<ElementRestriction> elementJson;
 	ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
 	
-	public Element(RestrictedJson<ElementRestriction> elementJson, int instances)
+	public Element(RestrictedJson<ElementRestriction> elementJson)
 	{
 		this.elementJson = elementJson;
-		for (int i = 0; i < instances; i++)
+		int instanceNumber = elementJson.getJsonEntityNumber(ElementRestriction.INSTANCE_NUMBER).getValue();
+		for (int i = 0; i < instanceNumber; i++)
 		{
 			ArrayList<Integer> values = new ArrayList<Integer>();
 			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementData = 
@@ -104,11 +105,11 @@ public class Element
 	
 	public static void main(String[] args)
 	{
-		JsonObject jsonObject = Main.openJsonFile(null);
-		RestrictedJson<ScenarioRestriction> scenarioJson = new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
-		JsonEntityArray<RestrictedJson<ElementRestriction>> elements = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ELEMENTS, ElementRestriction.class);
-		RestrictedJson<ElementRestriction> elementJson = elements.getMemberAt(0);
-		Element element = new Element(elementJson, 1);
-		System.out.println(element.getInstance(0).renderAsString());
+//		JsonObject jsonObject = Main.openJsonFile(null);
+//		RestrictedJson<ScenarioRestriction> scenarioJson = new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
+//		JsonEntityArray<RestrictedJson<ElementRestriction>> elements = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ELEMENTS, ElementRestriction.class);
+//		RestrictedJson<ElementRestriction> elementJson = elements.getMemberAt(0);
+//		Element element = new Element(elementJson, 1);
+//		System.out.println(element.getInstance(0).renderAsString());
 	}
 }

@@ -89,29 +89,29 @@ public class Template
 	
 	public static void main(String[] args)
 	{
-		JsonObject jsonObject = Main.openJsonFile(null);
-		RestrictedJson<ScenarioRestriction> scenarioJson = new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
-		JsonEntityArray<RestrictedJson<RoomRestriction>> rooms = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ROOMS, RoomRestriction.class);
-		RestrictedJson<RoomRestriction> room = rooms.getMemberAt(0);
-		JsonEntityArray<JsonEntityString> templates = room.getStringArray(RoomRestriction.TEMPLATES);
-		JsonEntityString templateString = templates.getMemberAt(0);
-		Template template = new Template(templateString.renderAsString());
-		
-		JsonEntityArray<RestrictedJson<ElementRestriction>> elements = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ELEMENTS, ElementRestriction.class);
-		RestrictedJson<ElementRestriction> elementJson = elements.getMemberAt(0);
-		Element element = new Element(elementJson, 1);
-		
-		HashMap<String, ElementInstance> instances = new HashMap<String, ElementInstance>();
-		instances.put(element.getName(), element.getInstance(0));
-		
-		JsonEntityArray<RestrictedJson<StateRestriction>> states = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.STATES, StateRestriction.class);
-		RestrictedJson<StateRestriction> stateJson = states.getMemberAt(0);
-		State state = new State(stateJson, 0);
-		HashMap<String, State> stateMap = new HashMap<String, State>();
-		JsonEntityString nameJson = stateJson.getJsonEntityString(StateRestriction.NAME);
-		stateMap.put(nameJson.renderAsString(), state);
-		
-		String result = template.getAlteredTemplateString(instances, stateMap);
-		System.out.println(result);
+//		JsonObject jsonObject = Main.openJsonFile(null);
+//		RestrictedJson<ScenarioRestriction> scenarioJson = new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
+//		JsonEntityArray<RestrictedJson<RoomRestriction>> rooms = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ROOMS, RoomRestriction.class);
+//		RestrictedJson<RoomRestriction> room = rooms.getMemberAt(0);
+//		JsonEntityArray<JsonEntityString> templates = room.getStringArray(RoomRestriction.TEMPLATES);
+//		JsonEntityString templateString = templates.getMemberAt(0);
+//		Template template = new Template(templateString.renderAsString());
+//		
+//		JsonEntityArray<RestrictedJson<ElementRestriction>> elements = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ELEMENTS, ElementRestriction.class);
+//		RestrictedJson<ElementRestriction> elementJson = elements.getMemberAt(0);
+//		Element element = new Element(elementJson, 1);
+//		
+//		HashMap<String, ElementInstance> instances = new HashMap<String, ElementInstance>();
+//		instances.put(element.getName(), element.getInstance(0));
+//		
+//		JsonEntityArray<RestrictedJson<StateRestriction>> states = scenarioJson.getRestrictedJsonArray(ScenarioRestriction.STATES, StateRestriction.class);
+//		RestrictedJson<StateRestriction> stateJson = states.getMemberAt(0);
+//		State state = new State(stateJson, 0);
+//		HashMap<String, State> stateMap = new HashMap<String, State>();
+//		JsonEntityString nameJson = stateJson.getJsonEntityString(StateRestriction.NAME);
+//		stateMap.put(nameJson.renderAsString(), state);
+//		
+//		String result = template.getAlteredTemplateString(instances, stateMap);
+//		System.out.println(result);
 	}
 }

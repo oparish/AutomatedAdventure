@@ -64,7 +64,7 @@ public class Scenario
 		for (int i = 0; i < elementJsonArray.getLength(); i++)
 		{
 			RestrictedJson<ElementRestriction> elementJson = elementJsonArray.getMemberAt(i);
-			this.elements.add(new Element(elementJson, 10));
+			this.elements.add(new Element(elementJson));
 		}
 	}
 	
