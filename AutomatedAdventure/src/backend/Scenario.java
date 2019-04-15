@@ -8,6 +8,7 @@ import json.JsonEntityArray;
 import json.JsonEntityString;
 import json.RestrictedJson;
 import json.restrictions.ElementRestriction;
+import json.restrictions.IntervalRestriction;
 import json.restrictions.RoomRestriction;
 import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
@@ -17,6 +18,7 @@ public class Scenario
 	RestrictedJson<ScenarioRestriction> scenarioJson;
 	ArrayList<Room> rooms = new ArrayList<Room>();
 	ArrayList<Element> elements = new ArrayList<Element>();
+	ArrayList<Interval> intervals = new ArrayList<Interval>();
 	public ArrayList<Element> getElements() {
 		return elements;
 	}
@@ -32,7 +34,37 @@ public class Scenario
 		this.scenarioJson = scenarioJson;
 		this.loadElements();
 		this.loadStates();
+		this.loadIntervals();
 		this.loadRooms();
+	}
+	
+	private void loadIntervals()
+	{
+		JsonEntityArray<RestrictedJson<IntervalRestriction>> intervalArray = 
+				this.scenarioJson.getRestrictedJsonArray(ScenarioRestriction.INTERVALS, IntervalRestriction.class);	
+		for (int i = 0; i < intervalArray.getLength(); i++)
+		{
+			RestrictedJson<IntervalRestriction> intervalJson = intervalArray.getMemberAt(i);
+			String name = intervalJson.getJsonEntityString(IntervalRestriction.NAME).renderAsString();
+			int time = intervalJson.getJsonEntityNumber(IntervalRestriction.TIME).getValue();
+			this.intervals.add(new Interval(name, time));
+		}
+	}
+	
+	public int getIntervalTime(int intervalIndex)
+	{
+		Interval interval = this.intervals.get(intervalIndex);
+		return interval.getTime();
+	}
+	
+	public Interval getInterval(int intervalIndex)
+	{
+		return this.intervals.get(intervalIndex);
+	}
+	
+	public int getIntervalsLength()
+	{
+		return this.intervals.size();
 	}
 	
 	public int getCheckTime()

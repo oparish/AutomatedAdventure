@@ -14,6 +14,7 @@ import backend.Room;
 import backend.State;
 import backend.Template;
 import backend.Element.ElementInstance;
+import backend.Interval;
 
 @SuppressWarnings("serial")
 public class RoomPanel extends JPanel
@@ -51,10 +52,10 @@ public class RoomPanel extends JPanel
 		this.add(this.textArea, textAreaConstraints);
 	}
 	
-	public void update(HashMap<String, State> states)
+	public void update(HashMap<String, State> states, Interval interval)
 	{	
 		Template template = this.room.getRandomTemplate();
-		String text = template.getAlteredTemplateString(this.room.getElementInstances(), states);
+		String text = template.getAlteredTemplateString(this.room.getElementInstances(), states, interval);
 		this.textArea.setText(text);
 	}
 	

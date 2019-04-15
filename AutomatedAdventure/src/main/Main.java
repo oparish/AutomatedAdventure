@@ -22,6 +22,9 @@ public class Main
 {
 	private static Random random = new Random();
 	
+	private Scenario scenario;
+	private int intervalCounter;
+	private long nextIntervalTime;
 	private int checkTime;
 	private RoomsWindow roomsWindow;
 	
@@ -65,16 +68,32 @@ public class Main
 		JsonObject jsonObject = Main.openJsonFile(null);
 		RestrictedJson<ScenarioRestriction> scenarioJson = 
 				new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
-		Scenario scenario = new Scenario(scenarioJson);
+		this.scenario = new Scenario(scenarioJson);
 		this.checkTime = scenario.getCheckTime();
+		this.intervalCounter = 0;
+		this.setNextIntervalTime();
 		this.roomsWindow = new RoomsWindow(scenario);
 		this.roomsWindow.showWindow();
 		this.startLoop();
 	}
 	
+	private void setNextIntervalTime()
+	{
+		this.nextIntervalTime = System.currentTimeMillis() + this.scenario.getIntervalTime(this.intervalCounter);
+	}
+	
 	private void mainLoop()
 	{	
-		this.roomsWindow.update();
+		if (System.currentTimeMillis() >= this.nextIntervalTime)
+		{
+			this.intervalCounter++;
+			if (this.intervalCounter >= this.scenario.getIntervalsLength())
+			{
+				this.intervalCounter = 0;
+			}
+			this.setNextIntervalTime();
+		}
+		this.roomsWindow.update(this.intervalCounter);
 	}
 	
 	private void startLoop()

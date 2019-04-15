@@ -1,5 +1,6 @@
 package backend;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,19 +23,28 @@ public class Template
 	Pattern elementPattern = Pattern.compile("\\[element:(.*?):(.*?)\\]");
 	Pattern statePattern = Pattern.compile("\\[state:(.*?)\\]");
 	Pattern changeElementPattern = Pattern.compile("\\[changeElement:(.*?)\\]");
+	Pattern intervalPattern = Pattern.compile("\\[interval\\]");
 	
 	public Template(String templateString)
 	{
 		this.templateString = templateString;
 	}
 	
-	public String getAlteredTemplateString(HashMap<String, ElementInstance> elementInstances, HashMap<String, State> states)
+	public String getAlteredTemplateString(HashMap<String, ElementInstance> elementInstances, HashMap<String, State> states, 
+			Interval interval)
 	{
 		String alteredTemplateString = this.templateString;
 		alteredTemplateString = this.checkForElementChanges(elementInstances, alteredTemplateString);
+		alteredTemplateString = this.checkForIntervals(interval, alteredTemplateString);
 		alteredTemplateString = this.checkForElements(elementInstances, alteredTemplateString);
 		alteredTemplateString = this.checkForStates(states, alteredTemplateString);
 		return alteredTemplateString;
+	}
+	
+	private String checkForIntervals(Interval interval, String alteredTemplateString)
+	{
+		Matcher intervalMatcher = intervalPattern.matcher(alteredTemplateString);
+		return intervalMatcher.replaceAll(interval.getName());
 	}
 	
 	private String checkForElementChanges(HashMap<String, ElementInstance> elementInstances, String alteredTemplateString)
