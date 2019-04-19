@@ -16,12 +16,17 @@ public enum Restriction
 	INTERVAL_NAME("interval", STRING, JsonDim.MONO),
 	CHANCE("chance", NUMBER, JsonDim.MONO),
 	VARIATIONS("variations", STRING, JsonDim.ARRAY),
-	TEMPLATES("templates", STRING, JsonDim.ARRAY),
+	TEMPLATES("templates", RestrictionType.TEMPLATE, JsonDim.ARRAY),
 	ROOMS("rooms", RestrictionType.ROOM, JsonDim.ARRAY),
 	STATES("states", RestrictionType.STATE, JsonDim.ARRAY),
 	INTERVALS("intervals", RestrictionType.INTERVAL, JsonDim.ARRAY),
 	CHECKTIME("checktime", NUMBER, JsonDim.MONO),
-	INSTANCE_NUMBER("instanceNumber", NUMBER, JsonDim.MONO);
+	INSTANCE_NUMBER("instanceNumber", NUMBER, JsonDim.MONO),
+	PERCENTAGE("percentage", NUMBER, JsonDim.MONO),
+	CHANCES("chances", RestrictionType.CHANCE, JsonDim.ARRAY),
+	CHANCE_NAME("chanceName", STRING, JsonDim.MONO),
+	PRIORITY("priority", NUMBER, JsonDim.MONO),
+	CONTENT("content", STRING, JsonDim.MONO);
 	
 	private final JsonDim jsonDim;
 	private final JsonType jsonType;

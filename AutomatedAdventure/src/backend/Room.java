@@ -1,6 +1,7 @@
 package backend;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import backend.Element.ElementInstance;
@@ -9,32 +10,43 @@ import json.JsonEntityArray;
 import json.JsonEntityString;
 import json.RestrictedJson;
 import json.restrictions.RoomRestriction;
+import json.restrictions.TemplateRestriction;
 import main.Main;
 
 public class Room
 {
 	private RestrictedJson<RoomRestriction> roomJson;
-	private ArrayList<Template> templates = new ArrayList<Template>();
+	private HashMap<Chance, ArrayList<Template>> templates = new HashMap<Chance, ArrayList<Template>>();
 	HashMap<String, ElementInstance> elementInstances = new HashMap<String, ElementInstance>();
 	
 	public HashMap<String, ElementInstance> getElementInstances() {
 		return elementInstances;
 	}
 
-	public Room(RestrictedJson<RoomRestriction> roomJson, HashMap<String, ElementInstance> elementInstances)
+	public Room(RestrictedJson<RoomRestriction> roomJson, Scenario scenario, HashMap<String, ElementInstance> elementInstances)
 	{
 		this.roomJson = roomJson;
 		this.elementInstances = elementInstances;
-		this.loadTemplates();
+		this.loadTemplates(scenario);
 	}
 	
-	private void loadTemplates()
+	private void loadTemplates(Scenario scenario)
 	{
-		JsonEntityArray<JsonEntityString> templateJson = this.roomJson.getStringArray(RoomRestriction.TEMPLATES);
-		for (int i = 0; i < templateJson.getLength(); i++)
+		JsonEntityArray<RestrictedJson<TemplateRestriction>> templates = 
+				this.roomJson.getRestrictedJsonArray(RoomRestriction.TEMPLATES, TemplateRestriction.class);
+		for (int i = 0; i < templates.getLength(); i++)
 		{
-			String templateString = templateJson.getMemberAt(i).renderAsString();
-			this.templates.add(new Template(templateString));
+			RestrictedJson<TemplateRestriction> templateJson = templates.getMemberAt(i);
+			Template template = new Template(templateJson);
+			Chance chance = template.getChance(scenario);
+			
+			ArrayList<Template> templateList = this.templates.get(chance);
+			if (templateList == null)
+			{
+				templateList = new ArrayList<Template>();
+				this.templates.put(chance, templateList);
+			}		
+			templateList.add(template);
 		}
 	}
 	
@@ -48,10 +60,32 @@ public class Room
 		this.elementInstances.put(element.getName(), elementInstance);
 	}
 	
-	public Template getRandomTemplate()
+	public Template getRandomTemplate(Scenario scenario)
 	{
-		int randomIndex = Main.getRndm(templates.size());
-		return this.templates.get(randomIndex);
+		int range = scenario.getChanceRange();
+		int random = Main.getRndm(range);
+		int number = 0;
+		Chance chosenChance = null;
+		for (Chance chance : scenario.getChanceList())
+		{
+			int percent = chance.getPercentage();
+			number += percent;
+			if (random < number)
+			{
+				chosenChance = chance;
+				break;
+			}
+		}
+			
+		ArrayList<Template> templateList = this.templates.get(chosenChance);
+		while (templateList == null || templateList.isEmpty())
+		{
+			chosenChance = scenario.getChanceByPriority(chosenChance.getPriority() + 1);
+			templateList = this.templates.get(chosenChance);
+		}	
+		
+		int randomIndex = Main.getRndm(templateList.size());
+		return templateList.get(randomIndex);
 	}
 
 	public String getName()

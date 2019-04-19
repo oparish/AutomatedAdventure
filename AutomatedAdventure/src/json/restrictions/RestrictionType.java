@@ -10,7 +10,9 @@ public enum RestrictionType implements JsonType
 	RULE(RuleRestriction.class),
 	STATE(StateRestriction.class),
 	ROOM(RoomRestriction.class),
-	SCENARIO(ScenarioRestriction.class);
+	SCENARIO(ScenarioRestriction.class),
+	CHANCE(ChanceRestriction.class),
+	TEMPLATE(TemplateRestriction.class);
 	
 	private final Class<? extends RestrictionPointer> clazz;
 	

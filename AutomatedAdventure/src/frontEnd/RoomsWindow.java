@@ -62,7 +62,7 @@ public class RoomsWindow extends JFrame
 		for (int i = 0; i < this.panels.size(); i++)
 		{
 			RoomPanel panel = this.panels.get(i);
-			panel.update(this.scenario.getStates(), this.scenario.getInterval(intervalIndex));
+			panel.update(this.scenario, this.scenario.getStates(), this.scenario.getCurrentInterval());
 		}
 	}
 	

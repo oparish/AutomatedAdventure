@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import backend.Room;
+import backend.Scenario;
 import backend.State;
 import backend.Template;
 import backend.Element.ElementInstance;
@@ -52,10 +53,10 @@ public class RoomPanel extends JPanel
 		this.add(this.textArea, textAreaConstraints);
 	}
 	
-	public void update(HashMap<String, State> states, Interval interval)
+	public void update(Scenario scenario, HashMap<String, State> states, Interval interval)
 	{	
-		Template template = this.room.getRandomTemplate();
-		String text = template.getAlteredTemplateString(this.room.getElementInstances(), states, interval);
+		Template template = this.room.getRandomTemplate(scenario);
+		String text = template.getAlteredTemplateString(this.room.getElementInstances(), scenario.getStates(), scenario.getCurrentInterval());
 		this.textArea.setText(text);
 	}
 	

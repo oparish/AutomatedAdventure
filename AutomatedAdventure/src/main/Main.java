@@ -20,10 +20,15 @@ import json.restrictions.ScenarioRestriction;
 
 public class Main
 {
+	public static Main main;
 	private static Random random = new Random();
 	
 	private Scenario scenario;
 	private int intervalCounter;
+	public int getIntervalCounter() {
+		return intervalCounter;
+	}
+
 	private long nextIntervalTime;
 	private int checkTime;
 	private RoomsWindow roomsWindow;
@@ -60,7 +65,8 @@ public class Main
 	
 	public static void main(String[] args)
 	{
-		Main main = new Main();
+		Main.main = new Main();
+		Main.main.startLoop();
 	}
 	
 	public Main()
@@ -74,7 +80,6 @@ public class Main
 		this.setNextIntervalTime();
 		this.roomsWindow = new RoomsWindow(scenario);
 		this.roomsWindow.showWindow();
-		this.startLoop();
 	}
 	
 	private void setNextIntervalTime()
@@ -96,7 +101,7 @@ public class Main
 		this.roomsWindow.update(this.intervalCounter);
 	}
 	
-	private void startLoop()
+	public void startLoop()
 	{
 		while(true)
 		{

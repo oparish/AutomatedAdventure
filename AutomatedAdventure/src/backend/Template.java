@@ -15,31 +15,48 @@ import json.restrictions.ElementRestriction;
 import json.restrictions.RoomRestriction;
 import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
+import json.restrictions.TemplateRestriction;
 import main.Main;
 
 public class Template
 {
-	String templateString;
+	RestrictedJson<TemplateRestriction> templateJson;
 	Pattern elementPattern = Pattern.compile("\\[element:(.*?):(.*?)\\]");
 	Pattern statePattern = Pattern.compile("\\[state:(.*?)\\]");
 	Pattern changeElementPattern = Pattern.compile("\\[changeElement:(.*?)\\]");
 	Pattern intervalPattern = Pattern.compile("\\[interval\\]");
 	
-	public Template(String templateString)
+	public Template(RestrictedJson<TemplateRestriction> templateJson)
 	{
-		this.templateString = templateString;
+		this.templateJson = templateJson;
 	}
 	
 	public String getAlteredTemplateString(HashMap<String, ElementInstance> elementInstances, HashMap<String, State> states, 
 			Interval interval)
 	{
-		String alteredTemplateString = this.templateString;
+		String alteredTemplateString = this.getContent();
 		alteredTemplateString = this.checkForElementChanges(elementInstances, alteredTemplateString);
 		alteredTemplateString = this.checkForIntervals(interval, alteredTemplateString);
 		alteredTemplateString = this.checkForElements(elementInstances, alteredTemplateString);
 		alteredTemplateString = this.checkForStates(states, alteredTemplateString);
 		return alteredTemplateString;
 	}
+	
+	public Chance getChance(Scenario scenario)
+	{
+		return scenario.getChance(this.getChanceName());
+	}
+	
+	private String getContent()
+	{
+		return this.templateJson.getJsonEntityString(TemplateRestriction.CONTENT).renderAsString();
+	}
+	
+	private String getChanceName()
+	{
+		return this.templateJson.getJsonEntityString(TemplateRestriction.CHANCE_NAME).renderAsString();
+	}
+	
 	
 	private String checkForIntervals(Interval interval, String alteredTemplateString)
 	{
