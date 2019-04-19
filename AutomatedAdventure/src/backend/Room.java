@@ -90,7 +90,7 @@ public class Room
 
 	public String getName()
 	{
-		return this.roomJson.getJsonEntityString(RoomRestriction.NAME).renderAsString();
+		return this.roomJson.getJsonEntityString(RoomRestriction.NAME);
 	}
 	
 }

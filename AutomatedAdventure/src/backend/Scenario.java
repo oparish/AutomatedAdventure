@@ -57,7 +57,7 @@ public class Scenario
 		for (int i = 0; i < chanceArray.getLength(); i++)
 		{
 			RestrictedJson<ChanceRestriction> chanceJson = chanceArray.getMemberAt(i);
-			String name = chanceJson.getJsonEntityString(ChanceRestriction.NAME).renderAsString();
+			String name = chanceJson.getJsonEntityString(ChanceRestriction.NAME);
 			int priority = chanceJson.getJsonEntityNumber(ChanceRestriction.PRIORITY).getValue();
 			Chance chance = new Chance(chanceJson);
 			this.chances.put(name, chance);
@@ -89,7 +89,7 @@ public class Scenario
 		for (int i = 0; i < intervalArray.getLength(); i++)
 		{
 			RestrictedJson<IntervalRestriction> intervalJson = intervalArray.getMemberAt(i);
-			String name = intervalJson.getJsonEntityString(IntervalRestriction.NAME).renderAsString();
+			String name = intervalJson.getJsonEntityString(IntervalRestriction.NAME);
 			int time = intervalJson.getJsonEntityNumber(IntervalRestriction.TIME).getValue();
 			this.intervals.add(new Interval(name, time));
 		}
@@ -168,8 +168,8 @@ public class Scenario
 		for (int i = 0; i < stateJsonArray.getLength(); i++)
 		{
 			RestrictedJson<StateRestriction> stateJson = stateJsonArray.getMemberAt(i);
-			JsonEntityString nameJson = stateJson.getJsonEntityString(StateRestriction.NAME);
-			this.states.put(nameJson.renderAsString(), new State(stateJson, 0));
+			String name = stateJson.getJsonEntityString(StateRestriction.NAME);
+			this.states.put(name, new State(stateJson, 0));
 		}
 	}
 }

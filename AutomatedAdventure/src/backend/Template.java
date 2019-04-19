@@ -49,12 +49,12 @@ public class Template
 	
 	private String getContent()
 	{
-		return this.templateJson.getJsonEntityString(TemplateRestriction.CONTENT).renderAsString();
+		return this.templateJson.getJsonEntityString(TemplateRestriction.CONTENT);
 	}
 	
 	private String getChanceName()
 	{
-		return this.templateJson.getJsonEntityString(TemplateRestriction.CHANCE_NAME).renderAsString();
+		return this.templateJson.getJsonEntityString(TemplateRestriction.CHANCE_NAME);
 	}
 	
 	

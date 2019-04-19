@@ -102,9 +102,10 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 		return (JsonEntityArray<JsonEntityString>) this.contents.get(r.getRestriction());
 	}
 	
-	public JsonEntityString getJsonEntityString(R r)
+	public String getJsonEntityString(R r)
 	{
-		return (JsonEntityString) this.contents.get(r.getRestriction());
+		JsonEntityString jsonEntityString = (JsonEntityString) this.contents.get(r.getRestriction());
+		return jsonEntityString.renderAsString();
 	}
 	
 	public JsonEntityNumber getJsonEntityNumber(R r)
