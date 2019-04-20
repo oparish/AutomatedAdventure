@@ -18,6 +18,7 @@ import main.Main;
 
 public class Scenario
 {
+	Mode mode;
 	RestrictedJson<ScenarioRestriction> scenarioJson;
 	ArrayList<Room> rooms = new ArrayList<Room>();
 	ArrayList<Element> elements = new ArrayList<Element>();
@@ -32,6 +33,11 @@ public class Scenario
 
 	public ArrayList<Element> getElements() {
 		return elements;
+	}
+	
+	public Mode getMode()
+	{
+		return this.mode;
 	}
 
 	HashMap<String, State> states = new HashMap<String, State>();
@@ -48,6 +54,12 @@ public class Scenario
 		this.loadStates();
 		this.loadIntervals();
 		this.loadRooms();
+		this.loadMode();
+	}
+	
+	private void loadMode()
+	{
+		this.mode = Mode.valueOf(this.scenarioJson.getJsonEntityString(ScenarioRestriction.MODE).toUpperCase());
 	}
 	
 	private void loadChances()

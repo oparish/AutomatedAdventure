@@ -13,6 +13,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.swing.JFileChooser;
 
+import backend.Mode;
 import backend.Scenario;
 import frontEnd.RoomsWindow;
 import json.RestrictedJson;
@@ -20,6 +21,7 @@ import json.restrictions.ScenarioRestriction;
 
 public class Main
 {
+	private boolean endingReached = false;
 	public static Main main;
 	private static Random random = new Random();
 	
@@ -89,12 +91,20 @@ public class Main
 	
 	private void mainLoop()
 	{	
-		if (System.currentTimeMillis() >= this.nextIntervalTime)
+		if (!this.endingReached && System.currentTimeMillis() >= this.nextIntervalTime)
 		{
 			this.intervalCounter++;
 			if (this.intervalCounter >= this.scenario.getIntervalsLength())
 			{
-				this.intervalCounter = 0;
+				if (this.scenario.getMode() == Mode.LOOP)
+				{
+					this.intervalCounter = 0;
+				}
+				else
+				{
+					this.endingReached = true;
+					this.intervalCounter--;
+				}
 			}
 			this.setNextIntervalTime();
 		}

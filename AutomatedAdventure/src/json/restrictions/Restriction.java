@@ -29,6 +29,7 @@ public enum Restriction
 	CONDITIONS("conditions", RestrictionType.CONDITION, JsonDim.ARRAY),
 	TYPE("type", STRING, JsonDim.MONO),
 	VALUE("value", STRING, JsonDim.MONO),
+	MODE("mode", STRING, JsonDim.MONO),
 	CONTENT("content", STRING, JsonDim.MONO);
 	
 	private final JsonDim jsonDim;
