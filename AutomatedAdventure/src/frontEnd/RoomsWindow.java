@@ -36,7 +36,9 @@ public class RoomsWindow extends JFrame
 		ArrayList<Room> rooms = this.scenario.getRooms();
 		for (int i = 0; i < rooms.size(); i++)
 		{
-			RoomPanel roomPanel = new RoomPanel(rooms.get(i));
+			Room room = rooms.get(i);
+			RoomPanel roomPanel = new RoomPanel(room);
+			roomPanel.setLabelText(room.getName());
 			this.panels.add(roomPanel);
 			innerPanel.add(roomPanel);
 		}
