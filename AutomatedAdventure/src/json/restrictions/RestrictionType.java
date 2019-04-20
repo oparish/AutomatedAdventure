@@ -12,7 +12,8 @@ public enum RestrictionType implements JsonType
 	ROOM(RoomRestriction.class),
 	SCENARIO(ScenarioRestriction.class),
 	CHANCE(ChanceRestriction.class),
-	TEMPLATE(TemplateRestriction.class);
+	TEMPLATE(TemplateRestriction.class),
+	CONDITION(ConditionRestriction.class);
 	
 	private final Class<? extends RestrictionPointer> clazz;
 	

@@ -11,6 +11,7 @@ import backend.Element.ElementInstance;
 import json.JsonEntityArray;
 import json.JsonEntityString;
 import json.RestrictedJson;
+import json.restrictions.ConditionRestriction;
 import json.restrictions.ElementRestriction;
 import json.restrictions.RoomRestriction;
 import json.restrictions.ScenarioRestriction;
@@ -21,15 +22,41 @@ import main.Main;
 public class Template
 {
 	RestrictedJson<TemplateRestriction> templateJson;
-	Pattern elementPattern = Pattern.compile("\\[element:(.*?):(.*?)\\]");
-	Pattern statePattern = Pattern.compile("\\[state:(.*?)\\]");
-	Pattern changeStatePattern = Pattern.compile("\\[changeState:(.*?):(.*?)\\]");
-	Pattern changeElementPattern = Pattern.compile("\\[changeElement:(.*?)\\]");
-	Pattern intervalPattern = Pattern.compile("\\[interval\\]");
+	ArrayList<Condition> conditions = new ArrayList<Condition>();
 	
-	public Template(RestrictedJson<TemplateRestriction> templateJson)
+	private static final Pattern elementPattern = Pattern.compile("\\[element:(.*?):(.*?)\\]");
+	private static final Pattern statePattern = Pattern.compile("\\[state:(.*?)\\]");
+	private static final Pattern changeStatePattern = Pattern.compile("\\[changeState:(.*?):(.*?)\\]");
+	private static final Pattern changeElementPattern = Pattern.compile("\\[changeElement:(.*?)\\]");
+	private static final Pattern intervalPattern = Pattern.compile("\\[interval\\]");
+	
+	public Template(Scenario scenario, RestrictedJson<TemplateRestriction> templateJson)
 	{
 		this.templateJson = templateJson;
+		this.loadConditions(scenario);
+	}
+	
+	public boolean checkConditions(Scenario scenario)
+	{
+		for (Condition condition : this.conditions)
+		{
+			if (!condition.check(scenario))
+				return false;
+		}
+		return true;
+	}
+	
+	private void loadConditions(Scenario scenario)
+	{
+		JsonEntityArray<RestrictedJson<ConditionRestriction>> conditions = 
+				this.templateJson.getRestrictedJsonArray(TemplateRestriction.CONDITIONS, ConditionRestriction.class);
+		for (int i = 0; i < conditions.getLength(); i++)
+		{
+			RestrictedJson<ConditionRestriction> conditionJson = conditions.getMemberAt(i);
+			String typeString = conditionJson.getJsonEntityString(ConditionRestriction.TYPE);
+			String valueString = conditionJson.getJsonEntityString(ConditionRestriction.VALUE);
+			this.conditions.add(Condition.createCondition(scenario, typeString, valueString));
+		}
 	}
 	
 	public String getAlteredTemplateString(HashMap<String, ElementInstance> elementInstances, HashMap<String, State> states, 

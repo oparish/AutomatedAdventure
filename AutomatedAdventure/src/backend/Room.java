@@ -37,7 +37,7 @@ public class Room
 		for (int i = 0; i < templates.getLength(); i++)
 		{
 			RestrictedJson<TemplateRestriction> templateJson = templates.getMemberAt(i);
-			Template template = new Template(templateJson);
+			Template template = new Template(scenario, templateJson);
 			Chance chance = template.getChance(scenario);
 			
 			ArrayList<Template> templateList = this.templates.get(chance);
@@ -77,15 +77,35 @@ public class Room
 			}
 		}
 			
-		ArrayList<Template> templateList = this.templates.get(chosenChance);
+		ArrayList<Template> templateList = this.getCheckedTemplateList(scenario, chosenChance);
+
 		while (templateList == null || templateList.isEmpty())
 		{
 			chosenChance = scenario.getChanceByPriority(chosenChance.getPriority() + 1);
-			templateList = this.templates.get(chosenChance);
+			templateList = this.getCheckedTemplateList(scenario, chosenChance);
 		}	
 		
 		int randomIndex = Main.getRndm(templateList.size());
 		return templateList.get(randomIndex);
+	}
+	
+	private ArrayList<Template> getCheckedTemplateList(Scenario scenario, Chance chosenChance)
+	{
+		ArrayList<Template> checkedTemplateList = new ArrayList<Template>();
+		ArrayList<Template> originalTemplateList = this.templates.get(chosenChance);
+		
+		if (originalTemplateList == null)
+			return null;
+		
+		for (Template template : originalTemplateList)
+		{
+			if (template.checkConditions(scenario))
+			{
+				checkedTemplateList.add(template);
+			}
+		}
+		
+		return checkedTemplateList;
 	}
 
 	public String getName()

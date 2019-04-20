@@ -113,9 +113,25 @@ public class Scenario
 		return this.chances.get(chanceName);
 	}
 	
+	public State getStateByName(String stateName)
+	{
+		return this.states.get(stateName);
+	}
+	
 	public Interval getInterval(int intervalIndex)
 	{
 		return this.intervals.get(intervalIndex);
+	}
+	
+	public Interval getIntervalByName(String intervalName)
+	{
+		for (Interval interval : intervals)
+		{
+			if (intervalName.equals(interval.getName()))
+				return interval;
+		}
+		new Exception("Interval name " + intervalName + " not recognised.").printStackTrace();
+		return null;
 	}
 	
 	public int getIntervalsLength()

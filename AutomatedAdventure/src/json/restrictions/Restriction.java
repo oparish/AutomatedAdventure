@@ -26,6 +26,9 @@ public enum Restriction
 	CHANCES("chances", RestrictionType.CHANCE, JsonDim.ARRAY),
 	CHANCE_NAME("chanceName", STRING, JsonDim.MONO),
 	PRIORITY("priority", NUMBER, JsonDim.MONO),
+	CONDITIONS("conditions", RestrictionType.CONDITION, JsonDim.ARRAY),
+	TYPE("type", STRING, JsonDim.MONO),
+	VALUE("value", STRING, JsonDim.MONO),
 	CONTENT("content", STRING, JsonDim.MONO);
 	
 	private final JsonDim jsonDim;
