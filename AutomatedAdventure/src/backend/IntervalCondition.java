@@ -1,20 +1,24 @@
 package backend;
 
-import main.Main;
+import java.util.ArrayList;
 
 public class IntervalCondition extends Condition
 {
-	Interval interval;
+	ArrayList<Interval> intervals = new ArrayList<Interval>();
 	
 	public IntervalCondition(Scenario scenario, String valueString)
 	{
 		super();
-		this.interval = scenario.getIntervalByName(valueString);
+		String[] intervalStrings = valueString.split("/");
+		for (String intervalString : intervalStrings)
+		{
+			this.intervals.add(scenario.getIntervalByName(intervalString));	
+		}
 	}
 
 	@Override
 	public boolean check(Scenario scenario)
 	{
-		return this.interval == scenario.getCurrentInterval();
+		return this.intervals.contains(scenario.getCurrentInterval());
 	}
 }
