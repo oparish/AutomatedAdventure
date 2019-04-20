@@ -23,6 +23,7 @@ public class Template
 	RestrictedJson<TemplateRestriction> templateJson;
 	Pattern elementPattern = Pattern.compile("\\[element:(.*?):(.*?)\\]");
 	Pattern statePattern = Pattern.compile("\\[state:(.*?)\\]");
+	Pattern changeStatePattern = Pattern.compile("\\[changeState:(.*?):(.*?)\\]");
 	Pattern changeElementPattern = Pattern.compile("\\[changeElement:(.*?)\\]");
 	Pattern intervalPattern = Pattern.compile("\\[interval\\]");
 	
@@ -36,9 +37,24 @@ public class Template
 	{
 		String alteredTemplateString = this.getContent();
 		alteredTemplateString = this.checkForElementChanges(elementInstances, alteredTemplateString);
+		alteredTemplateString = this.checkForStateChanges(states, alteredTemplateString);
 		alteredTemplateString = this.checkForIntervals(interval, alteredTemplateString);
 		alteredTemplateString = this.checkForElements(elementInstances, alteredTemplateString);
 		alteredTemplateString = this.checkForStates(states, alteredTemplateString);
+		return alteredTemplateString;
+	}
+	
+	private String checkForStateChanges(HashMap<String, State> states, String alteredTemplateString)
+	{
+		Matcher changeStateMatcher = changeStatePattern.matcher(alteredTemplateString);
+		while(changeStateMatcher.find())
+		{
+			String stateName = changeStateMatcher.group(1);
+			String newStateValue = changeStateMatcher.group(2);
+			State state = states.get(stateName);
+			state.changeStateValue(newStateValue);
+			alteredTemplateString = alteredTemplateString.replace(changeStateMatcher.group(0), "");
+		}
 		return alteredTemplateString;
 	}
 	

@@ -27,4 +27,19 @@ public class State
 		JsonEntityString jsonEntityString = stringArray.getMemberAt(this.currentIndex);
 		return jsonEntityString.renderAsString();
 	}
+	
+	public void changeStateValue(String newStateValue)
+	{
+		JsonEntityArray<JsonEntityString> stringArray = this.stateJson.getStringArray(StateRestriction.VARIATIONS);
+		for (int i = 0; i < stringArray.getLength(); i++)
+		{
+			String stateMember = stringArray.getMemberAt(i).renderAsString();
+			if (newStateValue.equals(stateMember))
+			{
+				this.currentIndex = i;
+				return;
+			}
+		}
+		new Exception("State value " + newStateValue + " not recognised.").printStackTrace();
+	}
 }
