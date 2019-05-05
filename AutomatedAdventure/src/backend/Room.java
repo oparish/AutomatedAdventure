@@ -113,4 +113,18 @@ public class Room
 		return this.roomJson.getJsonEntityString(RoomRestriction.NAME);
 	}
 	
+	public static Room getNewRoom(RoomType roomType, RestrictedJson<RoomRestriction> roomJson, Scenario scenario, 
+			HashMap<String, ElementInstance> elementInstances)
+	{
+		switch(roomType)
+		{
+			case TIMED_ROOM:
+				return new TimedRoom(roomJson, scenario, elementInstances);
+			case CHALLENGE_ROOM:
+				return new ChallengeRoom(roomJson, scenario, elementInstances);
+			default:
+				return null;
+		}
+	}
+	
 }

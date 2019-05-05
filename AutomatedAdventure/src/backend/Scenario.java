@@ -164,11 +164,13 @@ public class Scenario
 		{
 			RestrictedJson<RoomRestriction> roomJson = roomJsonArray.getMemberAt(i);
 			HashMap<String, ElementInstance> elementInstances = new HashMap<String, ElementInstance>();
+			String roomTypeString = roomJson.getJsonEntityString(RoomRestriction.TYPE);
+			RoomType roomType = RoomType.valueOf(roomTypeString.toUpperCase());
 			for (Element element : this.elements)
 			{
 				elementInstances.put(element.getName(), element.getRandomInstance());
 			}
-			this.rooms.add(new Room(roomJson, this, elementInstances));
+			this.rooms.add(Room.getNewRoom(roomType, roomJson, this, elementInstances));
 		}
 	}
 	

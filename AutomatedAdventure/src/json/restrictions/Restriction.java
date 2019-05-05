@@ -30,7 +30,8 @@ public enum Restriction
 	TYPE("type", STRING, JsonDim.MONO),
 	VALUE("value", STRING, JsonDim.MONO),
 	MODE("mode", STRING, JsonDim.MONO),
-	CONTENT("content", STRING, JsonDim.MONO);
+	CONTENT("content", STRING, JsonDim.MONO),
+	RROM_TYPE("type", STRING, JsonDim.MONO);
 	
 	private final JsonDim jsonDim;
 	private final JsonType jsonType;
