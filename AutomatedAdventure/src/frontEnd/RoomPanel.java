@@ -23,6 +23,7 @@ public class RoomPanel extends JPanel
 	Room room;
 	JTextArea textArea;
 	JLabel label;
+	ControlPanel controlPanel;
 	
 	public RoomPanel(Room room)
 	{
@@ -37,6 +38,7 @@ public class RoomPanel extends JPanel
 		this.textArea = new JTextArea();
 		this.textArea.setEditable(false);
 		this.label = new JLabel();
+		this.controlPanel = new ControlPanel();
 		label.setBorder(BorderFactory.createLineBorder(Color.black));
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints labelConstraints = new GridBagConstraints();
@@ -51,6 +53,13 @@ public class RoomPanel extends JPanel
 		textAreaConstraints.weighty = 1;
 		textAreaConstraints.fill = GridBagConstraints.BOTH;
 		this.add(this.textArea, textAreaConstraints);
+		GridBagConstraints controlPanelConstraints = new GridBagConstraints();
+		controlPanelConstraints.gridx = 0;
+		controlPanelConstraints.gridy = 2;
+		controlPanelConstraints.weightx = 1;
+		controlPanelConstraints.weighty = 1;
+		controlPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		this.add(this.controlPanel, controlPanelConstraints);
 	}
 	
 	public void update(Scenario scenario, HashMap<String, State> states, Interval interval)
