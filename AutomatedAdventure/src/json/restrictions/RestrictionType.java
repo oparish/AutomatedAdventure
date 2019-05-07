@@ -13,6 +13,8 @@ public enum RestrictionType implements JsonType
 	SCENARIO(ScenarioRestriction.class),
 	CHANCE(ChanceRestriction.class),
 	TEMPLATE(TemplateRestriction.class),
+	ACTION_TYPE(ActionTypeRestriction.class),
+	ACTION(ActionRestriction.class),
 	CONDITION(ConditionRestriction.class);
 	
 	private final Class<? extends RestrictionPointer> clazz;

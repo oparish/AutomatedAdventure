@@ -31,6 +31,10 @@ public enum Restriction
 	VALUE("value", STRING, JsonDim.MONO),
 	MODE("mode", STRING, JsonDim.MONO),
 	CONTENT("content", STRING, JsonDim.MONO),
+	ACTIONS("actions", RestrictionType.ACTION, JsonDim.ARRAY),
+	ACTION_TYPES("actionTypes", RestrictionType.ACTION_TYPE, JsonDim.ARRAY),
+	SHOWN_NAME("shownName", STRING, JsonDim.MONO),
+	KEY_NAME("keyName", STRING, JsonDim.MONO),
 	RROM_TYPE("type", STRING, JsonDim.MONO);
 	
 	private final JsonDim jsonDim;
