@@ -35,7 +35,8 @@ public enum Restriction
 	ACTION_TYPES("actionTypes", RestrictionType.ACTION_TYPE, JsonDim.ARRAY),
 	SHOWN_NAME("shownName", STRING, JsonDim.MONO),
 	KEY_NAME("keyName", STRING, JsonDim.MONO),
-	ROOM_TYPE("type", STRING, JsonDim.MONO);
+	ROOM_TYPE("type", STRING, JsonDim.MONO),
+	ACTION_NAME("actionName", STRING, JsonDim.MONO);
 	
 	private final JsonDim jsonDim;
 	private final JsonType jsonType;
