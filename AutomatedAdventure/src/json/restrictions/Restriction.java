@@ -36,7 +36,17 @@ public enum Restriction
 	SHOWN_NAME("shownName", STRING, JsonDim.MONO),
 	KEY_NAME("keyName", STRING, JsonDim.MONO),
 	ROOM_TYPE("type", STRING, JsonDim.MONO),
-	ACTION_NAME("actionName", STRING, JsonDim.MONO);
+	ACTION_NAME("actionName", STRING, JsonDim.MONO),
+	COMPONENT_STATES("componentStates", RestrictionType.COMPONENT_STATE, JsonDim.ARRAY),
+	COMPONENT_CHANGES("componentChanges", RestrictionType.COMPONENT_CHANGE, JsonDim.ARRAY),
+	COMPONENT_NAME("componentName", STRING, JsonDim.MONO),
+	OLD_COMPONENT_STATE_NAME("oldComponentStateName", STRING, JsonDim.MONO),
+	NEW_COMPONENT_STATE_NAME("newComponentStateName", STRING, JsonDim.MONO),
+	INITIAL_COMPONENT_STATE_NAME("initialComponentStateName", STRING, JsonDim.MONO),
+	TRANSITION_TEXT("transitionText", STRING, JsonDim.MONO),
+	DESCRIPTION("description", STRING, JsonDim.MONO),
+	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO);
+	
 	
 	private final JsonDim jsonDim;
 	private final JsonType jsonType;

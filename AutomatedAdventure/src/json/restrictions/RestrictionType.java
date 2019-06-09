@@ -15,7 +15,10 @@ public enum RestrictionType implements JsonType
 	TEMPLATE(TemplateRestriction.class),
 	ACTION_TYPE(ActionTypeRestriction.class),
 	ACTION(ActionRestriction.class),
-	CONDITION(ConditionRestriction.class);
+	CONDITION(ConditionRestriction.class),
+	COMPONENT_STATE(ComponentStateRestriction.class),
+	COMPONENT_CHANGE(ComponentChangeRestriction.class),
+	TRIGGER(TriggerRestriction.class);
 	
 	private final Class<? extends RestrictionPointer> clazz;
 	
