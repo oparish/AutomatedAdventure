@@ -9,6 +9,7 @@ import frontEnd.RoomPanel;
 import json.JsonEntityArray;
 import json.JsonEntityString;
 import json.RestrictedJson;
+import json.restrictions.RestrictionType;
 import json.restrictions.RoomRestriction;
 import json.restrictions.TemplateRestriction;
 import main.Main;
@@ -113,15 +114,15 @@ public class Room
 		return this.roomJson.getJsonEntityString(RoomRestriction.NAME);
 	}
 	
-	public static Room getNewRoom(RoomType roomType, RestrictedJson<RoomRestriction> roomJson, Scenario scenario, 
-			HashMap<String, ElementInstance> elementInstances)
+	public static Room getRoom(RestrictedJson<RoomRestriction> roomJson, Scenario scenario, HashMap<String, ElementInstance> elementInstances)
 	{
-		switch(roomType)
+		RestrictionType restrictionType = roomJson.getSubType();
+		switch(restrictionType)
 		{
-			case TIMED_ROOM:
-				return new TimedRoom(roomJson, scenario, elementInstances);
-			case CHALLENGE_ROOM:
+			case CHALLENGEROOMRESTRICTION:
 				return new ChallengeRoom(roomJson, scenario, elementInstances);
+			case TIMEDROOMRESTRICTION:
+				return new TimedRoom(roomJson, scenario, elementInstances);
 			default:
 				return null;
 		}

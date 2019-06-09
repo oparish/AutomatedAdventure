@@ -10,18 +10,47 @@ import javax.json.JsonObject;
 import json.restrictions.Restriction;
 import json.restrictions.RestrictionPointer;
 import json.restrictions.RestrictionType;
+import json.restrictions.SuperRestriction;
 
 public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 {
+	private static final String TYPE = "type";
+	RestrictionType subType = null;
+	
+	public RestrictionType getSubType() {
+		return subType;
+	}
+
 	HashMap<Restriction, JsonEntity> contents = new HashMap<Restriction, JsonEntity>();
 	
 	public RestrictedJson(JsonObject json, Class<R> restrictionPointerType)
+	{
+		this.iteratePointers(json, restrictionPointerType);
+	}
+	
+	private void iteratePointers(JsonObject json, Class<? extends RestrictionPointer> restrictionPointerType)
 	{
 		for (RestrictionPointer restrictionPointer : restrictionPointerType.getEnumConstants())
 		{
 			try
 			{
 				this.loadJson(json, restrictionPointer);
+				if (restrictionPointer instanceof SuperRestriction)
+				{
+					RestrictionType[] possibleSubRestrictions = ((SuperRestriction) restrictionPointer).getSubRestrictions();
+					
+					String typeString = json.getString(TYPE);	
+					if (typeString == null)
+						throw new Exception("Can't find type for " + restrictionPointer);
+					
+					RestrictionType restrictionType = RestrictionType.valueOf(typeString.toUpperCase());
+					if (restrictionType == null || !this.subrestrictionArrayContains(possibleSubRestrictions, restrictionType))
+						throw new Exception("Can't find valid type for " + restrictionPointer);
+					
+					this.subType = restrictionType;
+					this.iteratePointers(json, restrictionType.getClazz());
+				
+				}
 			}
 			catch(Exception e)
 			{
@@ -29,6 +58,17 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 			}
 		}
 	}
+	
+	private boolean subrestrictionArrayContains(RestrictionType[] possibleSubRestrictions, RestrictionType restrictionType)
+	{
+		for (RestrictionType subRestriction : possibleSubRestrictions)
+		{
+			if (restrictionType == subRestriction)
+				return true;
+		}
+		return false;
+	}
+	
 	
 	private void loadJson(JsonObject json, RestrictionPointer restrictionPointer)
 	{

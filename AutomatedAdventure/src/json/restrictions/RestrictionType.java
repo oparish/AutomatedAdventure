@@ -18,7 +18,9 @@ public enum RestrictionType implements JsonType
 	CONDITION(ConditionRestriction.class),
 	COMPONENT_STATE(ComponentStateRestriction.class),
 	COMPONENT_CHANGE(ComponentChangeRestriction.class),
-	TRIGGER(TriggerRestriction.class);
+	TRIGGER(TriggerRestriction.class),
+	CHALLENGEROOMRESTRICTION(ChallengeRoomRestriction.class),
+	TIMEDROOMRESTRICTION(TimedRoomRestriction.class);
 	
 	private final Class<? extends RestrictionPointer> clazz;
 	

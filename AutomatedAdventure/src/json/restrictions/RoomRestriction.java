@@ -1,8 +1,11 @@
 package json.restrictions;
 
-public enum RoomRestriction implements RestrictionPointer
+import static json.restrictions.RestrictionType.CHALLENGEROOMRESTRICTION;
+import static json.restrictions.RestrictionType.TIMEDROOMRESTRICTION;
+
+public enum RoomRestriction implements RestrictionPointer, SuperRestriction
 {
-	TEMPLATES(Restriction.TEMPLATES), NAME(Restriction.NAME), TYPE(Restriction.TYPE), ACTION_NAME(Restriction.ACTION_NAME);
+	TEMPLATES(Restriction.TEMPLATES), NAME(Restriction.NAME);
 	
 	private Restriction restriction;
 	
@@ -15,6 +18,12 @@ public enum RoomRestriction implements RestrictionPointer
 	public Restriction getRestriction()
 	{
 		return this.restriction;
+	}
+	
+	@Override
+	public RestrictionType[] getSubRestrictions()
+	{
+		return new RestrictionType[] {CHALLENGEROOMRESTRICTION, TIMEDROOMRESTRICTION};
 	}
 
 }
