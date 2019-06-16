@@ -1,7 +1,7 @@
 package json.restrictions;
 
-import static json.restrictions.RestrictionType.CHALLENGEROOMRESTRICTION;
-import static json.restrictions.RestrictionType.TIMEDROOMRESTRICTION;
+import static json.restrictions.RestrictionType.CHALLENGEROOM;
+import static json.restrictions.RestrictionType.TIMEDROOM;
 
 public enum RoomRestriction implements RestrictionPointer, SuperRestriction
 {
@@ -23,7 +23,7 @@ public enum RoomRestriction implements RestrictionPointer, SuperRestriction
 	@Override
 	public RestrictionType[] getSubRestrictions()
 	{
-		return new RestrictionType[] {CHALLENGEROOMRESTRICTION, TIMEDROOMRESTRICTION};
+		return new RestrictionType[] {CHALLENGEROOM, TIMEDROOM};
 	}
 
 }

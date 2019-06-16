@@ -42,10 +42,12 @@ public enum Restriction
 	COMPONENT_NAME("componentName", STRING, JsonDim.MONO),
 	OLD_COMPONENT_STATE_NAME("oldComponentStateName", STRING, JsonDim.MONO),
 	NEW_COMPONENT_STATE_NAME("newComponentStateName", STRING, JsonDim.MONO),
+	COMPONENT_STATE_NAME("componentStateName", STRING, JsonDim.MONO),
 	INITIAL_COMPONENT_STATE_NAME("initialComponentStateName", STRING, JsonDim.MONO),
 	TRANSITION_TEXT("transitionText", STRING, JsonDim.MONO),
 	DESCRIPTION("description", STRING, JsonDim.MONO),
-	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO);
+	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO),
+	COMPONENTS("components", RestrictionType.COMPONENT, JsonDim.ARRAY);
 	
 	
 	private final JsonDim jsonDim;

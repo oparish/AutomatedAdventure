@@ -119,9 +119,9 @@ public class Room
 		RestrictionType restrictionType = roomJson.getSubType();
 		switch(restrictionType)
 		{
-			case CHALLENGEROOMRESTRICTION:
+			case CHALLENGEROOM:
 				return new ChallengeRoom(roomJson, scenario, elementInstances);
-			case TIMEDROOMRESTRICTION:
+			case TIMEDROOM:
 				return new TimedRoom(roomJson, scenario, elementInstances);
 			default:
 				return null;
