@@ -13,10 +13,10 @@ import json.JsonEntityString;
 import json.RestrictedJson;
 import json.restrictions.ConditionRestriction;
 import json.restrictions.ElementRestriction;
-import json.restrictions.RoomRestriction;
 import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
 import json.restrictions.TemplateRestriction;
+import json.restrictions.room.RoomRestriction;
 import main.Main;
 
 public class Template

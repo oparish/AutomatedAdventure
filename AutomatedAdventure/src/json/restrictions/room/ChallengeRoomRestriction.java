@@ -1,4 +1,7 @@
-package json.restrictions;
+package json.restrictions.room;
+
+import json.restrictions.Restriction;
+import json.restrictions.RestrictionPointer;
 
 public enum ChallengeRoomRestriction implements RestrictionPointer
 {

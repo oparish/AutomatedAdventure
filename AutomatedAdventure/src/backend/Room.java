@@ -10,8 +10,8 @@ import json.JsonEntityArray;
 import json.JsonEntityString;
 import json.RestrictedJson;
 import json.restrictions.RestrictionType;
-import json.restrictions.RoomRestriction;
 import json.restrictions.TemplateRestriction;
+import json.restrictions.room.RoomRestriction;
 import main.Main;
 
 public class Room

@@ -1,5 +1,7 @@
 package backend;
 
+import static json.restrictions.ScenarioRestriction.COMPONENTS;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,9 +13,10 @@ import json.RestrictedJson;
 import json.restrictions.ChanceRestriction;
 import json.restrictions.ElementRestriction;
 import json.restrictions.IntervalRestriction;
-import json.restrictions.RoomRestriction;
 import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
+import json.restrictions.component.ComponentRestriction;
+import json.restrictions.room.RoomRestriction;
 import main.Main;
 
 public class Scenario

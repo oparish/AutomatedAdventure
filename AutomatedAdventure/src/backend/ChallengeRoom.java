@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import backend.Element.ElementInstance;
 import json.RestrictedJson;
-import json.restrictions.RoomRestriction;
+import json.restrictions.room.RoomRestriction;
 
 public class ChallengeRoom extends Room
 {

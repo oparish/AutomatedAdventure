@@ -71,6 +71,16 @@ public class Main
 		Main.main.startLoop();
 	}
 	
+	public static Main getMain()
+	{
+		return Main.main;
+	}
+	
+	public Scenario getScenario()
+	{
+		return this.scenario;
+	}
+	
 	public Main()
 	{
 		JsonObject jsonObject = Main.openJsonFile(null);

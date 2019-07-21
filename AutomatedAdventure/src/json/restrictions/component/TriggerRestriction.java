@@ -1,4 +1,9 @@
-package json.restrictions;
+package json.restrictions.component;
+
+import json.restrictions.Restriction;
+import json.restrictions.RestrictionPointer;
+import json.restrictions.RestrictionType;
+import json.restrictions.SuperRestriction;
 
 public enum TriggerRestriction implements RestrictionPointer, SuperRestriction
 {

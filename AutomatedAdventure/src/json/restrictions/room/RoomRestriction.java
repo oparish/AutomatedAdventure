@@ -1,7 +1,12 @@
-package json.restrictions;
+package json.restrictions.room;
 
 import static json.restrictions.RestrictionType.CHALLENGEROOM;
 import static json.restrictions.RestrictionType.TIMEDROOM;
+
+import json.restrictions.Restriction;
+import json.restrictions.RestrictionPointer;
+import json.restrictions.RestrictionType;
+import json.restrictions.SuperRestriction;
 
 public enum RoomRestriction implements RestrictionPointer, SuperRestriction
 {

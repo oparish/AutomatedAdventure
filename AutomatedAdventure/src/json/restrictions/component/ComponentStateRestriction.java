@@ -1,4 +1,7 @@
-package json.restrictions;
+package json.restrictions.component;
+
+import json.restrictions.Restriction;
+import json.restrictions.RestrictionPointer;
 
 public enum ComponentStateRestriction implements RestrictionPointer
 {

@@ -6,8 +6,8 @@ import backend.Room;
 import backend.Scenario;
 import frontEnd.RoomPanel;
 import frontEnd.RoomsWindow;
-import json.restrictions.RoomRestriction;
 import json.restrictions.ScenarioRestriction;
+import json.restrictions.room.RoomRestriction;
 import main.Main;
 
 public interface JsonEntity
