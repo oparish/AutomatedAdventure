@@ -47,7 +47,8 @@ public enum Restriction
 	TRANSITION_TEXT("transitionText", STRING, JsonDim.MONO),
 	DESCRIPTION("description", STRING, JsonDim.MONO),
 	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO),
-	COMPONENTS("components", RestrictionType.COMPONENT, JsonDim.ARRAY);
+	COMPONENTS("components", RestrictionType.COMPONENT, JsonDim.ARRAY),
+	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY);
 	
 	
 	private final JsonDim jsonDim;
