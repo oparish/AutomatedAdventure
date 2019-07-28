@@ -3,7 +3,7 @@ package json;
 import java.util.ArrayList;
 
 import json.restrictions.RestrictionPointer;
-import main.Main;
+import main.Rooms;
 
 public class JsonEntityArray<E extends JsonEntity> implements JsonEntity
 {
@@ -21,13 +21,13 @@ public class JsonEntityArray<E extends JsonEntity> implements JsonEntity
 	
 	public E getRandomMember()
 	{
-		int rndm = Main.getRndm(this.entityList.size());
+		int rndm = Rooms.getRndm(this.entityList.size());
 		return this.entityList.get(rndm);
 	}
 	
 	public int getRandomIndex()
 	{
-		int rndm = Main.getRndm(this.entityList.size());
+		int rndm = Rooms.getRndm(this.entityList.size());
 		return rndm;
 	}
 	

@@ -19,10 +19,10 @@ import frontEnd.RoomsWindow;
 import json.RestrictedJson;
 import json.restrictions.ScenarioRestriction;
 
-public class Main
+public class Rooms
 {
 	private boolean endingReached = false;
-	public static Main main;
+	public static Rooms main;
 	private static Random random = new Random();
 	
 	private Scenario scenario;
@@ -45,7 +45,7 @@ public class Main
 	
 	public static int getRndm(int range)
 	{
-		return Main.random.nextInt(range);
+		return Rooms.random.nextInt(range);
 	}
 	
 	public static JsonObject openJsonFile(Component parent)
@@ -67,13 +67,13 @@ public class Main
 	
 	public static void main(String[] args)
 	{
-		Main.main = new Main();
-		Main.main.startLoop();
+		Rooms.main = new Rooms();
+		Rooms.main.startLoop();
 	}
 	
-	public static Main getMain()
+	public static Rooms getMain()
 	{
-		return Main.main;
+		return Rooms.main;
 	}
 	
 	public Scenario getScenario()
@@ -81,9 +81,9 @@ public class Main
 		return this.scenario;
 	}
 	
-	public Main()
+	public Rooms()
 	{
-		JsonObject jsonObject = Main.openJsonFile(null);
+		JsonObject jsonObject = Rooms.openJsonFile(null);
 		RestrictedJson<ScenarioRestriction> scenarioJson = 
 				new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
 		this.scenario = new Scenario(scenarioJson);

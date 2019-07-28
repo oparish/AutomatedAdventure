@@ -14,7 +14,7 @@ import backend.Room;
 import backend.Scenario;
 import backend.State;
 import backend.Element.ElementInstance;
-import main.Main;
+import main.Rooms;
 
 @SuppressWarnings("serial")
 public class RoomsWindow extends JFrame
@@ -70,7 +70,7 @@ public class RoomsWindow extends JFrame
 	
 	public void showWindow()
 	{
-		Dimension screenCentre = Main.findScreenCentre();
+		Dimension screenCentre = Rooms.findScreenCentre();
 		int x = screenCentre.width - this.getWidth()/2;
 		int y = screenCentre.height - this.getHeight()/2;
 		this.setLocation(x, y);
