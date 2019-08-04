@@ -1,17 +1,6 @@
 package main;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.Random;
-
-import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.swing.JFileChooser;
 
 import backend.Mode;
 import backend.Scenario;
@@ -22,9 +11,6 @@ import json.restrictions.ScenarioRestriction;
 public class Rooms
 {
 	private boolean endingReached = false;
-	public static Rooms main;
-	private static Random random = new Random();
-	
 	private Scenario scenario;
 	private int intervalCounter;
 	public int getIntervalCounter() {
@@ -34,46 +20,17 @@ public class Rooms
 	private long nextIntervalTime;
 	private int checkTime;
 	private RoomsWindow roomsWindow;
-	
-	public static Dimension findScreenCentre()
-	{
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = (int) screenSize.getWidth()/2;
-		int height = (int) screenSize.getHeight()/2;
-		return new Dimension(width, height);
-	}
-	
-	public static int getRndm(int range)
-	{
-		return Rooms.random.nextInt(range);
-	}
-	
-	public static JsonObject openJsonFile(Component parent)
-	{
-		JFileChooser fileChooser = new JFileChooser(".");
-		fileChooser.showOpenDialog(parent);
-		File file = fileChooser.getSelectedFile();
-		try {
-			FileReader fileReader = new FileReader(file);
-			JsonReader jsonReader = Json.createReader(fileReader);
-			return jsonReader.readObject();
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
+	public static Rooms rooms;
 	
 	public static void main(String[] args)
 	{
-		Rooms.main = new Rooms();
-		Rooms.main.startLoop();
+		Rooms.rooms = new Rooms();
+		Rooms.rooms.startLoop();
 	}
 	
 	public static Rooms getMain()
 	{
-		return Rooms.main;
+		return Rooms.rooms;
 	}
 	
 	public Scenario getScenario()
@@ -83,7 +40,7 @@ public class Rooms
 	
 	public Rooms()
 	{
-		JsonObject jsonObject = Rooms.openJsonFile(null);
+		JsonObject jsonObject = Main.openJsonFile(null);
 		RestrictedJson<ScenarioRestriction> scenarioJson = 
 				new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
 		this.scenario = new Scenario(scenarioJson);

@@ -17,7 +17,7 @@ import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
 import json.restrictions.TemplateRestriction;
 import json.restrictions.room.RoomRestriction;
-import main.Rooms;
+import main.Main;
 
 public class Template
 {

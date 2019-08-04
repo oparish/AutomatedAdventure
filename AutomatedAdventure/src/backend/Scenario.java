@@ -17,6 +17,7 @@ import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
 import json.restrictions.component.ComponentRestriction;
 import json.restrictions.room.RoomRestriction;
+import main.Main;
 import main.Rooms;
 
 public class Scenario
@@ -118,8 +119,8 @@ public class Scenario
 	
 	public Interval getCurrentInterval()
 	{
-		Rooms main = Rooms.main;
-		int counter = main.getIntervalCounter();
+		Rooms rooms = Rooms.rooms;
+		int counter = rooms.getIntervalCounter();
 		return this.getInterval(counter);
 	}
 	

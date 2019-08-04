@@ -8,7 +8,7 @@ import json.RestrictedJson;
 import json.restrictions.ElementDataRestriction;
 import json.restrictions.ElementRestriction;
 import json.restrictions.ScenarioRestriction;
-import main.Rooms;
+import main.Main;
 
 public class Element
 {
@@ -41,7 +41,7 @@ public class Element
 	
 	public ElementInstance getRandomInstance()
 	{
-		int randomIndex = Rooms.getRndm(this.instances.size());
+		int randomIndex = Main.getRndm(this.instances.size());
 		return this.instances.get(randomIndex);
 	}
 	

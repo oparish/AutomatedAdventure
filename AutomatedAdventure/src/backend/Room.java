@@ -12,7 +12,7 @@ import json.RestrictedJson;
 import json.restrictions.RestrictionType;
 import json.restrictions.TemplateRestriction;
 import json.restrictions.room.RoomRestriction;
-import main.Rooms;
+import main.Main;
 
 public class Room
 {
@@ -64,7 +64,7 @@ public class Room
 	public Template getRandomTemplate(Scenario scenario)
 	{
 		int range = scenario.getChanceRange();
-		int random = Rooms.getRndm(range);
+		int random = Main.getRndm(range);
 		int number = 0;
 		Chance chosenChance = null;
 		for (Chance chance : scenario.getChanceList())
@@ -86,7 +86,7 @@ public class Room
 			templateList = this.getCheckedTemplateList(scenario, chosenChance);
 		}	
 		
-		int randomIndex = Rooms.getRndm(templateList.size());
+		int randomIndex = Main.getRndm(templateList.size());
 		return templateList.get(randomIndex);
 	}
 	
