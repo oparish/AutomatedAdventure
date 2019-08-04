@@ -47,10 +47,10 @@ public enum Restriction
 	TRANSITION_TEXT("transitionText", STRING, JsonDim.MONO),
 	DESCRIPTION("description", STRING, JsonDim.MONO),
 	COMPONENTS("components", RestrictionType.COMPONENT, JsonDim.ARRAY),
-	TRIGGER_COMPONENT_NAME("triggerComponentName", STRING, JsonDim.MONO),
+	TRIGGER_COMPONENT_NAME("triggerComponentName", STRING, JsonDim.MONO, true),
 	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY);
 	
-	
+	private final boolean noneable;
 	private final JsonDim jsonDim;
 	private final JsonType jsonType;
 	public JsonType getJsonType() {
@@ -67,11 +67,22 @@ public enum Restriction
 	{
 		return jsonDim;
 	}
+	
+	public boolean getNoneable()
+	{
+		return noneable;
+	}
 
 	private Restriction(String name, JsonType jsonType, JsonDim jsonDim)
+	{
+		this(name, jsonType, jsonDim, false);
+	}
+	
+	private Restriction(String name, JsonType jsonType, JsonDim jsonDim, boolean noneable)
 	{
 		this.name = name;
 		this.jsonType = jsonType;
 		this.jsonDim = jsonDim;
+		this.noneable = noneable;
 	}
 }

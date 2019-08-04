@@ -15,6 +15,8 @@ import json.restrictions.SuperRestriction;
 public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 {
 	private static final String TYPE = "type";
+	private static final String NONE = "none";
+	
 	RestrictionType subType = null;
 	
 	public RestrictionType getSubType() {
@@ -34,6 +36,10 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 		{
 			try
 			{
+				Restriction restriction = restrictionPointer.getRestriction();
+				String restrictionName = restriction.getName();
+				if (restriction.getNoneable() && json.getString(restrictionName).equals(RestrictedJson.NONE))
+					continue;
 				this.loadJson(json, restrictionPointer);
 				if (restrictionPointer instanceof SuperRestriction)
 				{
