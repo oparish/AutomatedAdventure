@@ -5,8 +5,9 @@ import json.restrictions.RestrictionPointer;
 
 public enum ComponentChangeRestriction implements RestrictionPointer
 {
-	TRIGGER(Restriction.TRIGGER), OLD_COMPONENT_STATE_NAME(Restriction.OLD_COMPONENT_STATE_NAME), 
-	NEW_COMPONENT_STATE_NAME(Restriction.NEW_COMPONENT_STATE_NAME), TRANSITION_TEXT(Restriction.TRANSITION_TEXT);
+	OLD_COMPONENT_STATE_NAME(Restriction.OLD_COMPONENT_STATE_NAME), 
+	NEW_COMPONENT_STATE_NAME(Restriction.NEW_COMPONENT_STATE_NAME), TRANSITION_TEXT(Restriction.TRANSITION_TEXT), TIME(Restriction.TIME),
+	TRIGGER_COMPONENT_NAME(Restriction.TRIGGER_COMPONENT_NAME);
 	
 	private Restriction restriction;
 	
@@ -20,4 +21,6 @@ public enum ComponentChangeRestriction implements RestrictionPointer
 	{
 		return this.restriction;
 	}
+	
+	
 }

@@ -46,8 +46,8 @@ public enum Restriction
 	INITIAL_COMPONENT_STATE_NAME("initialComponentStateName", STRING, JsonDim.MONO),
 	TRANSITION_TEXT("transitionText", STRING, JsonDim.MONO),
 	DESCRIPTION("description", STRING, JsonDim.MONO),
-	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO),
 	COMPONENTS("components", RestrictionType.COMPONENT, JsonDim.ARRAY),
+	TRIGGER_COMPONENT_NAME("triggerComponentName", STRING, JsonDim.MONO),
 	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY);
 	
 	

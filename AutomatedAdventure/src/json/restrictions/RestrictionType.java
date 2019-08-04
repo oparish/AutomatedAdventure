@@ -4,9 +4,6 @@ import json.JsonType;
 import json.restrictions.component.ComponentChangeRestriction;
 import json.restrictions.component.ComponentRestriction;
 import json.restrictions.component.ComponentStateRestriction;
-import json.restrictions.component.ComponentTriggerRestriction;
-import json.restrictions.component.TimedTriggerRestriction;
-import json.restrictions.component.TriggerRestriction;
 import json.restrictions.component.EndingRestriction;
 import json.restrictions.room.ChallengeRoomRestriction;
 import json.restrictions.room.RoomRestriction;
@@ -28,11 +25,8 @@ public enum RestrictionType implements JsonType
 	CONDITION(ConditionRestriction.class),
 	COMPONENT_STATE(ComponentStateRestriction.class),
 	COMPONENT_CHANGE(ComponentChangeRestriction.class),
-	TRIGGER(TriggerRestriction.class),
 	CHALLENGEROOM(ChallengeRoomRestriction.class),
 	TIMEDROOM(TimedRoomRestriction.class),
-	TIMEDTRIGGER(TimedTriggerRestriction.class),
-	COMPONENTTRIGGER(ComponentTriggerRestriction.class),
 	COMPONENT(ComponentRestriction.class),
 	ENDING(EndingRestriction.class);
 	
