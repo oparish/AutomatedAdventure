@@ -5,7 +5,7 @@ import json.restrictions.RestrictionPointer;
 
 public enum ComponentStateRestriction implements RestrictionPointer
 {
-	NAME(Restriction.NAME), DESCRIPTION(Restriction.DESCRIPTION);
+	DESCRIPTION(Restriction.DESCRIPTION);
 	
 	private Restriction restriction;
 	
