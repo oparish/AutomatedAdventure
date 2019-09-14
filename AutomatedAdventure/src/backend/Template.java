@@ -53,8 +53,8 @@ public class Template
 		for (int i = 0; i < conditions.getLength(); i++)
 		{
 			RestrictedJson<ConditionRestriction> conditionJson = conditions.getMemberAt(i);
-			String typeString = conditionJson.getJsonEntityString(ConditionRestriction.TYPE);
-			String valueString = conditionJson.getJsonEntityString(ConditionRestriction.VALUE);
+			String typeString = conditionJson.getString(ConditionRestriction.TYPE);
+			String valueString = conditionJson.getString(ConditionRestriction.VALUE);
 			this.conditions.add(Condition.createCondition(scenario, typeString, valueString));
 		}
 	}
@@ -92,12 +92,12 @@ public class Template
 	
 	private String getContent()
 	{
-		return this.templateJson.getJsonEntityString(TemplateRestriction.CONTENT);
+		return this.templateJson.getString(TemplateRestriction.CONTENT);
 	}
 	
 	private String getChanceName()
 	{
-		return this.templateJson.getJsonEntityString(TemplateRestriction.CHANCE_NAME);
+		return this.templateJson.getString(TemplateRestriction.CHANCE_NAME);
 	}
 	
 	

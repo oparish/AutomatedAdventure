@@ -111,7 +111,7 @@ public class Room
 
 	public String getName()
 	{
-		return this.roomJson.getJsonEntityString(RoomRestriction.NAME);
+		return this.roomJson.getString(RoomRestriction.NAME);
 	}
 	
 	public static Room getRoom(RestrictedJson<RoomRestriction> roomJson, Scenario scenario, HashMap<String, ElementInstance> elementInstances)

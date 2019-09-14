@@ -14,7 +14,7 @@ public class Chance
 	
 	public String getName()
 	{
-		return this.chanceJson.getJsonEntityString(ChanceRestriction.NAME);
+		return this.chanceJson.getString(ChanceRestriction.NAME);
 	}
 	
 	public int getPercentage()

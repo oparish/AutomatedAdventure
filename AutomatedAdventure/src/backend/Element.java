@@ -36,7 +36,7 @@ public class Element
 
 	public String getName()
 	{
-		return this.elementJson.getJsonEntityString(ElementRestriction.NAME);
+		return this.elementJson.getString(ElementRestriction.NAME);
 	}
 	
 	public ElementInstance getRandomInstance()
@@ -79,7 +79,7 @@ public class Element
 			for (int i = 0; i < values.size(); i++)
 			{
 				RestrictedJson<ElementDataRestriction> elementData = elementJson.getMemberAt(i);
-				String name = elementData.getJsonEntityString(ElementDataRestriction.NAME);
+				String name = elementData.getString(ElementDataRestriction.NAME);
 				if (dataName.equals(name))
 					return this.getValue(i);
 			}
@@ -93,7 +93,7 @@ public class Element
 			for (int i = 0; i < values.size(); i++)
 			{
 				RestrictedJson<ElementDataRestriction> elementData = elementJson.getMemberAt(i);
-				String name = elementData.getJsonEntityString(ElementDataRestriction.NAME);
+				String name = elementData.getString(ElementDataRestriction.NAME);
 				JsonEntityArray<JsonEntityString> options = elementData.getStringArray(ElementDataRestriction.OPTIONS);				
 				JsonEntityString value = options.getMemberAt(this.values.get(i));
 				
