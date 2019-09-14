@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import json.restrictions.Restriction;
 import json.restrictions.RestrictionPointer;
@@ -82,8 +85,43 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 		Restriction restriction = restrictionPointer.getRestriction();
 		String restrictionName = restriction.getName();
 		JsonType jsonType = restriction.getJsonType();
-		
-		if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType instanceof RestrictionType)
+		if (restriction.getJsonDim() == JsonDim.MAP && jsonType instanceof RestrictionType)
+		{
+			HashMap<String, RestrictedJson<? extends RestrictionPointer>> entityMap = new HashMap<String, RestrictedJson<? extends RestrictionPointer>>();
+			JsonObject jsonObject = json.getJsonObject(restrictionName);
+			for (Entry<String, JsonValue> entry : jsonObject.entrySet())
+			{
+				String key = entry.getKey();
+				RestrictionType restrictionType = (RestrictionType) jsonType;
+				entityMap.put(key, new RestrictedJson((JsonObject) entry.getValue(), restrictionType.getClazz()));
+			}	
+			jsonEntity = new JsonEntityMap<RestrictedJson<? extends RestrictionPointer>>(entityMap);
+		}
+		else if (restriction.getJsonDim() == JsonDim.MAP && jsonType == CoreJsonType.STRING)
+		{
+			HashMap<String, JsonEntityString> stringMap = new HashMap<String, JsonEntityString>();
+			JsonObject jsonObject = json.getJsonObject(restrictionName);
+			for (Entry<String, JsonValue> entry : jsonObject.entrySet())
+			{
+				String key = entry.getKey();
+				JsonString jsonString = (JsonString) entry.getValue();
+				stringMap.put(key, new JsonEntityString(jsonString.getString()));
+			}	
+			jsonEntity = new JsonEntityMap<JsonEntityString>(stringMap);
+		}
+		else if (restriction.getJsonDim() == JsonDim.MAP && jsonType == CoreJsonType.NUMBER)
+		{
+			HashMap<String, JsonEntityNumber> numberMap = new HashMap<String, JsonEntityNumber>();
+			JsonObject jsonObject = json.getJsonObject(restrictionName);
+			for (Entry<String, JsonValue> entry : jsonObject.entrySet())
+			{
+				String key = entry.getKey();
+				JsonNumber jsonNumber = (JsonNumber) entry.getValue();
+				numberMap.put(key, new JsonEntityNumber(jsonNumber.intValue()));
+			}	
+			jsonEntity = new JsonEntityMap<JsonEntityNumber>(numberMap);
+		}
+		else if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType instanceof RestrictionType)
 		{
 			ArrayList<RestrictedJson<? extends RestrictionPointer>> entityList = new ArrayList<RestrictedJson<? extends RestrictionPointer>>();
 			JsonArray jsonArray = json.getJsonArray(restrictionName);
@@ -138,9 +176,19 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 		return (RestrictedJson<J>) this.contents.get(r.getRestriction());
 	}
 	
+	public <J extends RestrictionPointer> JsonEntityMap<RestrictedJson<J>> getRestrictedJsonMap(R r, Class<J> j)
+	{
+		return (JsonEntityMap<RestrictedJson<J>>) this.contents.get(r.getRestriction());
+	}
+	
 	public <J extends RestrictionPointer> JsonEntityArray<RestrictedJson<J>> getRestrictedJsonArray(R r, Class<J> j)
 	{
 		return (JsonEntityArray<RestrictedJson<J>>) this.contents.get(r.getRestriction());
+	}
+	
+	public JsonEntityMap<JsonEntityString> getStringMap(R r)
+	{
+		return (JsonEntityMap<JsonEntityString>) this.contents.get(r.getRestriction());
 	}
 	
 	public JsonEntityArray<JsonEntityString> getStringArray(R r)
