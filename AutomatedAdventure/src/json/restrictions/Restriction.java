@@ -47,7 +47,7 @@ public enum Restriction
 	TRANSITION_TEXT("transitionText", STRING, JsonDim.MONO),
 	DESCRIPTION("description", STRING, JsonDim.MONO),
 	COMPONENTS("components", RestrictionType.COMPONENT, JsonDim.MAP),
-	TRIGGER_COMPONENT_NAME("triggerComponentName", STRING, JsonDim.MONO, true),
+	TRIGGER_COMPONENT_NAME("triggerComponentName", RestrictionType.TRIGGER, JsonDim.MONO, true),
 	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY);
 	
 	private final boolean noneable;

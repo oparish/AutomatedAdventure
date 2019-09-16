@@ -181,6 +181,11 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 		return (JsonEntityMap<RestrictedJson<J>>) this.contents.get(r.getRestriction());
 	}
 	
+	public <J extends RestrictionPointer> RestrictedJson<J> getRestrictedJsonFromMap(R r, Class<J> j, String key)
+	{
+		return ((JsonEntityMap<RestrictedJson<J>>) this.contents.get(r.getRestriction())).getMemberBy(key);
+	}
+	
 	public <J extends RestrictionPointer> JsonEntityArray<RestrictedJson<J>> getRestrictedJsonArray(R r, Class<J> j)
 	{
 		return (JsonEntityArray<RestrictedJson<J>>) this.contents.get(r.getRestriction());

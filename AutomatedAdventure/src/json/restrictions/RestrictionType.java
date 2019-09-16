@@ -5,6 +5,7 @@ import json.restrictions.component.ComponentChangeRestriction;
 import json.restrictions.component.ComponentRestriction;
 import json.restrictions.component.ComponentStateRestriction;
 import json.restrictions.component.EndingRestriction;
+import json.restrictions.component.TriggerRestriction;
 import json.restrictions.room.ChallengeRoomRestriction;
 import json.restrictions.room.RoomRestriction;
 import json.restrictions.room.TimedRoomRestriction;
@@ -28,7 +29,8 @@ public enum RestrictionType implements JsonType
 	CHALLENGEROOM(ChallengeRoomRestriction.class),
 	TIMEDROOM(TimedRoomRestriction.class),
 	COMPONENT(ComponentRestriction.class),
-	ENDING(EndingRestriction.class);
+	ENDING(EndingRestriction.class),
+	TRIGGER(TriggerRestriction.class);
 	
 	private final Class<? extends RestrictionPointer> clazz;
 	
