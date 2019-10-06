@@ -48,7 +48,8 @@ public enum Restriction
 	DESCRIPTION("description", STRING, JsonDim.MONO),
 	COMPONENTS("components", RestrictionType.COMPONENT, JsonDim.MAP),
 	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO, true),
-	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY);
+	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY),
+	PAGETEMPLATES("pageTemplates", STRING, JsonDim.MAP);
 	
 	private final boolean noneable;
 	private final JsonDim jsonDim;
