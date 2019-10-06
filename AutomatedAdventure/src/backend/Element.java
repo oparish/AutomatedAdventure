@@ -14,8 +14,9 @@ public class Element
 {
 	RestrictedJson<ElementRestriction> elementJson;
 	ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
+	String name;
 	
-	public Element(RestrictedJson<ElementRestriction> elementJson)
+	public Element(RestrictedJson<ElementRestriction> elementJson, String name)
 	{
 		this.elementJson = elementJson;
 		int instanceNumber = elementJson.getJsonEntityNumber(ElementRestriction.INSTANCE_NUMBER).getValue();
@@ -33,10 +34,10 @@ public class Element
 			this.instances.add(new ElementInstance(values));
 		}
 	}
-
+	
 	public String getName()
 	{
-		return this.elementJson.getString(ElementRestriction.NAME);
+		return this.name;
 	}
 	
 	public ElementInstance getRandomInstance()

@@ -5,9 +5,11 @@ import static json.restrictions.ScenarioRestriction.COMPONENTS;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import backend.Element.ElementInstance;
 import json.JsonEntityArray;
+import json.JsonEntityMap;
 import json.JsonEntityString;
 import json.RestrictedJson;
 import json.restrictions.ChanceRestriction;
@@ -178,13 +180,12 @@ public class Scenario
 	
 	private void loadElements()
 	{
-		JsonEntityArray<RestrictedJson<ElementRestriction>> elementJsonArray = 
-				this.scenarioJson.getRestrictedJsonArray(ScenarioRestriction.ELEMENTS, ElementRestriction.class);
+		JsonEntityMap<RestrictedJson<ElementRestriction>> elementJsonMap = 
+				this.scenarioJson.getRestrictedJsonMap(ScenarioRestriction.ELEMENTS, ElementRestriction.class);
 		
-		for (int i = 0; i < elementJsonArray.getLength(); i++)
+		for (Entry<String, RestrictedJson<ElementRestriction>> elementJsonEntry : elementJsonMap.getEntityMap().entrySet())
 		{
-			RestrictedJson<ElementRestriction> elementJson = elementJsonArray.getMemberAt(i);
-			this.elements.add(new Element(elementJson));
+			this.elements.add(new Element(elementJsonEntry.getValue(), elementJsonEntry.getKey()));
 		}
 	}
 	

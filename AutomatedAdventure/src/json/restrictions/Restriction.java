@@ -11,7 +11,7 @@ public enum Restriction
 	NAME("name", STRING, JsonDim.MONO),
 	ELEMENT_DATA("elementData", RestrictionType.ELEMENTDATA, JsonDim.ARRAY),
 	OPTIONS("options", STRING, JsonDim.ARRAY),
-	ELEMENTS("elements", RestrictionType.ELEMENT, JsonDim.ARRAY),
+	ELEMENTS("elements", RestrictionType.ELEMENT, JsonDim.MAP),
 	TIME("time", NUMBER, JsonDim.MONO),
 	INTERVAL_NAME("interval", STRING, JsonDim.MONO),
 	CHANCE("chance", NUMBER, JsonDim.MONO),

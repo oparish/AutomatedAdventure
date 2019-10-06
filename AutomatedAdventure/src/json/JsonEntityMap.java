@@ -8,6 +8,10 @@ public class JsonEntityMap<E extends JsonEntity> implements JsonEntity
 {
 	HashMap<String, E> entityMap;
 	
+	public HashMap<String, E> getEntityMap() {
+		return entityMap;
+	}
+
 	public JsonEntityMap(HashMap<String, E> entityMap)
 	{
 		this.entityMap = entityMap;
