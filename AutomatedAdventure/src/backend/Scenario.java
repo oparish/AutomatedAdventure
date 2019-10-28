@@ -27,7 +27,7 @@ public class Scenario
 	Mode mode;
 	RestrictedJson<ScenarioRestriction> scenarioJson;
 	ArrayList<Room> rooms = new ArrayList<Room>();
-	ArrayList<Element> elements = new ArrayList<Element>();
+	HashMap<String, Element> elementMap = new HashMap<String, Element>();
 	ArrayList<Interval> intervals = new ArrayList<Interval>();
 	HashMap<String, Chance> chances = new HashMap<String, Chance>();
 	HashMap<Integer, Chance> chanceByPriority = new HashMap<Integer, Chance>();
@@ -37,8 +37,14 @@ public class Scenario
 		return chanceRange;
 	}
 
-	public ArrayList<Element> getElements() {
-		return elements;
+	public Element getElement(String key)
+	{
+		return this.elementMap.get(key);
+	}
+	
+	public HashMap<String, Element> getElements()
+	{
+		return this.elementMap;
 	}
 	
 	public Mode getMode()
@@ -170,9 +176,10 @@ public class Scenario
 		{
 			RestrictedJson<RoomRestriction> roomJson = roomJsonArray.getMemberAt(i);
 			HashMap<String, ElementInstance> elementInstances = new HashMap<String, ElementInstance>();
-			for (Element element : this.elements)
+			for (Entry<String, Element> entry : this.elementMap.entrySet())
 			{
-				elementInstances.put(element.getName(), element.getRandomInstance());
+				Element element = entry.getValue();
+				elementInstances.put(entry.getKey(), element.getRandomInstance());
 			}
 			this.rooms.add(Room.getRoom(roomJson, this, elementInstances));
 		}
@@ -185,8 +192,14 @@ public class Scenario
 		
 		for (Entry<String, RestrictedJson<ElementRestriction>> elementJsonEntry : elementJsonMap.getEntityMap().entrySet())
 		{
-			this.elements.add(new Element(elementJsonEntry.getValue(), elementJsonEntry.getKey()));
+			this.elementMap.put(elementJsonEntry.getKey(), new Element(elementJsonEntry.getValue()));
 		}
+	}
+	
+	public ElementInstance getRandomElementInstance(String elementType)
+	{
+		Element element = this.elementMap.get(elementType);
+		return element.getRandomInstance();
 	}
 	
 	public ArrayList<Room> getRooms()

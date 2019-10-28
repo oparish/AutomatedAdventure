@@ -115,7 +115,7 @@ public class Template
 			String elementName = changeElementMatcher.group(1);
 			ElementInstance elementInstance = elementInstances.get(elementName);
 			Element element = elementInstance.getElement();
-			elementInstances.put(element.getName(), element.getRandomInstance());
+			elementInstances.put(elementName, element.getRandomInstance());
 			alteredTemplateString = alteredTemplateString.replace(changeElementMatcher.group(0), "");
 		}
 		return alteredTemplateString;

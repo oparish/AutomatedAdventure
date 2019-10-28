@@ -30,7 +30,7 @@ public class Pages
 		
 		JsonEntityMap<JsonEntityString> pageTemplateMap = scenarioJson.getStringMap(ScenarioRestriction.PAGETEMPLATES);
 		String pageTemplate = pageTemplateMap.getMemberBy("initial").renderAsString();
-		PageInstance pageInstance = new PageInstance(pageTemplate);
+		PageInstance pageInstance = new PageInstance(this.scenario, pageTemplate);
 		
 		PageWindow pageWindow = new PageWindow();
 		pageWindow.showWindow();

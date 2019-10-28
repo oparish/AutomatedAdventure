@@ -56,9 +56,9 @@ public class Room
 		return this.getElementInstance(element);
 	}
 	
-	public void setElementInstance(Element element, ElementInstance elementInstance)
+	public void setElementInstance(String elementName, Element element, ElementInstance elementInstance)
 	{
-		this.elementInstances.put(element.getName(), elementInstance);
+		this.elementInstances.put(elementName, elementInstance);
 	}
 	
 	public Template getRandomTemplate(Scenario scenario)
