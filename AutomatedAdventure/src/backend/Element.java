@@ -15,6 +15,10 @@ public class Element
 	RestrictedJson<ElementRestriction> elementJson;
 	ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
 	
+	public ArrayList<ElementInstance> getInstances() {
+		return instances;
+	}
+
 	public Element(RestrictedJson<ElementRestriction> elementJson)
 	{
 		this.elementJson = elementJson;
