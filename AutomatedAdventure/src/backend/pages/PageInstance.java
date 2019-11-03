@@ -14,10 +14,12 @@ public class PageInstance
 {
 	private static final String RANDOM = "random";
 	private static final String ALL = "all";
-	private static final Pattern mainPattern = Pattern.compile("<head>([\\s\\S]*)</head><body>(.*)</body>");
+	private static final Pattern mainPattern = Pattern.compile("<head>([\\s\\S]*)</head><body>([\\s\\S]*)</body>");
 	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(.*):(.*)");
 	private static final Pattern elementListHeadPattern = Pattern.compile("elementList:(.*):(.*):(.*)");
 	private static final Pattern elementBodyPattern = Pattern.compile("<element:([^<>]*):([^<>]*)>");
+	private static final Pattern elementItemPattern = Pattern.compile("<elementItem:([^<>]*)>");
+	private static final Pattern loopThroughListPattern = Pattern.compile("<loopThroughList:([^<>]*)>([\\s\\S]*)</loopThroughList>");
 	Scenario scenario;
 	String pageTemplate;
 	HashMap<String, ElementInstance> elementMap = new HashMap<String, ElementInstance>();
@@ -44,15 +46,42 @@ public class PageInstance
 	{
 		String adjustedText = bodyText;
 		
-		Matcher matcher = elementBodyPattern.matcher(adjustedText);
-		while(matcher.find())
+		Matcher elementMatcher = elementBodyPattern.matcher(adjustedText);
+		while(elementMatcher.find())
 		{
-			String elementName = matcher.group(1);
-			String elementOption = matcher.group(2);
+			String elementName = elementMatcher.group(1);
+			String elementOption = elementMatcher.group(2);
 			ElementInstance elementInstance = this.elementMap.get(elementName);
 			String replaceText = elementInstance.getValueByName(elementOption);
-			adjustedText = matcher.replaceFirst(replaceText);
-			matcher = elementBodyPattern.matcher(adjustedText);
+			adjustedText = elementMatcher.replaceFirst(replaceText);
+			elementMatcher = elementBodyPattern.matcher(adjustedText);
+		}
+		
+		Matcher loopMatcher = loopThroughListPattern.matcher(adjustedText);
+		while(loopMatcher.find())
+		{
+			String elementListName = loopMatcher.group(1);
+			String loopBody = loopMatcher.group(2);
+			
+			ArrayList<ElementInstance> elementList = this.elementListMap.get(elementListName);
+			StringBuffer stringBuffer = new StringBuffer();		
+			
+			for (ElementInstance elementInstance : elementList)
+			{
+				String adjustedBody = new String(loopBody);
+				Matcher itemMatcher = elementItemPattern.matcher(adjustedBody);
+				while (itemMatcher.find())
+				{
+					String elementItemName = itemMatcher.group(1);
+					String replaceItemText = elementInstance.getValueByName(elementItemName);
+					adjustedBody = itemMatcher.replaceFirst(replaceItemText);
+					itemMatcher = elementItemPattern.matcher(adjustedBody);
+				}
+				stringBuffer.append(adjustedBody);
+			}
+			
+			adjustedText = loopMatcher.replaceFirst(stringBuffer.toString());		
+			loopMatcher = loopThroughListPattern.matcher(adjustedText);
 		}
 		
 		return adjustedText;
