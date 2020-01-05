@@ -14,26 +14,30 @@ import json.restrictions.ScenarioRestriction;
 
 public class Pages
 {
-	private Scenario scenario;
+	private static Scenario scenario;
+	private static PageWindow pageWindow;
 	
 	public static void main(String[] args)
-	{
-		new Pages();
-	}
-	
-	public Pages()
 	{
 		JsonObject jsonObject = Main.openJsonFile(null);
 		RestrictedJson<ScenarioRestriction> scenarioJson = 
 				new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
-		this.scenario = new Scenario(scenarioJson);	
+		Pages.scenario = new Scenario(scenarioJson);	
 		
 		JsonEntityMap<JsonEntityString> pageTemplateMap = scenarioJson.getStringMap(ScenarioRestriction.PAGETEMPLATES);
 		String pageTemplate = pageTemplateMap.getMemberBy("initial").renderAsString();
-		PageInstance pageInstance = new PageInstance(this.scenario, pageTemplate);
+		PageInstance pageInstance = new PageInstance(Pages.scenario, pageTemplate);
 		
-		PageWindow pageWindow = new PageWindow();
-		pageWindow.showWindow();
-		pageWindow.update(pageInstance.getText());
+		Pages.pageWindow = new PageWindow(Pages.scenario);
+		Pages.pageWindow.showWindow();
+		Pages.pageWindow.update(pageInstance);
 	}
+	
+	public static void loadPage(String key)
+	{
+		String pageTemplate = Pages.scenario.getPageTemplate(key);
+		PageInstance pageInstance = new PageInstance(Pages.scenario, pageTemplate);
+		Pages.pageWindow.update(pageInstance);
+	}
+	
 }

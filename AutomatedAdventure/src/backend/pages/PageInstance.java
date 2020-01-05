@@ -15,6 +15,7 @@ public class PageInstance
 	private static final String RANDOM = "random";
 	private static final String ALL = "all";
 	private static final Pattern mainPattern = Pattern.compile("<head>([\\s\\S]*)</head><body>([\\s\\S]*)</body>");
+	private static final Pattern choicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*)");
 	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(.*):(.*)");
 	private static final Pattern elementListHeadPattern = Pattern.compile("elementList:(.*):(.*):(.*)");
 	private static final Pattern elementBodyPattern = Pattern.compile("<element:([^<>]*):([^<>]*)>");
@@ -24,7 +25,12 @@ public class PageInstance
 	String pageTemplate;
 	HashMap<String, ElementInstance> elementMap = new HashMap<String, ElementInstance>();
 	HashMap<String, ArrayList<ElementInstance>> elementListMap = new HashMap<String, ArrayList<ElementInstance>>();
+	HashMap<String, String> choiceMap = new HashMap<String, String>();
 	
+	public HashMap<String, String> getChoiceMap() {
+		return choiceMap;
+	}
+
 	public PageInstance(Scenario scenario, String pageTemplate)
 	{
 		this.scenario = scenario;
@@ -98,6 +104,8 @@ public class PageInstance
 				continue;
 			if (this.checkForElementList(line))
 				continue;
+			if (this.checkForChoice(line))
+				continue;
 		}
 	}
 	
@@ -135,6 +143,22 @@ public class PageInstance
 				ElementInstance elementInstance = this.scenario.getRandomElementInstance(elementType);
 				this.elementMap.put(elementName, elementInstance);
 			}	
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	private boolean checkForChoice(String line)
+	{
+		Matcher matcher = choicePattern.matcher(line);
+		if (matcher.find())
+		{	
+			String choiceName = matcher.group(1);
+			String choiceText = matcher.group(2);
+			this.choiceMap.put(choiceName, choiceText);
 			return true;
 		}
 		else

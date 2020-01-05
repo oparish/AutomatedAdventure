@@ -119,6 +119,13 @@ public class Scenario
 		}
 	}
 	
+	public String getPageTemplate(String key)
+	{
+		JsonEntityMap<JsonEntityString> pageTemplateMap = this.scenarioJson.getStringMap(ScenarioRestriction.PAGETEMPLATES);
+		JsonEntityString pageTemplateJson = pageTemplateMap.getMemberBy(key);
+		return pageTemplateJson.renderAsString();
+	}
+	
 	public int getIntervalTime(int intervalIndex)
 	{
 		Interval interval = this.intervals.get(intervalIndex);
