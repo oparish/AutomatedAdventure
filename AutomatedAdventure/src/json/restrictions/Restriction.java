@@ -21,7 +21,6 @@ public enum Restriction
 	STATES("states", RestrictionType.STATE, JsonDim.ARRAY),
 	INTERVALS("intervals", RestrictionType.INTERVAL, JsonDim.ARRAY),
 	CHECKTIME("checktime", NUMBER, JsonDim.MONO),
-	INSTANCE_NUMBER("instanceNumber", NUMBER, JsonDim.MONO),
 	PERCENTAGE("percentage", NUMBER, JsonDim.MONO),
 	CHANCES("chances", RestrictionType.CHANCE, JsonDim.ARRAY),
 	CHANCE_NAME("chanceName", STRING, JsonDim.MONO),
@@ -49,7 +48,10 @@ public enum Restriction
 	COMPONENTS("components", RestrictionType.COMPONENT, JsonDim.MAP),
 	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO, true),
 	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY),
-	PAGETEMPLATES("pageTemplates", STRING, JsonDim.MAP);
+	PAGETEMPLATES("pageTemplates", STRING, JsonDim.MAP),
+	FIRST("first", STRING, JsonDim.MONO),
+	SECOND("second", STRING, JsonDim.MONO),
+	CONNECTIONS("connections", RestrictionType.CONNECTION, JsonDim.ARRAY);
 	
 	private final boolean noneable;
 	private final JsonDim jsonDim;

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import backend.Element.ElementInstance;
+import backend.component.ConnectionSet;
 import json.JsonEntityArray;
 import json.JsonEntityMap;
 import json.JsonEntityString;
@@ -18,6 +19,7 @@ import json.restrictions.IntervalRestriction;
 import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
 import json.restrictions.component.ComponentRestriction;
+import json.restrictions.component.ConnectionRestriction;
 import json.restrictions.room.RoomRestriction;
 import main.Main;
 import main.Rooms;
@@ -31,6 +33,7 @@ public class Scenario
 	ArrayList<Interval> intervals = new ArrayList<Interval>();
 	HashMap<String, Chance> chances = new HashMap<String, Chance>();
 	HashMap<Integer, Chance> chanceByPriority = new HashMap<Integer, Chance>();
+	HashMap<String, ConnectionSet> connections = new HashMap<String, ConnectionSet>();
 	int chanceRange;
 	
 	public int getChanceRange() {
@@ -58,7 +61,7 @@ public class Scenario
 		return states;
 	}
 
-	public Scenario(RestrictedJson<ScenarioRestriction> scenarioJson)
+	public Scenario(RestrictedJson<ScenarioRestriction> scenarioJson) throws Exception
 	{
 		this.scenarioJson = scenarioJson;
 		this.loadChances();
@@ -67,6 +70,22 @@ public class Scenario
 		this.loadIntervals();
 		this.loadRooms();
 		this.loadMode();
+		this.loadConnections();
+	}
+	
+	private void loadConnections() throws Exception
+	{
+		JsonEntityArray<RestrictedJson<ConnectionRestriction>> connectionArray = 
+				this.scenarioJson.getRestrictedJsonArray(ScenarioRestriction.CONNECTIONS, ConnectionRestriction.class);
+		for (int i = 0; i < connectionArray.getLength(); i++)
+		{
+			RestrictedJson<ConnectionRestriction> connectionJson = connectionArray.getMemberAt(i);
+			String firstString = connectionJson.getString(ConnectionRestriction.FIRST);
+			String secondString = connectionJson.getString(ConnectionRestriction.SECOND);
+			Element firstElement = this.elementMap.get(firstString);
+			Element secondElement = this.elementMap.get(secondString);
+			this.connections.put(connectionJson.getString(ConnectionRestriction.NAME), new ConnectionSet(firstElement, secondElement));
+		}
 	}
 	
 	private void loadMode()
@@ -183,11 +202,6 @@ public class Scenario
 		{
 			RestrictedJson<RoomRestriction> roomJson = roomJsonArray.getMemberAt(i);
 			HashMap<String, ElementInstance> elementInstances = new HashMap<String, ElementInstance>();
-			for (Entry<String, Element> entry : this.elementMap.entrySet())
-			{
-				Element element = entry.getValue();
-				elementInstances.put(entry.getKey(), element.getRandomInstance());
-			}
 			this.rooms.add(Room.getRoom(roomJson, this, elementInstances));
 		}
 	}

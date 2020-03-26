@@ -17,6 +17,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import backend.pages.ElementChoice;
 import main.Pages;
 
 public class ChoiceBox extends JList<ChoiceEntry> implements ListSelectionListener
@@ -34,13 +35,13 @@ public class ChoiceBox extends JList<ChoiceEntry> implements ListSelectionListen
 	public void valueChanged(ListSelectionEvent lse)
 	{		
 		ChoiceEntry choiceEntry = this.getSelectedValue();
-		Pages.loadPage(choiceEntry.value);
+		Pages.loadPage(choiceEntry.elementChoice);
 	}
 	
-	public void updateChoiceBox(HashMap<String, String> choiceMap)
+	public void updateChoiceBox(HashMap<String, ElementChoice> choiceMap)
 	{
 		this.removeAll();
-		for (Entry<String, String> entry : choiceMap.entrySet())
+		for (Entry<String, ElementChoice> entry : choiceMap.entrySet())
 		{
 			ChoiceEntry choiceEntry = new ChoiceEntry(entry.getKey(), entry.getValue());
 			this.model.addElement(choiceEntry);	
@@ -57,7 +58,7 @@ public class ChoiceBox extends JList<ChoiceEntry> implements ListSelectionListen
 				return new JLabel("");
 			
 			ChoiceEntry choiceEntry = (ChoiceEntry) arg1;
-			return new JLabel(choiceEntry.text);
+			return new JLabel(choiceEntry.value);
 		}
 		
 	}

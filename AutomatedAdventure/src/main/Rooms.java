@@ -24,7 +24,14 @@ public class Rooms
 	
 	public static void main(String[] args)
 	{
-		Rooms.rooms = new Rooms();
+		try
+		{
+			Rooms.rooms = new Rooms();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		Rooms.rooms.startLoop();
 	}
 	
@@ -38,7 +45,7 @@ public class Rooms
 		return this.scenario;
 	}
 	
-	public Rooms()
+	public Rooms() throws Exception
 	{
 		JsonObject jsonObject = Main.openJsonFile(null);
 		RestrictedJson<ScenarioRestriction> scenarioJson = 

@@ -41,7 +41,7 @@ public class PageWindow extends MyWindow
 		return gdc;
 	}
 	
-	public void update(PageInstance pageInstance)
+	public void update(PageInstance pageInstance) throws Exception
 	{
 		this.textArea.setText(pageInstance.getText());
 		this.choiceBox.updateChoiceBox(pageInstance.getChoiceMap());

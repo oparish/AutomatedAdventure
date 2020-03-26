@@ -1,13 +1,15 @@
 package frontEnd;
 
+import backend.pages.ElementChoice;
+
 public class ChoiceEntry
 {
-	public String text;
+	public ElementChoice elementChoice;
 	public String value;
 	
-	public ChoiceEntry(String value, String text)
+	public ChoiceEntry(String value, ElementChoice elementChoice)
 	{
-		this.text = text;
+		this.elementChoice = elementChoice;
 		this.value = value;
 	}
 }

@@ -22,8 +22,11 @@ public class Element
 	public Element(RestrictedJson<ElementRestriction> elementJson)
 	{
 		this.elementJson = elementJson;
-		int instanceNumber = elementJson.getJsonEntityNumber(ElementRestriction.INSTANCE_NUMBER).getValue();
-		for (int i = 0; i < instanceNumber; i++)
+	}
+	
+	public void makeInstances(int number)
+	{
+		for (int i = 0; i < number; i++)
 		{
 			ArrayList<Integer> values = new ArrayList<Integer>();
 			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementData = 
@@ -42,6 +45,12 @@ public class Element
 	{
 		int randomIndex = Main.getRndm(this.instances.size());
 		return this.instances.get(randomIndex);
+	}
+	
+	public ElementInstance createInstance()
+	{
+		this.makeInstances(1);
+		return this.instances.get(this.instances.size() - 1);
 	}
 	
 	public ElementInstance getInstance(int index)

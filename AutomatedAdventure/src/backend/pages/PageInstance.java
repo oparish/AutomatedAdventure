@@ -9,35 +9,33 @@ import java.util.regex.Pattern;
 import backend.Element;
 import backend.Element.ElementInstance;
 import backend.Scenario;
+import backend.component.ConnectionSet;
 
 public class PageInstance
 {
-	private static final String RANDOM = "random";
-	private static final String ALL = "all";
 	private static final Pattern mainPattern = Pattern.compile("<head>([\\s\\S]*)</head><body>([\\s\\S]*)</body>");
 	private static final Pattern choicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*)");
-	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(.*):(.*)");
-	private static final Pattern elementListHeadPattern = Pattern.compile("elementList:(.*):(.*):(.*)");
-	private static final Pattern elementBodyPattern = Pattern.compile("<element:([^<>]*):([^<>]*)>");
-	private static final Pattern elementItemPattern = Pattern.compile("<elementItem:([^<>]*)>");
-	private static final Pattern loopThroughListPattern = Pattern.compile("<loopThroughList:([^<>]*)>([\\s\\S]*)</loopThroughList>");
+	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
+	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(\\d+)");
+	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
 	Scenario scenario;
 	String pageTemplate;
-	HashMap<String, ElementInstance> elementMap = new HashMap<String, ElementInstance>();
-	HashMap<String, ArrayList<ElementInstance>> elementListMap = new HashMap<String, ArrayList<ElementInstance>>();
-	HashMap<String, String> choiceMap = new HashMap<String, String>();
+	PageContext pageContext;
+	HashMap<String, ElementChoice> choiceMap = new HashMap<String, ElementChoice>();
+	HashMap<String, ConnectionSet> connectionMap = new HashMap<String, ConnectionSet>();
 	
-	public HashMap<String, String> getChoiceMap() {
+	public HashMap<String, ElementChoice> getChoiceMap() {
 		return choiceMap;
 	}
 
-	public PageInstance(Scenario scenario, String pageTemplate)
+	public PageInstance(Scenario scenario, PageContext pageContext, String pageTemplate)
 	{
 		this.scenario = scenario;
 		this.pageTemplate = pageTemplate;
+		this.pageContext = pageContext;
 	}
 	
-	public String getText()
+	public String getText() throws Exception
 	{
 		Matcher matcher = mainPattern.matcher(this.pageTemplate);
 		matcher.find();
@@ -50,78 +48,60 @@ public class PageInstance
 	
 	private String checkPatterns(String bodyText)
 	{
-		String adjustedText = bodyText;
-		
-		Matcher elementMatcher = elementBodyPattern.matcher(adjustedText);
-		while(elementMatcher.find())
-		{
-			String elementName = elementMatcher.group(1);
-			String elementOption = elementMatcher.group(2);
-			ElementInstance elementInstance = this.elementMap.get(elementName);
-			String replaceText = elementInstance.getValueByName(elementOption);
-			adjustedText = elementMatcher.replaceFirst(replaceText);
-			elementMatcher = elementBodyPattern.matcher(adjustedText);
-		}
-		
-		Matcher loopMatcher = loopThroughListPattern.matcher(adjustedText);
-		while(loopMatcher.find())
-		{
-			String elementListName = loopMatcher.group(1);
-			String loopBody = loopMatcher.group(2);
-			
-			ArrayList<ElementInstance> elementList = this.elementListMap.get(elementListName);
-			StringBuffer stringBuffer = new StringBuffer();		
-			
-			for (ElementInstance elementInstance : elementList)
-			{
-				String adjustedBody = new String(loopBody);
-				Matcher itemMatcher = elementItemPattern.matcher(adjustedBody);
-				while (itemMatcher.find())
-				{
-					String elementItemName = itemMatcher.group(1);
-					String replaceItemText = elementInstance.getValueByName(elementItemName);
-					adjustedBody = itemMatcher.replaceFirst(replaceItemText);
-					itemMatcher = elementItemPattern.matcher(adjustedBody);
-				}
-				stringBuffer.append(adjustedBody);
-			}
-			
-			adjustedText = loopMatcher.replaceFirst(stringBuffer.toString());		
-			loopMatcher = loopThroughListPattern.matcher(adjustedText);
-		}
-		
-		return adjustedText;
+		return bodyText;
 	}
 	
-	
-	
-	private void assessHead(String headerText)
+	private void assessHead(String headerText) throws Exception
 	{
 		String[] lines = headerText.split("\r\n");
 		for (String line : lines)
 		{
 			if (this.checkForElement(line))
 				continue;
-			if (this.checkForElementList(line))
+			if (this.checkForConnection(line))
 				continue;
 			if (this.checkForChoice(line))
+				continue;
+			if (this.checkForElementChoice(line))
 				continue;
 		}
 	}
 	
-	private boolean checkForElementList(String line)
+	private boolean checkForElementChoice(String line)
 	{
-		Matcher matcher = elementListHeadPattern.matcher(line);
+		Matcher matcher = elementChoicePattern.matcher(line);
 		if (matcher.find())
 		{	
-			String elementListName = matcher.group(1);
-			String elementListType = matcher.group(2);
-			String elementListDefinition = matcher.group(3);
-			if (elementListDefinition.equals(ALL))
+			String keyword = matcher.group(1);
+			String elementName = matcher.group(2);
+			String elementNamingQuality = matcher.group(3);
+			Element element = this.scenario.getElement(elementName);
+			
+			for (ElementInstance elementInstance : element.getInstances())
 			{
-				Element element = this.scenario.getElement(elementListType);			
-				this.elementListMap.put(elementListName, element.getInstances());
-			}	
+				ElementChoice elementChoice = new ElementChoice();
+				elementChoice.keyword = keyword;
+				elementChoice.elementInstance = elementInstance;
+				this.choiceMap.put(elementInstance.getValueByName(elementNamingQuality), elementChoice);
+			}
+			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	private boolean checkForConnection(String line) throws Exception
+	{
+		Matcher matcher = connectionHeadPattern.matcher(line);
+		if (matcher.find())
+		{	
+			String connectionName = matcher.group(1);
+			int connectionNumber = Integer.valueOf(matcher.group(2));
+			ConnectionSet connectionSet = this.connectionMap.get(connectionName);
+			connectionSet.makeUniqueConnections(connectionNumber);
 			return true;
 		}
 		else
@@ -136,13 +116,9 @@ public class PageInstance
 		if (matcher.find())
 		{	
 			String elementName = matcher.group(1);
-			String elementType = matcher.group(2);
-			String elementDefinition = matcher.group(3);
-			if (elementDefinition.equals(RANDOM))
-			{
-				ElementInstance elementInstance = this.scenario.getRandomElementInstance(elementType);
-				this.elementMap.put(elementName, elementInstance);
-			}	
+			int elementNumber = Integer.valueOf(matcher.group(2));
+			Element element = this.scenario.getElement(elementName);
+			element.makeInstances(elementNumber);
 			return true;
 		}
 		else
@@ -157,8 +133,10 @@ public class PageInstance
 		if (matcher.find())
 		{	
 			String choiceName = matcher.group(1);
-			String choiceText = matcher.group(2);
-			this.choiceMap.put(choiceName, choiceText);
+			String keyword = matcher.group(2);
+			ElementChoice elementChoice = new ElementChoice();
+			elementChoice.keyword = keyword;
+			this.choiceMap.put(choiceName, elementChoice);
 			return true;
 		}
 		else
