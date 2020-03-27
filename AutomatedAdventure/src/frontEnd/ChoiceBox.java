@@ -35,12 +35,15 @@ public class ChoiceBox extends JList<ChoiceEntry> implements ListSelectionListen
 	public void valueChanged(ListSelectionEvent lse)
 	{		
 		ChoiceEntry choiceEntry = this.getSelectedValue();
-		Pages.loadPage(choiceEntry.elementChoice);
+		if (choiceEntry != null)
+		{
+			Pages.loadPage(choiceEntry.elementChoice);
+		}
 	}
 	
 	public void updateChoiceBox(HashMap<String, ElementChoice> choiceMap)
 	{
-		this.removeAll();
+		this.model.removeAllElements();
 		for (Entry<String, ElementChoice> entry : choiceMap.entrySet())
 		{
 			ChoiceEntry choiceEntry = new ChoiceEntry(entry.getKey(), entry.getValue());
