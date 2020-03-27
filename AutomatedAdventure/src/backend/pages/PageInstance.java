@@ -14,6 +14,8 @@ import backend.component.ConnectionSet;
 public class PageInstance
 {
 	private static final Pattern mainPattern = Pattern.compile("<head>([\\s\\S]*)</head><body>([\\s\\S]*)</body>");
+	private static final Pattern selectedElementPattern = Pattern.compile("<selectedElement:([\\s\\S]*)>");
+	
 	private static final Pattern choicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*)");
 	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
 	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(\\d+)");
@@ -47,8 +49,17 @@ public class PageInstance
 	}
 	
 	private String checkPatterns(String bodyText)
-	{
-		return bodyText;
+	{		
+		String adjustedText = bodyText;
+		Matcher elementMatcher = selectedElementPattern.matcher(adjustedText);
+		while(elementMatcher.find())
+		{
+			String elementQualityType = elementMatcher.group(1);
+			String elementQuality = this.pageContext.selectedElementInstance.getValueByName(elementQualityType);
+			adjustedText = elementMatcher.replaceFirst(elementQuality);
+			elementMatcher = selectedElementPattern.matcher(adjustedText);
+		}
+		return adjustedText;
 	}
 	
 	private void assessHead(String headerText) throws Exception
