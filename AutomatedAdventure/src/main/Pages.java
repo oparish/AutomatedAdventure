@@ -45,7 +45,7 @@ public class Pages
 			Pages.pageWindow.update(pageInstance);
 		} catch (Exception e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	

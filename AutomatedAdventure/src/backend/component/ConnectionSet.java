@@ -128,4 +128,20 @@ public class ConnectionSet
 			throw new Exception("Wrong key value.");
 		return this.contents.get(keyInstance);
 	}
+	
+	public ElementInstance get(ElementInstance elementInstance) throws Exception
+	{
+		if (elementInstance.getElement() == this.keyElement)
+		{
+			return this.getByKey(elementInstance);
+		}
+		else if (elementInstance.getElement() == this.valueElement)
+		{
+			return this.getByValue(elementInstance);
+		}
+		else
+		{
+			throw new Exception("Neither connection element matches " + elementInstance.getElement() + ".");
+		}
+	}
 }

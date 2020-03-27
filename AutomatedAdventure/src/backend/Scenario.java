@@ -36,6 +36,11 @@ public class Scenario
 	HashMap<String, ConnectionSet> connections = new HashMap<String, ConnectionSet>();
 	int chanceRange;
 	
+	public ConnectionSet getConnectionSet(String connectionSetName)
+	{
+		return this.connections.get(connectionSetName);
+	}
+	
 	public int getChanceRange() {
 		return chanceRange;
 	}
