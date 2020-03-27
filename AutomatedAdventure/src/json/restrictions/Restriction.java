@@ -2,6 +2,7 @@ package json.restrictions;
 
 import static json.CoreJsonType.NUMBER;
 import static json.CoreJsonType.STRING;
+import static json.CoreJsonType.BOOLEAN;
 
 import json.JsonDim;
 import json.JsonType;
@@ -9,6 +10,7 @@ import json.JsonType;
 public enum Restriction
 {	
 	NAME("name", STRING, JsonDim.MONO),
+	UNIQUE("unique", BOOLEAN, JsonDim.MONO),
 	ELEMENT_DATA("elementData", RestrictionType.ELEMENTDATA, JsonDim.ARRAY),
 	OPTIONS("options", STRING, JsonDim.ARRAY),
 	ELEMENTS("elements", RestrictionType.ELEMENT, JsonDim.MAP),

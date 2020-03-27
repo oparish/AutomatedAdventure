@@ -110,7 +110,7 @@ public class PageInstance
 		}
 	}
 	
-	private boolean checkForElement(String line)
+	private boolean checkForElement(String line) throws Exception
 	{
 		Matcher matcher = elementHeadPattern.matcher(line);
 		if (matcher.find())

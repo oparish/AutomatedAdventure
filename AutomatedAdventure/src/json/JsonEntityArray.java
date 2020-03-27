@@ -35,6 +35,11 @@ public class JsonEntityArray<E extends JsonEntity> implements JsonEntity
 	{
 		return this.entityList.get(index);
 	}
+	
+	public int size()
+	{
+		return this.entityList.size();
+	}
 
 	@Override
 	public String renderAsString()

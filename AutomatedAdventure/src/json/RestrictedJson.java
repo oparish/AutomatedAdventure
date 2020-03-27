@@ -120,6 +120,18 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 			}	
 			jsonEntity = new JsonEntityMap<JsonEntityNumber>(numberMap);
 		}
+		else if (restriction.getJsonDim() == JsonDim.MAP && jsonType == CoreJsonType.BOOLEAN)
+		{
+			HashMap<String, JsonEntityBoolean> booleanMap = new HashMap<String, JsonEntityBoolean>();
+			JsonObject jsonObject = json.getJsonObject(restrictionName);
+			for (Entry<String, JsonValue> entry : jsonObject.entrySet())
+			{
+				String key = entry.getKey();
+				JsonValue jsonValue = (JsonValue) entry.getValue();
+				booleanMap.put(key, new JsonEntityBoolean(jsonValue.equals(JsonValue.TRUE)));
+			}	
+			jsonEntity = new JsonEntityMap<JsonEntityBoolean>(booleanMap);
+		}
 		else if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType instanceof RestrictionType)
 		{
 			ArrayList<RestrictedJson<? extends RestrictionPointer>> entityList = new ArrayList<RestrictedJson<? extends RestrictionPointer>>();
@@ -153,6 +165,17 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 			}
 			jsonEntity = new JsonEntityArray<JsonEntityNumber>(entityList);
 		}
+		else if (restriction.getJsonDim() == JsonDim.ARRAY && jsonType == CoreJsonType.BOOLEAN)
+		{
+			JsonArray jsonArray = json.getJsonArray(restrictionName);
+			ArrayList<JsonEntityBoolean> entityList = new ArrayList<JsonEntityBoolean>();
+			for (int i = 0; i < jsonArray.size(); i++)
+			{
+				entityList.add(new JsonEntityBoolean(jsonArray.getBoolean(i)));
+
+			}
+			jsonEntity = new JsonEntityArray<JsonEntityBoolean>(entityList);
+		}
 		else if (jsonType instanceof RestrictionType)
 		{
 			RestrictionType restrictionType = (RestrictionType) jsonType;
@@ -165,7 +188,11 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 		else if (jsonType == CoreJsonType.NUMBER)
 		{
 			jsonEntity = new JsonEntityNumber(json.getInt(restrictionName));
-		}					
+		}
+		else if (jsonType == CoreJsonType.BOOLEAN)
+		{
+			jsonEntity = new JsonEntityBoolean(json.containsKey(restrictionName) && json.getBoolean(restrictionName));
+		}
 		
 		this.contents.put(restriction, jsonEntity);
 	}
@@ -204,6 +231,12 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 	{
 		JsonEntityString jsonEntityString = (JsonEntityString) this.contents.get(r.getRestriction());
 		return jsonEntityString.renderAsString();
+	}
+	
+	public boolean getBoolean(R r)
+	{
+		JsonEntityBoolean jsonEntityBoolean = (JsonEntityBoolean) this.contents.get(r.getRestriction());
+		return jsonEntityBoolean.isValue();
 	}
 	
 	public JsonEntityNumber getJsonEntityNumber(R r)

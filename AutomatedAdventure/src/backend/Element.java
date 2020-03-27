@@ -24,8 +24,9 @@ public class Element
 		this.elementJson = elementJson;
 	}
 	
-	public void makeInstances(int number)
-	{
+	public void makeInstances(int number) throws Exception
+	{	
+		int existingInstances = this.instances.size();
 		for (int i = 0; i < number; i++)
 		{
 			ArrayList<Integer> values = new ArrayList<Integer>();
@@ -34,8 +35,42 @@ public class Element
 			for (int j = 0; j < elementData.getLength(); j++)
 			{
 				RestrictedJson<ElementDataRestriction> elementDetail = elementData.getMemberAt(j);
+				boolean unique = elementDetail.getBoolean(ElementDataRestriction.UNIQUE);			
 				JsonEntityArray<JsonEntityString> options = elementDetail.getStringArray(ElementDataRestriction.OPTIONS);
-				values.add(options.getRandomIndex());			
+				if (unique && (existingInstances + number) > options.size())
+				{
+					throw new Exception("Not enough element options for a unique selection in " + 
+							elementDetail.getString(ElementDataRestriction.NAME) + ".");
+				}
+				if (unique)
+				{
+					ArrayList<Integer> valueIndexList = new ArrayList<Integer>();
+					
+					for (int k = 0; k < options.size(); k++)
+					{
+						valueIndexList.add(k);
+					}
+					
+					for (ElementInstance instance : this.instances)
+					{
+						int instanceValueIndex = instance.values.get(j);
+						for (int k = 0; k < options.size(); k++)
+						{
+							if (valueIndexList.get(k) == instanceValueIndex)
+							{
+								valueIndexList.remove(k);
+								break;
+							}
+						}
+					}
+					
+					int rnd = Main.getRndm(valueIndexList.size());
+					values.add(valueIndexList.get(rnd));
+				}
+				else
+				{
+					values.add(options.getRandomIndex());	
+				}			
 			}	
 			this.instances.add(new ElementInstance(values));
 		}
@@ -47,7 +82,7 @@ public class Element
 		return this.instances.get(randomIndex);
 	}
 	
-	public ElementInstance createInstance()
+	public ElementInstance createInstance() throws Exception
 	{
 		this.makeInstances(1);
 		return this.instances.get(this.instances.size() - 1);
