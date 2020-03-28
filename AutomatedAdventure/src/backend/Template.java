@@ -146,7 +146,7 @@ public class Template
 	private String getElementReplacement(String elementType, String elementData, HashMap<String, ElementInstance> elementInstances)
 	{
 		ElementInstance elementInstance = elementInstances.get(elementType);
-		String replacement = elementInstance.getValueByName(elementData);
+		String replacement = elementInstance.getDetailValueByName(elementData);
 		return replacement;
 	}
 	

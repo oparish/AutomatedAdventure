@@ -14,6 +14,7 @@ import json.restrictions.room.TimedRoomRestriction;
 public enum RestrictionType implements JsonType
 {
 	ELEMENTDATA(ElementDataRestriction.class),
+	ELEMENT_NUMBER(ElementNumberRestriction.class),
 	ELEMENT(ElementRestriction.class),
 	INTERVAL(IntervalRestriction.class),
 	RULE(RuleRestriction.class),

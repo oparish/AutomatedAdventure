@@ -55,7 +55,7 @@ public class PageInstance
 		while(elementMatcher.find())
 		{
 			String elementQualityType = elementMatcher.group(1);
-			String elementQuality = this.pageContext.selectedElementInstance.getValueByName(elementQualityType);
+			String elementQuality = this.pageContext.selectedElementInstance.getStringValue(elementQualityType);
 			adjustedText = elementMatcher.replaceFirst(elementQuality);
 			elementMatcher = selectedElementPattern.matcher(adjustedText);
 		}
@@ -67,7 +67,7 @@ public class PageInstance
 			String elementQualityType = connectionMatcher.group(2);
 			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionType);
 			ElementInstance connectedInstance = connectionSet.get(this.pageContext.selectedElementInstance);
-			String elementQuality = connectedInstance.getValueByName(elementQualityType);
+			String elementQuality = connectedInstance.getStringValue(elementQualityType);
 			adjustedText = connectionMatcher.replaceFirst(elementQuality);
 			connectionMatcher = selectedElementPattern.matcher(adjustedText);
 		}
@@ -106,7 +106,7 @@ public class PageInstance
 				ElementChoice elementChoice = new ElementChoice();
 				elementChoice.keyword = keyword;
 				elementChoice.elementInstance = elementInstance;
-				this.choiceMap.put(elementInstance.getValueByName(elementNamingQuality), elementChoice);
+				this.choiceMap.put(elementInstance.getDetailValueByName(elementNamingQuality), elementChoice);
 			}
 			
 			return true;

@@ -12,6 +12,7 @@ public enum Restriction
 	NAME("name", STRING, JsonDim.MONO),
 	UNIQUE("unique", BOOLEAN, JsonDim.MONO),
 	ELEMENT_DATA("elementData", RestrictionType.ELEMENTDATA, JsonDim.ARRAY),
+	ELEMENT_NUMBERS("elementNumbers", RestrictionType.ELEMENT_NUMBER, JsonDim.ARRAY, true),
 	OPTIONS("options", STRING, JsonDim.ARRAY),
 	ELEMENTS("elements", RestrictionType.ELEMENT, JsonDim.MAP),
 	TIME("time", NUMBER, JsonDim.MONO),
@@ -53,6 +54,8 @@ public enum Restriction
 	PAGETEMPLATES("pageTemplates", STRING, JsonDim.MAP),
 	FIRST("first", STRING, JsonDim.MONO),
 	SECOND("second", STRING, JsonDim.MONO),
+	MAX_VALUE("maxValue", NUMBER, JsonDim.MONO),
+	MIN_VALUE("minValue", NUMBER, JsonDim.MONO),
 	CONNECTIONS("connections", RestrictionType.CONNECTION, JsonDim.ARRAY);
 	
 	private final boolean noneable;
