@@ -143,6 +143,14 @@ public class Element
 			return Element.this;
 		}
 		
+		public void adjustNumber(String elementNumber, int value)
+		{
+			Integer id = this.getNumberIDByName(elementNumber);
+			int number = this.numberValues.get(id);
+			number += value;
+			this.numberValues.set(id, number);
+		}
+		
 		public String getDetailValue(int index)
 		{
 			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
@@ -176,7 +184,7 @@ public class Element
 			return null;
 		}
 		
-		public Integer getNumberValueByName(String numberName)
+		public Integer getNumberIDByName(String numberName)
 		{
 			JsonEntityArray<RestrictedJson<ElementNumberRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_NUMBERS, ElementNumberRestriction.class);
 			for (int i = 0; i < numberValues.size(); i++)
@@ -184,9 +192,17 @@ public class Element
 				RestrictedJson<ElementNumberRestriction> elementNumber = elementJson.getMemberAt(i);
 				String name = elementNumber.getString(ElementNumberRestriction.NAME);
 				if (numberName.equals(name))
-					return this.numberValues.get(i);
+					return i;
 			}
 			return null;
+		}
+		
+		public Integer getNumberValueByName(String numberName)
+		{
+			Integer id = this.getNumberIDByName(numberName);
+			if (id == null)
+				return null;
+			return this.numberValues.get(id);
 		}
 		
 		public String renderAsString()

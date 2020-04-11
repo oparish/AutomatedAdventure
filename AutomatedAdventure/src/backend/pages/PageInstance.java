@@ -21,6 +21,8 @@ public class PageInstance
 	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
 	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(\\d+)");
 	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
+	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
+	
 	Scenario scenario;
 	String pageTemplate;
 	PageContext pageContext;
@@ -88,6 +90,29 @@ public class PageInstance
 				continue;
 			if (this.checkForElementChoice(line))
 				continue;
+			if (this.checkForEachElementAdjust(line))
+				continue;
+		}
+	}
+	
+	private boolean checkForEachElementAdjust(String line)
+	{
+		Matcher matcher = eachElementAdjustPattern.matcher(line);
+		if (matcher.find())
+		{
+			String elementType = matcher.group(1);
+			String elementNumberType = matcher.group(2);
+			int value = Integer.valueOf(matcher.group(3));
+			Element element = this.scenario.getElement(elementType);
+			for (ElementInstance instance : element.getInstances())
+			{
+				instance.adjustNumber(elementNumberType, value);
+			}
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 	
