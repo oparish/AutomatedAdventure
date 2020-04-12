@@ -55,7 +55,8 @@ public class Element
 			int minValue = elementNumber.getNumber(ElementNumberRestriction.MIN_VALUE);
 			int maxValue = elementNumber.getNumber(ElementNumberRestriction.MAX_VALUE);
 			int diff = maxValue - minValue;
-			int result = minValue + Main.getRndm(diff);
+			int rndm = diff != 0 ? Main.getRndm(diff) : 0;
+			int result = minValue + rndm;
 			values.add(result);
 		}
 		

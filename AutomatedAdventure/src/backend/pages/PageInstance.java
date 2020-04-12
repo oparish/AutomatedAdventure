@@ -21,9 +21,11 @@ public class PageInstance
 	
 	private static final Pattern choicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*)");
 	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
+	private static final Pattern conditionalElementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>]?=?):(-?\\d+)");
 	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(\\d+)");
 	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
 	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
+	private static final Pattern adjustSelectedElementPattern = Pattern.compile("selectedElementAdjust:([\\s\\S]*):(-?\\d+)");
 	
 	Scenario scenario;
 	String pageTemplate;
@@ -74,10 +76,7 @@ public class PageInstance
 				String elementNumberName = innerMatcher.group(2);
 				String comparatorText = innerMatcher.group(3);
 				String valueText = innerMatcher.group(4);
-				Comparator comparator = Comparator.fromText(comparatorText);
-				int value = Integer.valueOf(valueText);
-				int elementNumber = this.pageContext.selectedElementInstance.getNumberValueByName(elementNumberName);
-				if (this.checkComparision(comparator, elementNumber, value))
+				if (this.checkComparison(this.pageContext.selectedElementInstance, comparatorText, elementNumberName, valueText))
 					return pageName;
 			}
 			
@@ -89,7 +88,15 @@ public class PageInstance
 		}
 	}
 	
-	private boolean checkComparision(Comparator comparator, int elementNumber, int value) throws Exception
+	private boolean checkComparison(ElementInstance elementInstance, String comparatorText, String elementNumberName, String valueText) throws Exception
+	{
+		Comparator comparator = Comparator.fromText(comparatorText);
+		int value = Integer.valueOf(valueText);
+		int elementNumber = elementInstance.getNumberValueByName(elementNumberName);
+		return this.checkComparison(comparator, elementNumber, value);
+	}
+	
+	private boolean checkComparison(Comparator comparator, int elementNumber, int value) throws Exception
 	{
 		switch(comparator)
 		{
@@ -146,13 +153,34 @@ public class PageInstance
 				continue;
 			if (this.checkForChoice(line))
 				continue;
+			if (this.checkForConditionalElementChoice(line))
+				continue;
 			if (this.checkForElementChoice(line))
 				continue;
 			if (this.checkForEachElementAdjust(line))
 				continue;
+			if (this.checkForSelectedElementAdjust(line))
+				continue;
 		}
 	}
 
+	private boolean checkForSelectedElementAdjust(String line)
+	{
+		Matcher matcher = adjustSelectedElementPattern.matcher(line);
+		if (matcher.find())
+		{
+			String elementNumberName = matcher.group(1);
+			String valueText = matcher.group(2);
+			int value = Integer.valueOf(valueText);
+			this.pageContext.selectedElementInstance.adjustNumber(elementNumberName, value);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	private boolean checkForEachElementAdjust(String line)
 	{
 		Matcher matcher = eachElementAdjustPattern.matcher(line);
@@ -182,14 +210,12 @@ public class PageInstance
 			String keyword = matcher.group(1);
 			String elementName = matcher.group(2);
 			String elementNamingQuality = matcher.group(3);
+			
 			Element element = this.scenario.getElement(elementName);
 			
-			for (ElementInstance elementInstance : element.getInstances())
+			for(ElementInstance elementInstance : element.getInstances())
 			{
-				ElementChoice elementChoice = new ElementChoice();
-				elementChoice.keyword = keyword;
-				elementChoice.elementInstance = elementInstance;
-				this.choiceMap.put(elementInstance.getDetailValueByName(elementNamingQuality), elementChoice);
+				this.makeElementChoice(elementInstance, keyword, elementNamingQuality);
 			}
 			
 			return true;
@@ -198,6 +224,43 @@ public class PageInstance
 		{
 			return false;
 		}
+	}
+	
+	private boolean checkForConditionalElementChoice(String line) throws Exception
+	{
+		Matcher matcher = conditionalElementChoicePattern.matcher(line);
+		if (matcher.find())
+		{	
+			String keyword = matcher.group(1);
+			String elementName = matcher.group(2);
+			String elementNamingQuality = matcher.group(3);
+			
+			String elementNumberName = matcher.group(4);
+			String comparatorText = matcher.group(5);
+			String valueText = matcher.group(6);
+			
+			Element element = this.scenario.getElement(elementName);
+			
+			for (ElementInstance elementInstance : element.getInstances())
+			{
+				if (this.checkComparison(elementInstance, comparatorText, elementNumberName, valueText))
+					this.makeElementChoice(elementInstance, keyword, elementNamingQuality);
+			}
+			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	private void makeElementChoice(ElementInstance elementInstance, String keyword, String elementNamingQuality)
+	{
+		ElementChoice elementChoice = new ElementChoice();
+		elementChoice.keyword = keyword;
+		elementChoice.elementInstance = elementInstance;
+		this.choiceMap.put(elementInstance.getDetailValueByName(elementNamingQuality), elementChoice);
 	}
 	
 	private boolean checkForConnection(String line) throws Exception
