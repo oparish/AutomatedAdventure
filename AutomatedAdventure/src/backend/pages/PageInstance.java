@@ -14,10 +14,10 @@ import backend.component.ConnectionSet;
 public class PageInstance
 {
 	private static final Pattern mainPattern = Pattern.compile("<head>([\\s\\S]*)</head><body>([\\s\\S]*)</body>");
-	private static final Pattern selectedElementPattern = Pattern.compile("<selectedElement:([^<>]*)>");
-	private static final Pattern connectionToSelectedElementPattern = Pattern.compile("<connectionToSelectedElement:([^<>]*):([^<>]*)>");
+	private static final Pattern selectedElementPattern = Pattern.compile("<selectedElement:([^<>]*):([^<>]*)>");
+	private static final Pattern connectionToSelectedElementPattern = Pattern.compile("<connectionToSelectedElement:([^<>]*):([^<>]*):([^<>]*)>");
 	private static final Pattern redirectOuterPattern = Pattern.compile("((?:<redirect:(?:.*)))+<else:([^<>]*)>");
-	private static final Pattern redirectInnerPattern = Pattern.compile("<redirect:([^<>]*):([^<>]*):([<>]?=?):(-?\\d+)>");
+	private static final Pattern redirectInnerPattern = Pattern.compile("<redirect:([^<>]*):([^<>]*):([^<>]*):([<>]?=?):(-?\\d+)>");
 	
 	private static final Pattern choicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*)");
 	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
@@ -25,7 +25,7 @@ public class PageInstance
 	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(\\d+)");
 	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
 	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
-	private static final Pattern adjustSelectedElementPattern = Pattern.compile("selectedElementAdjust:([\\s\\S]*):(-?\\d+)");
+	private static final Pattern adjustSelectedElementPattern = Pattern.compile("selectedElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	
 	Scenario scenario;
 	String pageTemplate;
@@ -73,10 +73,13 @@ public class PageInstance
 			while(innerMatcher.find())
 			{
 				String pageName = innerMatcher.group(1);
-				String elementNumberName = innerMatcher.group(2);
-				String comparatorText = innerMatcher.group(3);
-				String valueText = innerMatcher.group(4);
-				if (this.checkComparison(this.pageContext.selectedElementInstance, comparatorText, elementNumberName, valueText))
+				String elementType = innerMatcher.group(2);
+				String elementNumberName = innerMatcher.group(3);
+				String comparatorText = innerMatcher.group(4);
+				String valueText = innerMatcher.group(5);
+				
+				Element element = this.scenario.getElement(elementType);
+				if (this.checkComparison(this.pageContext.getElementInstance(element), comparatorText, elementNumberName, valueText))
 					return pageName;
 			}
 			
@@ -120,8 +123,11 @@ public class PageInstance
 		Matcher elementMatcher = selectedElementPattern.matcher(adjustedText);
 		while(elementMatcher.find())
 		{
-			String elementQualityType = elementMatcher.group(1);
-			String elementQuality = this.pageContext.selectedElementInstance.getStringValue(elementQualityType);
+			String elementType = elementMatcher.group(1);
+			String elementQualityType = elementMatcher.group(2);
+			Element element = this.scenario.getElement(elementType);
+			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
+			String elementQuality = elementInstance.getStringValue(elementQualityType);
 			adjustedText = elementMatcher.replaceFirst(elementQuality);
 			elementMatcher = selectedElementPattern.matcher(adjustedText);
 		}
@@ -129,10 +135,13 @@ public class PageInstance
 		Matcher connectionMatcher = connectionToSelectedElementPattern.matcher(adjustedText);
 		while(connectionMatcher.find())
 		{
-			String connectionType = connectionMatcher.group(1);
-			String elementQualityType = connectionMatcher.group(2);
+			String elementType = connectionMatcher.group(1);
+			String connectionType = connectionMatcher.group(2);
+			String elementQualityType = connectionMatcher.group(3);
 			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionType);
-			ElementInstance connectedInstance = connectionSet.get(this.pageContext.selectedElementInstance);
+			Element element = this.scenario.getElement(elementType);
+			ElementInstance firstInstance = this.pageContext.getElementInstance(element);
+			ElementInstance connectedInstance = connectionSet.get(firstInstance);
 			String elementQuality = connectedInstance.getStringValue(elementQualityType);
 			adjustedText = connectionMatcher.replaceFirst(elementQuality);
 			connectionMatcher = selectedElementPattern.matcher(adjustedText);
@@ -169,10 +178,13 @@ public class PageInstance
 		Matcher matcher = adjustSelectedElementPattern.matcher(line);
 		if (matcher.find())
 		{
-			String elementNumberName = matcher.group(1);
-			String valueText = matcher.group(2);
+			String elementType = matcher.group(1);
+			String elementNumberName = matcher.group(2);
+			String valueText = matcher.group(3);
+			Element element = this.scenario.getElement(elementType);
 			int value = Integer.valueOf(valueText);
-			this.pageContext.selectedElementInstance.adjustNumber(elementNumberName, value);
+			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
+			elementInstance.adjustNumber(elementNumberName, value);
 			return true;
 		}
 		else
