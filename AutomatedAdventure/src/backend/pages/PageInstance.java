@@ -16,6 +16,8 @@ public class PageInstance
 	private static final Pattern mainPattern = Pattern.compile("<head>([\\s\\S]*)</head><body>([\\s\\S]*)</body>");
 	private static final Pattern selectedElementPattern = Pattern.compile("<selectedElement:([^<>]*)>");
 	private static final Pattern connectionToSelectedElementPattern = Pattern.compile("<connectionToSelectedElement:([^<>]*):([^<>]*)>");
+	private static final Pattern redirectOuterPattern = Pattern.compile("((?:<redirect:(?:.*)))+<else:([^<>]*)>");
+	private static final Pattern redirectInnerPattern = Pattern.compile("<redirect:([^<>]*):([^<>]*):([<>]?=?):(-?\\d+)>");
 	
 	private static final Pattern choicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*)");
 	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
@@ -39,6 +41,14 @@ public class PageInstance
 		this.pageContext = pageContext;
 	}
 	
+	public Scenario getScenario() {
+		return scenario;
+	}
+
+	public PageContext getPageContext() {
+		return pageContext;
+	}
+
 	public String getText() throws Exception
 	{
 		Matcher matcher = mainPattern.matcher(this.pageTemplate);
@@ -48,6 +58,53 @@ public class PageInstance
 		this.assessHead(headerText);
 		String adjustedText = this.checkPatterns(bodyText);
 		return adjustedText;
+	}
+	
+	public String getRedirect() throws Exception
+	{
+		Matcher outerMatcher = redirectOuterPattern.matcher(this.pageTemplate);
+		if (outerMatcher.find())
+		{
+			String redirects = outerMatcher.group(1);			
+			Matcher innerMatcher = redirectInnerPattern.matcher(redirects);
+			
+			while(innerMatcher.find())
+			{
+				String pageName = innerMatcher.group(1);
+				String elementNumberName = innerMatcher.group(2);
+				String comparatorText = innerMatcher.group(3);
+				String valueText = innerMatcher.group(4);
+				Comparator comparator = Comparator.fromText(comparatorText);
+				int value = Integer.valueOf(valueText);
+				int elementNumber = this.pageContext.selectedElementInstance.getNumberValueByName(elementNumberName);
+				if (this.checkComparision(comparator, elementNumber, value))
+					return pageName;
+			}
+			
+			return outerMatcher.group(2);
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	private boolean checkComparision(Comparator comparator, int elementNumber, int value) throws Exception
+	{
+		switch(comparator)
+		{
+			case GREATER_THAN:
+				return (elementNumber > value);
+			case GREATER_THAN_OR_EQUAL:
+				return (elementNumber >= value);
+			case LESS_THAN:
+				return (elementNumber < value);
+			case LESS_THAN_OR_EQUAL:
+				return (elementNumber <= value);
+			case EQUAL:
+				return (elementNumber == value);
+		}
+		throw new Exception("Unrecognised comparator type.");
 	}
 	
 	private String checkPatterns(String bodyText) throws Exception
@@ -80,6 +137,7 @@ public class PageInstance
 	private void assessHead(String headerText) throws Exception
 	{
 		String[] lines = headerText.split("\r\n");
+		
 		for (String line : lines)
 		{
 			if (this.checkForElement(line))
@@ -94,7 +152,7 @@ public class PageInstance
 				continue;
 		}
 	}
-	
+
 	private boolean checkForEachElementAdjust(String line)
 	{
 		Matcher matcher = eachElementAdjustPattern.matcher(line);

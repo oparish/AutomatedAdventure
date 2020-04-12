@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import backend.Scenario;
+import backend.pages.PageContext;
 import backend.pages.PageInstance;
 
 public class PageWindow extends MyWindow
@@ -43,7 +44,19 @@ public class PageWindow extends MyWindow
 	
 	public void update(PageInstance pageInstance) throws Exception
 	{
-		this.textArea.setText(pageInstance.getText());
-		this.choiceBox.updateChoiceBox(pageInstance.getChoiceMap());
+		String redirectPage = pageInstance.getRedirect();
+		if (redirectPage != null)
+		{
+			PageContext pageContext = pageInstance.getPageContext();
+			Scenario scenario = pageInstance.getScenario();
+			String pageTemplate = scenario.getPageTemplate(redirectPage);
+			PageInstance newInstance = new PageInstance(scenario, pageContext, pageTemplate);
+			this.update(newInstance);
+		}
+		else
+		{
+			this.textArea.setText(pageInstance.getText());
+			this.choiceBox.updateChoiceBox(pageInstance.getChoiceMap());
+		}
 	}
 }
