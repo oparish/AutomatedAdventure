@@ -20,9 +20,13 @@ public class Element
 		return instances;
 	}
 
-	public Element(RestrictedJson<ElementRestriction> elementJson)
+	public Element(RestrictedJson<ElementRestriction> elementJson) throws Exception
 	{
 		this.elementJson = elementJson;
+		if (this.getUnique())
+		{
+			this.makeInstances(1);
+		}
 	}
 	
 	public void makeInstances(int number) throws Exception
@@ -32,6 +36,16 @@ public class Element
 		{
 			this.makeInstance(number, existingInstances);
 		}
+	}
+	
+	public boolean getUnique()
+	{
+		return this.elementJson.getBoolean(ElementRestriction.UNIQUE);
+	}
+	
+	public ElementInstance getUniqueInstance()
+	{
+		return this.instances.get(0);
 	}
 	
 	private void makeInstance(int number, int existingInstances) throws Exception

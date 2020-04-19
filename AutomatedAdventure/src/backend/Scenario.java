@@ -211,7 +211,7 @@ public class Scenario
 		}
 	}
 	
-	private void loadElements()
+	private void loadElements() throws Exception
 	{
 		JsonEntityMap<RestrictedJson<ElementRestriction>> elementJsonMap = 
 				this.scenarioJson.getRestrictedJsonMap(ScenarioRestriction.ELEMENTS, ElementRestriction.class);

@@ -183,7 +183,13 @@ public class PageInstance
 			String valueText = matcher.group(3);
 			Element element = this.scenario.getElement(elementType);
 			int value = Integer.valueOf(valueText);
-			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
+			
+			ElementInstance elementInstance;
+			if (element.getUnique())
+				elementInstance = element.getUniqueInstance();
+			else
+				elementInstance = this.pageContext.getElementInstance(element);
+			
 			elementInstance.adjustNumber(elementNumberName, value);
 			return true;
 		}
