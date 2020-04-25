@@ -8,8 +8,10 @@ import java.util.regex.Pattern;
 
 import backend.Element;
 import backend.Element.ElementInstance;
+import backend.NumberRange;
 import backend.Scenario;
 import backend.component.ConnectionSet;
+import main.Main;
 
 public class PageInstance
 {
@@ -18,6 +20,8 @@ public class PageInstance
 	private static final Pattern connectionToSelectedElementPattern = Pattern.compile("<connectionToSelectedElement:([^<>]*):([^<>]*):([^<>]*)>");
 	private static final Pattern redirectOuterPattern = Pattern.compile("((?:<redirect:(?:.*)))+<else:([^<>]*)>");
 	private static final Pattern redirectInnerPattern = Pattern.compile("<redirect:([^<>]*):([^<>]*):([^<>]*):([<>]?=?):(-?\\d+)>");
+	private static final Pattern randomRedirectOuterPattern = Pattern.compile("(<randomRedirect:([^<>]*):(\\d+)>)+");
+	private static final Pattern randomRedirectInnerPattern = Pattern.compile("<randomRedirect:([^<>]*):(\\d+)>");
 	
 	private static final Pattern choicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*)");
 	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
@@ -60,6 +64,43 @@ public class PageInstance
 		this.assessHead(headerText);
 		String adjustedText = this.checkPatterns(bodyText);
 		return adjustedText;
+	}
+	public String getRandomRedirect() throws Exception
+	{
+		Matcher outerMatcher = randomRedirectOuterPattern.matcher(this.pageTemplate);
+		if (outerMatcher.find())
+		{		
+			Matcher innerMatcher = randomRedirectInnerPattern.matcher(this.pageTemplate);
+			
+			HashMap<String, NumberRange> pages = new HashMap<String, NumberRange>();
+			int total = 0;
+			
+			while(innerMatcher.find())
+			{
+				String pageName = innerMatcher.group(1);
+				String numberString = innerMatcher.group(2);
+				int number = Integer.valueOf(numberString);
+				pages.put(pageName, new NumberRange(total, total + number));
+				total += number;
+			}
+			
+			int result = Main.getRndm(total) + 1;
+			
+			for (Entry<String, NumberRange> entry: pages.entrySet())
+			{
+				NumberRange numberRange = entry.getValue();
+				if (numberRange.check(result))
+				{
+					return entry.getKey();
+				}
+			}
+			
+			return null;
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 	public String getRedirect() throws Exception

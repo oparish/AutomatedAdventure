@@ -45,6 +45,12 @@ public class PageWindow extends MyWindow
 	public void update(PageInstance pageInstance) throws Exception
 	{
 		String redirectPage = pageInstance.getRedirect();
+		
+		if (redirectPage == null)
+		{
+			redirectPage = pageInstance.getRandomRedirect();
+		}
+		
 		if (redirectPage != null)
 		{
 			PageContext pageContext = pageInstance.getPageContext();
