@@ -18,6 +18,7 @@ public class PageInstance
 	private static final Pattern mainPattern = Pattern.compile("<head>([\\s\\S]*)</head><body>([\\s\\S]*)</body>");
 	private static final Pattern selectedElementPattern = Pattern.compile("<selectedElement:([^<>]*):([^<>]*)>");
 	private static final Pattern connectionToSelectedElementPattern = Pattern.compile("<connectionToSelectedElement:([^<>]*):([^<>]*):([^<>]*)>");
+	
 	private static final Pattern redirectOuterPattern = Pattern.compile("((?:<redirect:(?:.*)))+<else:([^<>]*)>");
 	private static final Pattern redirectInnerPattern = Pattern.compile("<redirect:([^<>]*):([^<>]*):([^<>]*):([<>]?=?):(-?\\d+)>");
 	private static final Pattern randomRedirectOuterPattern = Pattern.compile("(<randomRedirect:([^<>]*):(\\d+)>)+");
@@ -25,8 +26,8 @@ public class PageInstance
 	
 	private static final Pattern choicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*)");
 	private static final Pattern conditionalChoicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)");
-	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
-	private static final Pattern conditionalElementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)");
+	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
+	private static final Pattern conditionalElementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)");
 	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(\\d+)");
 	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
 	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
@@ -274,12 +275,14 @@ public class PageInstance
 			String keyword = matcher.group(1);
 			String elementName = matcher.group(2);
 			String elementNamingQuality = matcher.group(3);
+			String startString = matcher.group(4);
+			String endString = matcher.group(5);
 			
 			Element element = this.scenario.getElement(elementName);
 			
 			for(ElementInstance elementInstance : element.getInstances())
 			{
-				this.makeElementChoice(elementInstance, keyword, elementNamingQuality);
+				this.makeElementChoice(elementInstance, keyword, elementNamingQuality, startString, endString);
 			}
 			
 			return true;
@@ -298,17 +301,18 @@ public class PageInstance
 			String keyword = matcher.group(1);
 			String elementName = matcher.group(2);
 			String elementNamingQuality = matcher.group(3);
-			
 			String elementNumberName = matcher.group(4);
-			String comparatorText = matcher.group(5);
-			String valueText = matcher.group(6);
+			String startString = matcher.group(5);
+			String endString = matcher.group(6);
+			String comparatorText = matcher.group(7);
+			String valueText = matcher.group(8);
 			
 			Element element = this.scenario.getElement(elementName);
 			
 			for (ElementInstance elementInstance : element.getInstances())
 			{
 				if (this.checkComparison(elementInstance, comparatorText, elementNumberName, valueText))
-					this.makeElementChoice(elementInstance, keyword, elementNamingQuality);
+					this.makeElementChoice(elementInstance, keyword, elementNamingQuality, startString, endString);
 			}
 			
 			return true;
@@ -319,12 +323,14 @@ public class PageInstance
 		}
 	}
 	
-	private void makeElementChoice(ElementInstance elementInstance, String keyword, String elementNamingQuality)
+	private void makeElementChoice(ElementInstance elementInstance, String keyword, String elementNamingQuality, String startString, String endString)
 	{
 		ElementChoice elementChoice = new ElementChoice();
 		elementChoice.keyword = keyword;
 		elementChoice.elementInstance = elementInstance;
-		this.choiceMap.put(elementInstance.getDetailValueByName(elementNamingQuality), elementChoice);
+		String qualityString = elementInstance.getDetailValueByName(elementNamingQuality);
+		String keyString = startString + qualityString + endString;
+		this.choiceMap.put(keyString, elementChoice);
 	}
 	
 	private boolean checkForConnection(String line) throws Exception
