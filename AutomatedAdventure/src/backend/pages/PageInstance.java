@@ -24,8 +24,9 @@ public class PageInstance
 	private static final Pattern randomRedirectInnerPattern = Pattern.compile("<randomRedirect:([^<>]*):(\\d+)>");
 	
 	private static final Pattern choicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*)");
+	private static final Pattern conditionalChoicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)");
 	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
-	private static final Pattern conditionalElementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>]?=?):(-?\\d+)");
+	private static final Pattern conditionalElementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)");
 	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(\\d+)");
 	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
 	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
@@ -154,6 +155,8 @@ public class PageInstance
 				return (elementNumber <= value);
 			case EQUAL:
 				return (elementNumber == value);
+			case NOT_EQUAL:
+				return (elementNumber != value);
 		}
 		throw new Exception("Unrecognised comparator type.");
 	}
@@ -200,6 +203,8 @@ public class PageInstance
 			if (this.checkForElement(line))
 				continue;
 			if (this.checkForConnection(line))
+				continue;
+			if (this.checkForConditionalChoice(line))
 				continue;
 			if (this.checkForChoice(line))
 				continue;
@@ -349,6 +354,39 @@ public class PageInstance
 			Element element = this.scenario.getElement(elementName);
 			element.makeInstances(elementNumber);
 			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	private boolean checkForConditionalChoice(String line) throws Exception
+	{
+		Matcher matcher = conditionalChoicePattern.matcher(line);
+		if (matcher.find())
+		{	
+			String choiceName = matcher.group(1);
+			String keyword = matcher.group(2);
+			String elementType = matcher.group(3);
+			String elementNumberName = matcher.group(4);
+			String comparatorText = matcher.group(5);
+			String numberString = matcher.group(6);
+			
+			Element element = this.scenario.getElement(elementType);	
+			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
+			ElementChoice elementChoice = new ElementChoice();
+			elementChoice.keyword = keyword;
+			
+			if (this.checkComparison(elementInstance, comparatorText, elementNumberName, numberString))
+			{
+				this.choiceMap.put(choiceName, elementChoice);
+				return true;
+			}
+			else
+			{
+				return true;
+			}
 		}
 		else
 		{
