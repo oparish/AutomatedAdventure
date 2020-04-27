@@ -24,10 +24,19 @@ public class PageInstance
 	private static final Pattern randomRedirectOuterPattern = Pattern.compile("(<randomRedirect:([^<>]*):(\\d+)>)+");
 	private static final Pattern randomRedirectInnerPattern = Pattern.compile("<randomRedirect:([^<>]*):(\\d+)>");
 	
-	private static final Pattern choicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*)");
-	private static final Pattern conditionalChoicePattern = Pattern.compile("choice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)");
-	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)");
-	private static final Pattern conditionalElementChoicePattern = Pattern.compile("elementChoice:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)");
+	private static final String MAIN_CHOICE_REGEX_STRING = ":([\\s\\S]*):([\\s\\S]*)";
+	private static final String MAIN_CONDITIONAL_CHOICE_REGEX_STRING = ":([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)";
+	private static final String MAIN_ELEMENT_CHOICE_REGEX_STRING = ":([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)";
+	private static final String MAIN_CONDITIONAL_ELEMENT_CHOICE_REGEX_STRING = ":([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)";
+	private static final Pattern choicePattern = Pattern.compile("choice" + MAIN_CHOICE_REGEX_STRING);
+	private static final Pattern conditionalChoicePattern = Pattern.compile("choice" + MAIN_CONDITIONAL_CHOICE_REGEX_STRING);
+	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice" + MAIN_ELEMENT_CHOICE_REGEX_STRING);
+	private static final Pattern conditionalElementChoicePattern = Pattern.compile("elementChoice" + MAIN_CONDITIONAL_ELEMENT_CHOICE_REGEX_STRING);
+	private static final Pattern choiceWithContextPattern = Pattern.compile("choiceWithContext" + MAIN_CHOICE_REGEX_STRING);
+	private static final Pattern conditionalChoiceWithContextPattern = Pattern.compile("choiceWithContext" + MAIN_CONDITIONAL_CHOICE_REGEX_STRING);
+	private static final Pattern elementChoiceWithContextPattern = Pattern.compile("elementChoiceWithContext" + MAIN_ELEMENT_CHOICE_REGEX_STRING);
+	private static final Pattern conditionalElementChoiceWithContextPattern = Pattern.compile("elementChoiceWithContext" + MAIN_CONDITIONAL_ELEMENT_CHOICE_REGEX_STRING);
+	
 	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(\\d+)");
 	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
 	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
@@ -210,11 +219,19 @@ public class PageInstance
 				continue;
 			if (this.checkForConnection(line))
 				continue;
+			if (this.checkForConditionalChoiceWithContext(line))
+				continue;
 			if (this.checkForConditionalChoice(line))
+				continue;
+			if (this.checkForChoiceWithContext(line))
 				continue;
 			if (this.checkForChoice(line))
 				continue;
+			if (this.checkForConditionalElementChoiceWithContext(line))
+				continue;
 			if (this.checkForConditionalElementChoice(line))
+				continue;
+			if (this.checkForElementChoiceWithContext(line))
 				continue;
 			if (this.checkForElementChoice(line))
 				continue;
@@ -275,6 +292,18 @@ public class PageInstance
 	private boolean checkForElementChoice(String line)
 	{
 		Matcher matcher = elementChoicePattern.matcher(line);
+		return this.checkForElementChoice(matcher, false);
+	}
+	
+	private boolean checkForElementChoiceWithContext(String line)
+	{
+		Matcher matcher = elementChoiceWithContextPattern.matcher(line);
+		return this.checkForElementChoice(matcher, true);
+	}
+	
+	private boolean checkForElementChoice(Matcher matcher, boolean withContext)
+	{
+		
 		if (matcher.find())
 		{	
 			String keyword = matcher.group(1);
@@ -287,7 +316,7 @@ public class PageInstance
 			
 			for(ElementInstance elementInstance : element.getInstances())
 			{
-				this.makeElementChoice(elementInstance, keyword, elementNamingQuality, startString, endString);
+				this.makeElementChoice(elementInstance, keyword, withContext, elementNamingQuality, startString, endString);
 			}
 			
 			return true;
@@ -301,6 +330,17 @@ public class PageInstance
 	private boolean checkForConditionalElementChoice(String line) throws Exception
 	{
 		Matcher matcher = conditionalElementChoicePattern.matcher(line);
+		return this.checkForConditionalElementChoice(matcher, false);
+	}
+	
+	private boolean checkForConditionalElementChoiceWithContext(String line) throws Exception
+	{
+		Matcher matcher = conditionalElementChoiceWithContextPattern.matcher(line);
+		return this.checkForConditionalElementChoice(matcher, true);
+	}
+	
+	private boolean checkForConditionalElementChoice(Matcher matcher, boolean withContext) throws Exception
+	{
 		if (matcher.find())
 		{	
 			String keyword = matcher.group(1);
@@ -317,7 +357,7 @@ public class PageInstance
 			for (ElementInstance elementInstance : element.getInstances())
 			{
 				if (this.checkComparison(elementInstance, comparatorText, elementNumberName, valueText))
-					this.makeElementChoice(elementInstance, keyword, elementNamingQuality, startString, endString);
+					this.makeElementChoice(elementInstance, keyword, withContext, elementNamingQuality, startString, endString);
 			}
 			
 			return true;
@@ -328,11 +368,12 @@ public class PageInstance
 		}
 	}
 	
-	private void makeElementChoice(ElementInstance elementInstance, String keyword, String elementNamingQuality, String startString, String endString)
+	private void makeElementChoice(ElementInstance elementInstance, String keyword, boolean withContext, String elementNamingQuality, String startString, String endString)
 	{
 		ElementChoice elementChoice = new ElementChoice();
 		elementChoice.keyword = keyword;
 		elementChoice.elementInstance = elementInstance;
+		elementChoice.context = this.getPageContext();
 		String qualityString = elementInstance.getDetailValueByName(elementNamingQuality);
 		String keyString = startString + qualityString + endString;
 		this.addChoice(keyString, elementChoice);
@@ -375,6 +416,17 @@ public class PageInstance
 	private boolean checkForConditionalChoice(String line) throws Exception
 	{
 		Matcher matcher = conditionalChoicePattern.matcher(line);
+		return this.checkForConditionalChoice(matcher, false);
+	}
+	
+	private boolean checkForConditionalChoiceWithContext(String line) throws Exception
+	{
+		Matcher matcher = conditionalChoiceWithContextPattern.matcher(line);
+		return this.checkForConditionalChoice(matcher, true);
+	}
+	
+	private boolean checkForConditionalChoice(Matcher matcher, boolean withContext) throws Exception
+	{	
 		if (matcher.find())
 		{	
 			String choiceName = matcher.group(1);
@@ -388,6 +440,7 @@ public class PageInstance
 			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
 			ElementChoice elementChoice = new ElementChoice();
 			elementChoice.keyword = keyword;
+			elementChoice.context = this.getPageContext();
 			
 			if (this.checkComparison(elementInstance, comparatorText, elementNumberName, numberString))
 			{
@@ -405,15 +458,27 @@ public class PageInstance
 		}
 	}
 	
+	private boolean checkForChoiceWithContext(String line)
+	{
+		Matcher matcher = choiceWithContextPattern.matcher(line);
+		return this.checkForChoice(matcher, true);
+	}
+	
 	private boolean checkForChoice(String line)
 	{
 		Matcher matcher = choicePattern.matcher(line);
+		return this.checkForChoice(matcher, false);
+	}
+	
+	private boolean checkForChoice(Matcher matcher, boolean withContext)
+	{
 		if (matcher.find())
 		{	
 			String choiceName = matcher.group(1);
 			String keyword = matcher.group(2);
 			ElementChoice elementChoice = new ElementChoice();
 			elementChoice.keyword = keyword;
+			elementChoice.context = this.getPageContext();
 			this.addChoice(choiceName, elementChoice);
 			return true;
 		}

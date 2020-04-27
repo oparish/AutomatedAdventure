@@ -6,4 +6,5 @@ public class ElementChoice
 {
 	public ElementInstance elementInstance;
 	public String keyword;
+	public PageContext context;
 }

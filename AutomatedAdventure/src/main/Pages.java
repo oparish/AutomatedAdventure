@@ -38,9 +38,16 @@ public class Pages
 	public static void loadPage(ElementChoice elementChoice)
 	{
 		String pageTemplate = Pages.scenario.getPageTemplate(elementChoice.keyword);
-		PageContext pageContext = new PageContext();
+		PageContext pageContext;
+		
+		if (elementChoice.context != null)
+			pageContext = elementChoice.context;
+		else
+			pageContext = new PageContext();
+		
 		if (elementChoice.elementInstance != null)
 			pageContext.addElementInstance(elementChoice.elementInstance);
+		
 		PageInstance pageInstance = new PageInstance(Pages.scenario, pageContext, pageTemplate);
 		try {
 			Pages.pageWindow.update(pageInstance);
