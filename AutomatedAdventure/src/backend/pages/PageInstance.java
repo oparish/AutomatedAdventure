@@ -138,7 +138,7 @@ public class PageInstance
 				String valueText = innerMatcher.group(5);
 				
 				Element element = this.scenario.getElement(elementType);
-				if (this.checkComparison(this.pageContext.getElementInstance(element), comparatorText, elementNumberName, valueText))
+				if (this.checkComparison(this.getSelectedElementInstance(element), comparatorText, elementNumberName, valueText))
 					return pageName;
 			}
 			
@@ -187,12 +187,20 @@ public class PageInstance
 			String elementType = elementMatcher.group(1);
 			String elementQualityType = elementMatcher.group(2);
 			Element element = this.scenario.getElement(elementType);
-			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
+			ElementInstance elementInstance = this.getSelectedElementInstance(element);
 			String elementQuality = elementInstance.getStringValue(elementQualityType);
 			adjustedText = elementMatcher.replaceFirst(elementQuality);
 			elementMatcher = selectedElementPattern.matcher(adjustedText);
 		}
 		return adjustedText;
+	}
+	
+	private ElementInstance getSelectedElementInstance(Element element)
+	{
+		if (element.getUnique())
+			return element.getUniqueInstance();
+		else
+			return this.pageContext.getElementInstance(element);
 	}
 	
 	private String checkForConnectionToSelectedElementPattern(String bodyText) throws Exception
@@ -206,7 +214,7 @@ public class PageInstance
 			String elementQualityType = connectionMatcher.group(3);
 			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionType);
 			Element element = this.scenario.getElement(elementType);
-			ElementInstance firstInstance = this.pageContext.getElementInstance(element);
+			ElementInstance firstInstance = this.getSelectedElementInstance(element);
 			ElementInstance connectedInstance = connectionSet.get(firstInstance);
 			String elementQuality = connectedInstance.getStringValue(elementQualityType);
 			adjustedText = connectionMatcher.replaceFirst(elementQuality);
@@ -297,13 +305,7 @@ public class PageInstance
 			String valueText = matcher.group(3);
 			Element element = this.scenario.getElement(elementType);
 			int value = Integer.valueOf(valueText);
-			
-			ElementInstance elementInstance;
-			if (element.getUnique())
-				elementInstance = element.getUniqueInstance();
-			else
-				elementInstance = this.pageContext.getElementInstance(element);
-			
+			ElementInstance elementInstance = this.getSelectedElementInstance(element);
 			elementInstance.adjustNumber(elementNumberName, value);
 			return true;
 		}
@@ -482,7 +484,7 @@ public class PageInstance
 			String numberString = matcher.group(6);
 			
 			Element element = this.scenario.getElement(elementType);	
-			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
+			ElementInstance elementInstance = this.getSelectedElementInstance(element);
 			ElementChoice elementChoice = new ElementChoice();
 			elementChoice.keyword = keyword;
 			elementChoice.context = this.getPageContext();
