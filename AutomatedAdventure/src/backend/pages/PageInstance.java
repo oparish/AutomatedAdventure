@@ -37,7 +37,12 @@ public class PageInstance
 	String pageTemplate;
 	PageContext pageContext;
 	HashMap<String, ElementChoice> choiceMap = new HashMap<String, ElementChoice>();
+	ArrayList<String> choiceList = new ArrayList<String>();
 	
+	public ArrayList<String> getChoiceList() {
+		return choiceList;
+	}
+
 	public HashMap<String, ElementChoice> getChoiceMap() {
 		return choiceMap;
 	}
@@ -330,7 +335,7 @@ public class PageInstance
 		elementChoice.elementInstance = elementInstance;
 		String qualityString = elementInstance.getDetailValueByName(elementNamingQuality);
 		String keyString = startString + qualityString + endString;
-		this.choiceMap.put(keyString, elementChoice);
+		this.addChoice(keyString, elementChoice);
 	}
 	
 	private boolean checkForConnection(String line) throws Exception
@@ -386,7 +391,7 @@ public class PageInstance
 			
 			if (this.checkComparison(elementInstance, comparatorText, elementNumberName, numberString))
 			{
-				this.choiceMap.put(choiceName, elementChoice);
+				this.addChoice(choiceName, elementChoice);
 				return true;
 			}
 			else
@@ -409,12 +414,18 @@ public class PageInstance
 			String keyword = matcher.group(2);
 			ElementChoice elementChoice = new ElementChoice();
 			elementChoice.keyword = keyword;
-			this.choiceMap.put(choiceName, elementChoice);
+			this.addChoice(choiceName, elementChoice);
 			return true;
 		}
 		else
 		{
 			return false;
 		}
+	}
+	
+	private void addChoice(String choiceName, ElementChoice elementChoice)
+	{
+		this.choiceMap.put(choiceName, elementChoice);
+		this.choiceList.add(choiceName);
 	}
 }

@@ -18,6 +18,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import backend.pages.ElementChoice;
+import backend.pages.PageInstance;
 import main.Pages;
 
 public class ChoiceBox extends JList<ChoiceEntry> implements ListSelectionListener
@@ -41,12 +42,13 @@ public class ChoiceBox extends JList<ChoiceEntry> implements ListSelectionListen
 		}
 	}
 	
-	public void updateChoiceBox(HashMap<String, ElementChoice> choiceMap)
+	public void updateChoiceBox(PageInstance pageInstance)
 	{
 		this.model.removeAllElements();
-		for (Entry<String, ElementChoice> entry : choiceMap.entrySet())
+		HashMap<String, ElementChoice> choiceMap = pageInstance.getChoiceMap();
+		for (String key : pageInstance.getChoiceList())
 		{
-			ChoiceEntry choiceEntry = new ChoiceEntry(entry.getKey(), entry.getValue());
+			ChoiceEntry choiceEntry = new ChoiceEntry(key, choiceMap.get(key));
 			this.model.addElement(choiceEntry);	
 		}
 	}

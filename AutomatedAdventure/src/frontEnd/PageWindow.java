@@ -62,7 +62,7 @@ public class PageWindow extends MyWindow
 		else
 		{
 			this.textArea.setText(pageInstance.getText());
-			this.choiceBox.updateChoiceBox(pageInstance.getChoiceMap());
+			this.choiceBox.updateChoiceBox(pageInstance);
 		}
 	}
 }
