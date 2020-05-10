@@ -56,7 +56,9 @@ public enum Restriction
 	SECOND("second", STRING, JsonDim.MONO),
 	MAX_VALUE("maxValue", NUMBER, JsonDim.MONO),
 	MIN_VALUE("minValue", NUMBER, JsonDim.MONO),
-	CONNECTIONS("connections", RestrictionType.CONNECTION, JsonDim.ARRAY);
+	CONNECTIONS("connections", RestrictionType.CONNECTION, JsonDim.ARRAY),
+	ELEMENT_SETS("elementSets", RestrictionType.ELEMENT_SET, JsonDim.ARRAY, true),
+	MEMBERS("members", RestrictionType.ELEMENT_SET_MEMBER, JsonDim.ARRAY);
 	
 	private final boolean noneable;
 	private final JsonDim jsonDim;
