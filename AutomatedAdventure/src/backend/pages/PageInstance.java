@@ -45,6 +45,7 @@ public class PageInstance
 	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
 	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	private static final Pattern adjustSelectedElementPattern = Pattern.compile("selectedElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
+	private static final Pattern adjustConnectedElementPattern = Pattern.compile("connectedElementAdjust:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	
 	Scenario scenario;
 	String pageTemplate;
@@ -337,6 +338,8 @@ public class PageInstance
 				continue;
 			if (this.checkForSelectedElementAdjust(line))
 				continue;
+			if (this.checkForConnectedlementAdjust(line))
+				continue;
 		}
 	}
 
@@ -352,6 +355,29 @@ public class PageInstance
 			int value = Integer.valueOf(valueText);
 			ElementInstance elementInstance = this.getSelectedElementInstance(element);
 			elementInstance.adjustNumber(elementNumberName, value);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	private boolean checkForConnectedlementAdjust(String line) throws Exception
+	{
+		Matcher matcher = adjustConnectedElementPattern.matcher(line);
+		if (matcher.find())
+		{
+			String elementType = matcher.group(1);
+			String connectionType = matcher.group(2);
+			String elementNumberName = matcher.group(3);
+			String valueText = matcher.group(4);
+			Element element = this.scenario.getElement(elementType);
+			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionType);
+			ElementInstance selectedInstance = this.getSelectedElementInstance(element);
+			ElementInstance connectedInstance = connectionSet.get(selectedInstance);		
+			int value = Integer.valueOf(valueText);
+			connectedInstance.adjustNumber(elementNumberName, value);
 			return true;
 		}
 		else
