@@ -71,9 +71,12 @@ public class Element
 			RestrictedJson<ElementNumberRestriction> elementNumber = elementNumbers.getMemberAt(j);
 			int minValue = elementNumber.getNumber(ElementNumberRestriction.MIN_VALUE);
 			int maxValue = elementNumber.getNumber(ElementNumberRestriction.MAX_VALUE);
+			Integer multiplier = elementNumber.getNumber(ElementNumberRestriction.MULTIPLIER);
 			int diff = maxValue - minValue;
 			int rndm = diff != 0 ? Main.getRndm(diff) : 0;
 			int result = minValue + rndm;
+			if (multiplier != null)
+				result = result * multiplier;
 			values.add(result);
 		}
 		
