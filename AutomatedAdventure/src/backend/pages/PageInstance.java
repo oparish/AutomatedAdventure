@@ -18,7 +18,9 @@ public class PageInstance
 	private static final Pattern mainPattern = Pattern.compile("<head>([\\s\\S]*)</head><body>([\\s\\S]*)</body>");
 	private static final Pattern selectedElementPattern = Pattern.compile("<selectedElement:([^<>]*):([^<>]*)>");
 	private static final Pattern connectionToSelectedElementPattern = Pattern.compile("<connectionToSelectedElement:([^<>]*):([^<>]*):([^<>]*)>");
+	private static final Pattern connectionToRepeatedElementPattern = Pattern.compile("<connectionToRepeatedElement:([^<>]*):([^<>]*)>");
 	private static final Pattern repeatForElementPattern = Pattern.compile("<repeatForElement:([^<>]*)>([\\s\\S]*)</repeatForElement>");
+	private static final Pattern conditionalRepeatForElementPattern = Pattern.compile("<conditionalRepeatForElement:([^<>]*):([^<>]*):([<>!]?=?):(-?\\d+)>([\\s\\S]*)</conditionalRepeatForElement>");
 	private static final Pattern repeatedElementPattern = Pattern.compile("<repeatedElement:([^<>]*)>");
 	
 	private static final Pattern redirectOuterPattern = Pattern.compile("((?:<redirect:(?:.*)))+<else:([^<>]*)>");
@@ -223,7 +225,7 @@ public class PageInstance
 		return adjustedText;
 	}
 	
-	private String checkForRepeatForElementPattern(String bodyText)
+	private String checkForRepeatForElementPattern(String bodyText) throws Exception
 	{
 		String adjustedText = bodyText;
 		Matcher repeatMatcher = repeatForElementPattern.matcher(adjustedText);
@@ -237,15 +239,7 @@ public class PageInstance
 			Element element = this.scenario.getElement(elementTypeName);
 			for (ElementInstance elementInstance : element.getInstances())
 			{
-				String innerText = text;
-				Matcher innerMatcher = repeatedElementPattern.matcher(innerText);
-				while (innerMatcher.find())
-				{
-					String elementQuality = innerMatcher.group(1);
-					innerText = innerMatcher.replaceFirst(elementInstance.getStringValue(elementQuality));
-					innerMatcher = repeatedElementPattern.matcher(innerText);
-				}
-				stringBuffer.append(innerText);
+				this.processRepeatedElementInstance(text, stringBuffer, elementInstance);
 			}
 			
 			adjustedText = repeatMatcher.replaceFirst(stringBuffer.toString());
@@ -254,11 +248,62 @@ public class PageInstance
 		return adjustedText;
 	}
 	
+	private String checkForConditionalRepeatForElementPattern(String bodyText) throws Exception
+	{
+		String adjustedText = bodyText;
+		Matcher repeatMatcher = conditionalRepeatForElementPattern.matcher(adjustedText);
+		while (repeatMatcher.find())
+		{
+			String elementName = repeatMatcher.group(1);
+			String elementNumberName = repeatMatcher.group(2);
+			String comparatorText = repeatMatcher.group(3);
+			String numberText = repeatMatcher.group(4);
+			String text = repeatMatcher.group(5);
+			
+			StringBuffer stringBuffer = new StringBuffer();		
+			Element element = this.scenario.getElement(elementName);
+			for (ElementInstance elementInstance : element.getInstances())
+			{
+				if (this.checkComparison(elementInstance, comparatorText, elementNumberName, numberText))
+					this.processRepeatedElementInstance(text, stringBuffer, elementInstance);
+			}		
+			adjustedText = repeatMatcher.replaceFirst(stringBuffer.toString());
+			repeatMatcher = conditionalRepeatForElementPattern.matcher(adjustedText);
+		}
+		return adjustedText;
+	}
+
+	private void processRepeatedElementInstance(String text, StringBuffer stringBuffer, ElementInstance elementInstance)
+			throws Exception
+	{
+		String innerText = text;
+		Matcher elementMatcher = repeatedElementPattern.matcher(innerText);
+		while (elementMatcher.find())
+		{
+			String elementQuality = elementMatcher.group(1);
+			innerText = elementMatcher.replaceFirst(elementInstance.getStringValue(elementQuality));
+			elementMatcher = repeatedElementPattern.matcher(innerText);
+		}
+		
+		Matcher connectionMatcher = connectionToRepeatedElementPattern.matcher(innerText);
+		while (connectionMatcher.find())
+		{
+			String connectionName = connectionMatcher.group(1);
+			String elementQuality = connectionMatcher.group(2);
+			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
+			ElementInstance connectedInstance = connectionSet.get(elementInstance);
+			innerText = connectionMatcher.replaceFirst(connectedInstance.getStringValue(elementQuality));
+			connectionMatcher = connectionToRepeatedElementPattern.matcher(innerText);
+		}
+		stringBuffer.append(innerText);
+	}
+	
 	private String checkPatterns(String bodyText) throws Exception
 	{		
 		String adjustedText = this.checkForSelectedElementPattern(bodyText);
 		adjustedText = this.checkForConnectionToSelectedElementPattern(adjustedText);
 		adjustedText = this.checkForRepeatForElementPattern(adjustedText);
+		adjustedText = this.checkForConditionalRepeatForElementPattern(adjustedText);
 		return adjustedText;
 	}
 	
