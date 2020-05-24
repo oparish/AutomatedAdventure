@@ -51,6 +51,13 @@ public class ChoiceBox extends JList<ChoiceEntry> implements ListSelectionListen
 			ChoiceEntry choiceEntry = new ChoiceEntry(key, choiceMap.get(key));
 			this.model.addElement(choiceEntry);	
 		}
+		this.setEnabled(true);
+	}
+	
+	public void clear()
+	{
+		this.model.removeAllElements();
+		this.setEnabled(false);
 	}
 	
 	private class ChoiceBoxRenderer implements ListCellRenderer

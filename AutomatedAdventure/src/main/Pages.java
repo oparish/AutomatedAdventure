@@ -30,7 +30,7 @@ public class Pages
 		String pageTemplate = pageTemplateMap.getMemberBy("initial").renderAsString();
 		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(), pageTemplate);
 		
-		Pages.pageWindow = new PageWindow(Pages.scenario);
+		Pages.pageWindow = new PageWindow();
 		Pages.pageWindow.showWindow();
 		Pages.pageWindow.update(pageInstance);
 	}
