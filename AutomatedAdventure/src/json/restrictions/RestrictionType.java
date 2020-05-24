@@ -22,6 +22,7 @@ public enum RestrictionType implements JsonType
 	RULE(RuleRestriction.class),
 	STATE(StateRestriction.class),
 	ROOM(RoomRestriction.class),
+	PAGE(PageRestriction.class),
 	SCENARIO(ScenarioRestriction.class),
 	CHANCE(ChanceRestriction.class),
 	TEMPLATE(TemplateRestriction.class),

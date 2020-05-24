@@ -16,6 +16,7 @@ import json.RestrictedJson;
 import json.restrictions.ChanceRestriction;
 import json.restrictions.ElementRestriction;
 import json.restrictions.IntervalRestriction;
+import json.restrictions.PageRestriction;
 import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
 import json.restrictions.component.ComponentRestriction;
@@ -145,9 +146,11 @@ public class Scenario
 	
 	public String getPageTemplate(String key)
 	{
-		JsonEntityMap<JsonEntityString> pageTemplateMap = this.scenarioJson.getStringMap(ScenarioRestriction.PAGETEMPLATES);
-		JsonEntityString pageTemplateJson = pageTemplateMap.getMemberBy(key);
-		return pageTemplateJson.renderAsString();
+		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PAGES, PageRestriction.class);
+
+		RestrictedJson<PageRestriction> pageJson = pageTemplateMap.getMemberBy(key);
+		String pageValue = pageJson.getString(PageRestriction.VALUE);
+		return pageValue;
 	}
 	
 	public int getIntervalTime(int intervalIndex)

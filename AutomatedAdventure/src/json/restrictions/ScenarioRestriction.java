@@ -4,7 +4,7 @@ public enum ScenarioRestriction implements RestrictionPointer
 {
 	ROOMS(Restriction.ROOMS), STATES(Restriction.STATES), INTERVALS(Restriction.INTERVALS), ELEMENTS(Restriction.ELEMENTS), 
 	CHECKTIME(Restriction.CHECKTIME), CHANCES(Restriction.CHANCES), MODE(Restriction.MODE), ACTION_TYPES(Restriction.ACTION_TYPES),
-	COMPONENTS(Restriction.COMPONENTS), ENDINGS(Restriction.ENDINGS), PAGETEMPLATES(Restriction.PAGETEMPLATES), 
+	COMPONENTS(Restriction.COMPONENTS), ENDINGS(Restriction.ENDINGS), PAGES(Restriction.PAGES), 
 	CONNECTIONS(Restriction.CONNECTIONS);
 	
 	private Restriction restriction;

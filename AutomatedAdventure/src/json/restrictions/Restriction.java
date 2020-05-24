@@ -51,7 +51,7 @@ public enum Restriction
 	COMPONENTS("components", RestrictionType.COMPONENT, JsonDim.MAP),
 	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO, true),
 	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY),
-	PAGETEMPLATES("pageTemplates", STRING, JsonDim.MAP),
+	PAGES("pages", RestrictionType.PAGE, JsonDim.MAP),
 	FIRST("first", STRING, JsonDim.MONO),
 	SECOND("second", STRING, JsonDim.MONO),
 	MAX_VALUE("maxValue", NUMBER, JsonDim.MONO),

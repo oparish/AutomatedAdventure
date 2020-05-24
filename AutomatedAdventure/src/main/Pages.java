@@ -12,6 +12,7 @@ import frontEnd.PageWindow;
 import json.JsonEntityMap;
 import json.JsonEntityString;
 import json.RestrictedJson;
+import json.restrictions.PageRestriction;
 import json.restrictions.ScenarioRestriction;
 
 public class Pages
@@ -26,9 +27,10 @@ public class Pages
 				new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
 		Pages.scenario = new Scenario(scenarioJson);	
 		
-		JsonEntityMap<JsonEntityString> pageTemplateMap = scenarioJson.getStringMap(ScenarioRestriction.PAGETEMPLATES);
-		String pageTemplate = pageTemplateMap.getMemberBy("initial").renderAsString();
-		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(), pageTemplate);
+		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PAGES, PageRestriction.class);
+		RestrictedJson<PageRestriction> pageJson = pageTemplateMap.getMemberBy("initial");
+		String pageValue = pageJson.getString(PageRestriction.VALUE);
+		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(), pageValue);
 		
 		Pages.pageWindow = new PageWindow();
 		Pages.pageWindow.showWindow();
