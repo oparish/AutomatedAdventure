@@ -11,6 +11,15 @@ import backend.Element.ElementInstance;
 import backend.NumberRange;
 import backend.Scenario;
 import backend.component.ConnectionSet;
+import json.JsonEntityArray;
+import json.JsonEntityMap;
+import json.RestrictedJson;
+import json.restrictions.ChoiceRestriction;
+import json.restrictions.ConditionRestriction;
+import json.restrictions.ContextConditionRestriction;
+import json.restrictions.ElementChoiceRestriction;
+import json.restrictions.ElementConditionRestriction;
+import json.restrictions.PageRestriction;
 import main.Main;
 
 public class PageInstance
@@ -28,19 +37,6 @@ public class PageInstance
 	private static final Pattern randomRedirectOuterPattern = Pattern.compile("(<randomRedirect:([^<>]*):(\\d+)>)+");
 	private static final Pattern randomRedirectInnerPattern = Pattern.compile("<randomRedirect:([^<>]*):(\\d+)>");
 	
-	private static final String MAIN_CHOICE_REGEX_STRING = ":([\\s\\S]*):([\\s\\S]*)";
-	private static final String MAIN_CONDITIONAL_CHOICE_REGEX_STRING = ":([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)";
-	private static final String MAIN_ELEMENT_CHOICE_REGEX_STRING = ":([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*)";
-	private static final String MAIN_CONDITIONAL_ELEMENT_CHOICE_REGEX_STRING = ":([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):([<>!]?=?):(-?\\d+)";
-	private static final Pattern choicePattern = Pattern.compile("choice" + MAIN_CHOICE_REGEX_STRING);
-	private static final Pattern conditionalChoicePattern = Pattern.compile("choice" + MAIN_CONDITIONAL_CHOICE_REGEX_STRING);
-	private static final Pattern elementChoicePattern = Pattern.compile("elementChoice" + MAIN_ELEMENT_CHOICE_REGEX_STRING);
-	private static final Pattern conditionalElementChoicePattern = Pattern.compile("elementChoice" + MAIN_CONDITIONAL_ELEMENT_CHOICE_REGEX_STRING);
-	private static final Pattern choiceWithContextPattern = Pattern.compile("choiceWithContext" + MAIN_CHOICE_REGEX_STRING);
-	private static final Pattern conditionalChoiceWithContextPattern = Pattern.compile("choiceWithContext" + MAIN_CONDITIONAL_CHOICE_REGEX_STRING);
-	private static final Pattern elementChoiceWithContextPattern = Pattern.compile("elementChoiceWithContext" + MAIN_ELEMENT_CHOICE_REGEX_STRING);
-	private static final Pattern conditionalElementChoiceWithContextPattern = Pattern.compile("elementChoiceWithContext" + MAIN_CONDITIONAL_ELEMENT_CHOICE_REGEX_STRING);
-	
 	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(\\d+)");
 	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
 	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
@@ -48,7 +44,7 @@ public class PageInstance
 	private static final Pattern adjustConnectedElementPattern = Pattern.compile("connectedElementAdjust:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	
 	Scenario scenario;
-	String pageTemplate;
+	RestrictedJson<PageRestriction> pageJson;
 	PageContext pageContext;
 	HashMap<String, ElementChoice> choiceMap = new HashMap<String, ElementChoice>();
 	ArrayList<String> choiceList = new ArrayList<String>();
@@ -61,10 +57,10 @@ public class PageInstance
 		return choiceMap;
 	}
 
-	public PageInstance(Scenario scenario, PageContext pageContext, String pageTemplate)
+	public PageInstance(Scenario scenario, PageContext pageContext, RestrictedJson<PageRestriction> pageJson)
 	{
 		this.scenario = scenario;
-		this.pageTemplate = pageTemplate;
+		this.pageJson = pageJson;
 		this.pageContext = pageContext;
 	}
 	
@@ -78,7 +74,9 @@ public class PageInstance
 
 	public String getText() throws Exception
 	{
-		Matcher matcher = mainPattern.matcher(this.pageTemplate);
+		this.setupChoices();
+		
+		Matcher matcher = mainPattern.matcher(this.pageJson.getString(PageRestriction.VALUE));
 		matcher.find();
 		String headerText = matcher.group(1);
 		String bodyText = matcher.group(2);
@@ -86,12 +84,93 @@ public class PageInstance
 		String adjustedText = this.checkPatterns(bodyText);
 		return adjustedText;
 	}
+	
+	private boolean checkContextCondition(RestrictedJson<ContextConditionRestriction> contextConditionData) throws Exception
+	{
+		String comparatorText = contextConditionData.getString(ContextConditionRestriction.TYPE);
+		int value = contextConditionData.getNumber(ContextConditionRestriction.NUMBER_VALUE);
+		String elementQualityText = contextConditionData.getString(ContextConditionRestriction.ELEMENT_QUALITY);
+		String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
+		Element element = this.scenario.getElement(elementName);
+		ElementInstance elementInstance = this.getSelectedElementInstance(element);
+		return this.checkComparison(elementInstance, comparatorText, elementQualityText, value);
+	}
+	
+	private void setupChoices() throws Exception
+	{
+		JsonEntityArray<RestrictedJson<ChoiceRestriction>> choiceDataArray = 
+				this.pageJson.getRestrictedJsonArray(PageRestriction.CHOICES, ChoiceRestriction.class);
+		
+		if (choiceDataArray == null)
+			return;
+		
+		for (int i = 0; i < choiceDataArray.size(); i++)
+		{
+			this.setupChoice(choiceDataArray.getMemberAt(i));
+		}
+	}
+	
+	private void setupChoice(RestrictedJson<ChoiceRestriction> choiceData) throws Exception
+	{	
+		boolean withContext = choiceData.getBoolean(ChoiceRestriction.WITH_CONTEXT);
+		
+		RestrictedJson<ContextConditionRestriction> contextConditionData = choiceData.getRestrictedJson(ChoiceRestriction.CONTEXT_CONDITION, ContextConditionRestriction.class);
+		if (contextConditionData != null && !this.checkContextCondition(contextConditionData))
+			return;
+		
+		String keyword = choiceData.getString(ChoiceRestriction.VALUE);
+		String first = choiceData.getString(ChoiceRestriction.FIRST);
+		RestrictedJson<ElementChoiceRestriction> elementChoiceData = choiceData.getRestrictedJson(ChoiceRestriction.ELEMENT_CHOICE, ElementChoiceRestriction.class);
+		
+		if (elementChoiceData != null)
+		{
+			String elementName = elementChoiceData.getString(ElementChoiceRestriction.ELEMENT_NAME);
+			String elementQualityName = elementChoiceData.getString(ElementChoiceRestriction.ELEMENT_QUALITY);
+			String second = elementChoiceData.getString(ElementChoiceRestriction.SECOND);
+			
+			Element element = this.scenario.getElement(elementName);
+			
+			RestrictedJson<ElementConditionRestriction> elementConditionData = elementChoiceData.getRestrictedJson(
+					ElementChoiceRestriction.ELEMENT_CONDITION, ElementConditionRestriction.class);
+			
+			if (elementConditionData != null)
+			{
+				String elementQualityText = elementConditionData.getString(ElementConditionRestriction.ELEMENT_QUALITY);
+				String comparatorText = elementConditionData.getString(ElementConditionRestriction.TYPE);
+				int value = elementConditionData.getNumber(ElementConditionRestriction.NUMBER_VALUE);		
+			
+				for (ElementInstance elementInstance : element.getInstances())
+				{
+					if (this.checkComparison(elementInstance, comparatorText, elementQualityText, value))
+						this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second);
+				}	
+			}
+			else
+			{
+				for (ElementInstance elementInstance : element.getInstances())
+				{
+					this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second);
+				}
+			}	
+					
+		}
+		else
+		{
+			ElementChoice elementChoice = new ElementChoice();
+			elementChoice.keyword = keyword;
+			if (withContext)
+				elementChoice.context = this.pageContext;
+			this.addChoice(first, elementChoice);
+		}
+	}
+	
 	public String getRandomRedirect() throws Exception
 	{
-		Matcher outerMatcher = randomRedirectOuterPattern.matcher(this.pageTemplate);
+		String pageText = this.pageJson.getString(PageRestriction.VALUE);
+		Matcher outerMatcher = randomRedirectOuterPattern.matcher(pageText);
 		if (outerMatcher.find())
 		{		
-			Matcher innerMatcher = randomRedirectInnerPattern.matcher(this.pageTemplate);
+			Matcher innerMatcher = randomRedirectInnerPattern.matcher(pageText);
 			
 			HashMap<String, NumberRange> pages = new HashMap<String, NumberRange>();
 			int total = 0;
@@ -126,7 +205,8 @@ public class PageInstance
 	
 	public String getRedirect() throws Exception
 	{
-		Matcher outerMatcher = redirectOuterPattern.matcher(this.pageTemplate);
+		String pageText = this.pageJson.getString(PageRestriction.VALUE);
+		Matcher outerMatcher = redirectOuterPattern.matcher(pageText);
 		if (outerMatcher.find())
 		{
 			String redirects = outerMatcher.group(1);			
@@ -138,10 +218,10 @@ public class PageInstance
 				String elementType = innerMatcher.group(2);
 				String elementNumberName = innerMatcher.group(3);
 				String comparatorText = innerMatcher.group(4);
-				String valueText = innerMatcher.group(5);
+				int value = Integer.valueOf(innerMatcher.group(5));
 				
 				Element element = this.scenario.getElement(elementType);
-				if (this.checkComparison(this.getSelectedElementInstance(element), comparatorText, elementNumberName, valueText))
+				if (this.checkComparison(this.getSelectedElementInstance(element), comparatorText, elementNumberName, value))
 					return pageName;
 			}
 			
@@ -153,10 +233,9 @@ public class PageInstance
 		}
 	}
 	
-	private boolean checkComparison(ElementInstance elementInstance, String comparatorText, String elementNumberName, String valueText) throws Exception
+	private boolean checkComparison(ElementInstance elementInstance, String comparatorText, String elementNumberName, int value) throws Exception
 	{
-		Comparator comparator = Comparator.fromText(comparatorText);
-		int value = Integer.valueOf(valueText);
+		Comparator comparator = Comparator.fromText(comparatorText);		
 		int elementNumber = elementInstance.getNumberValueByName(elementNumberName);
 		return this.checkComparison(comparator, elementNumber, value);
 	}
@@ -258,14 +337,14 @@ public class PageInstance
 			String elementName = repeatMatcher.group(1);
 			String elementNumberName = repeatMatcher.group(2);
 			String comparatorText = repeatMatcher.group(3);
-			String numberText = repeatMatcher.group(4);
+			int number = Integer.valueOf(repeatMatcher.group(4));
 			String text = repeatMatcher.group(5);
 			
 			StringBuffer stringBuffer = new StringBuffer();		
 			Element element = this.scenario.getElement(elementName);
 			for (ElementInstance elementInstance : element.getInstances())
 			{
-				if (this.checkComparison(elementInstance, comparatorText, elementNumberName, numberText))
+				if (this.checkComparison(elementInstance, comparatorText, elementNumberName, number))
 					this.processRepeatedElementInstance(text, stringBuffer, elementInstance);
 			}		
 			adjustedText = repeatMatcher.replaceFirst(stringBuffer.toString());
@@ -310,6 +389,7 @@ public class PageInstance
 	
 	private void assessHead(String headerText) throws Exception
 	{
+		
 		String[] lines = headerText.split("\r\n");
 		
 		for (String line : lines)
@@ -317,22 +397,6 @@ public class PageInstance
 			if (this.checkForElement(line))
 				continue;
 			if (this.checkForConnection(line))
-				continue;
-			if (this.checkForConditionalChoiceWithContext(line))
-				continue;
-			if (this.checkForConditionalChoice(line))
-				continue;
-			if (this.checkForChoiceWithContext(line))
-				continue;
-			if (this.checkForChoice(line))
-				continue;
-			if (this.checkForConditionalElementChoiceWithContext(line))
-				continue;
-			if (this.checkForConditionalElementChoice(line))
-				continue;
-			if (this.checkForElementChoiceWithContext(line))
-				continue;
-			if (this.checkForElementChoice(line))
 				continue;
 			if (this.checkForEachElementAdjust(line))
 				continue;
@@ -407,91 +471,13 @@ public class PageInstance
 		}
 	}
 	
-	private boolean checkForElementChoice(String line)
-	{
-		Matcher matcher = elementChoicePattern.matcher(line);
-		return this.checkForElementChoice(matcher, false);
-	}
-	
-	private boolean checkForElementChoiceWithContext(String line)
-	{
-		Matcher matcher = elementChoiceWithContextPattern.matcher(line);
-		return this.checkForElementChoice(matcher, true);
-	}
-	
-	private boolean checkForElementChoice(Matcher matcher, boolean withContext)
-	{
-		
-		if (matcher.find())
-		{	
-			String keyword = matcher.group(1);
-			String elementName = matcher.group(2);
-			String elementNamingQuality = matcher.group(3);
-			String startString = matcher.group(4);
-			String endString = matcher.group(5);
-			
-			Element element = this.scenario.getElement(elementName);
-			
-			for(ElementInstance elementInstance : element.getInstances())
-			{
-				this.makeElementChoice(elementInstance, keyword, withContext, elementNamingQuality, startString, endString);
-			}
-			
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	
-	private boolean checkForConditionalElementChoice(String line) throws Exception
-	{
-		Matcher matcher = conditionalElementChoicePattern.matcher(line);
-		return this.checkForConditionalElementChoice(matcher, false);
-	}
-	
-	private boolean checkForConditionalElementChoiceWithContext(String line) throws Exception
-	{
-		Matcher matcher = conditionalElementChoiceWithContextPattern.matcher(line);
-		return this.checkForConditionalElementChoice(matcher, true);
-	}
-	
-	private boolean checkForConditionalElementChoice(Matcher matcher, boolean withContext) throws Exception
-	{
-		if (matcher.find())
-		{	
-			String keyword = matcher.group(1);
-			String elementName = matcher.group(2);
-			String elementNamingQuality = matcher.group(3);
-			String elementNumberName = matcher.group(4);
-			String startString = matcher.group(5);
-			String endString = matcher.group(6);
-			String comparatorText = matcher.group(7);
-			String valueText = matcher.group(8);
-			
-			Element element = this.scenario.getElement(elementName);
-			
-			for (ElementInstance elementInstance : element.getInstances())
-			{
-				if (this.checkComparison(elementInstance, comparatorText, elementNumberName, valueText))
-					this.makeElementChoice(elementInstance, keyword, withContext, elementNamingQuality, startString, endString);
-			}
-			
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	
 	private void makeElementChoice(ElementInstance elementInstance, String keyword, boolean withContext, String elementNamingQuality, String startString, String endString)
 	{
 		ElementChoice elementChoice = new ElementChoice();
 		elementChoice.keyword = keyword;
 		elementChoice.elementInstance = elementInstance;
-		elementChoice.context = this.getPageContext();
+		if (withContext)
+			elementChoice.context = this.getPageContext();
 		String qualityString = elementInstance.getDetailValueByName(elementNamingQuality);
 		String keyString = startString + qualityString + endString;
 		this.addChoice(keyString, elementChoice);
@@ -523,81 +509,6 @@ public class PageInstance
 			int elementNumber = Integer.valueOf(matcher.group(2));
 			Element element = this.scenario.getElement(elementName);
 			element.makeInstances(elementNumber);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	
-	private boolean checkForConditionalChoice(String line) throws Exception
-	{
-		Matcher matcher = conditionalChoicePattern.matcher(line);
-		return this.checkForConditionalChoice(matcher, false);
-	}
-	
-	private boolean checkForConditionalChoiceWithContext(String line) throws Exception
-	{
-		Matcher matcher = conditionalChoiceWithContextPattern.matcher(line);
-		return this.checkForConditionalChoice(matcher, true);
-	}
-	
-	private boolean checkForConditionalChoice(Matcher matcher, boolean withContext) throws Exception
-	{	
-		if (matcher.find())
-		{	
-			String choiceName = matcher.group(1);
-			String keyword = matcher.group(2);
-			String elementType = matcher.group(3);
-			String elementNumberName = matcher.group(4);
-			String comparatorText = matcher.group(5);
-			String numberString = matcher.group(6);
-			
-			Element element = this.scenario.getElement(elementType);	
-			ElementInstance elementInstance = this.getSelectedElementInstance(element);
-			ElementChoice elementChoice = new ElementChoice();
-			elementChoice.keyword = keyword;
-			elementChoice.context = this.getPageContext();
-			
-			if (this.checkComparison(elementInstance, comparatorText, elementNumberName, numberString))
-			{
-				this.addChoice(choiceName, elementChoice);
-				return true;
-			}
-			else
-			{
-				return true;
-			}
-		}
-		else
-		{
-			return false;
-		}
-	}
-	
-	private boolean checkForChoiceWithContext(String line)
-	{
-		Matcher matcher = choiceWithContextPattern.matcher(line);
-		return this.checkForChoice(matcher, true);
-	}
-	
-	private boolean checkForChoice(String line)
-	{
-		Matcher matcher = choicePattern.matcher(line);
-		return this.checkForChoice(matcher, false);
-	}
-	
-	private boolean checkForChoice(Matcher matcher, boolean withContext)
-	{
-		if (matcher.find())
-		{	
-			String choiceName = matcher.group(1);
-			String keyword = matcher.group(2);
-			ElementChoice elementChoice = new ElementChoice();
-			elementChoice.keyword = keyword;
-			elementChoice.context = this.getPageContext();
-			this.addChoice(choiceName, elementChoice);
 			return true;
 		}
 		else

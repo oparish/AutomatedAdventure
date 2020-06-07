@@ -29,8 +29,7 @@ public class Pages
 		
 		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PAGES, PageRestriction.class);
 		RestrictedJson<PageRestriction> pageJson = pageTemplateMap.getMemberBy("initial");
-		String pageValue = pageJson.getString(PageRestriction.VALUE);
-		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(), pageValue);
+		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(), pageJson);
 		
 		Pages.pageWindow = new PageWindow();
 		Pages.pageWindow.showWindow();
@@ -39,7 +38,7 @@ public class Pages
 	
 	public static void loadPage(ElementChoice elementChoice)
 	{
-		String pageTemplate = Pages.scenario.getPageTemplate(elementChoice.keyword);
+		RestrictedJson<PageRestriction> pageJson = Pages.scenario.getPageTemplate(elementChoice.keyword);
 		PageContext pageContext;
 		
 		if (elementChoice.context != null)
@@ -50,7 +49,7 @@ public class Pages
 		if (elementChoice.elementInstance != null)
 			pageContext.addElementInstance(elementChoice.elementInstance);
 		
-		PageInstance pageInstance = new PageInstance(Pages.scenario, pageContext, pageTemplate);
+		PageInstance pageInstance = new PageInstance(Pages.scenario, pageContext, pageJson);
 		try {
 			Pages.pageWindow.update(pageInstance);
 		} catch (Exception e)

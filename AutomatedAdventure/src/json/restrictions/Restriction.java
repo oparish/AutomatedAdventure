@@ -31,6 +31,7 @@ public enum Restriction
 	CONDITIONS("conditions", RestrictionType.CONDITION, JsonDim.ARRAY),
 	TYPE("type", STRING, JsonDim.MONO),
 	VALUE("value", STRING, JsonDim.MONO),
+	NUMBER_VALUE("numberValue", NUMBER, JsonDim.MONO),
 	MODE("mode", STRING, JsonDim.MONO),
 	CONTENT("content", STRING, JsonDim.MONO),
 	ACTIONS("actions", RestrictionType.ACTION, JsonDim.ARRAY),
@@ -52,16 +53,23 @@ public enum Restriction
 	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO, true),
 	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY),
 	PAGES("pages", RestrictionType.PAGE, JsonDim.MAP),
+	CHOICES("choices", RestrictionType.CHOICE, JsonDim.ARRAY, true),
+	WITH_CONTEXT("withContext", BOOLEAN, JsonDim.MONO),
 	FIRST("first", STRING, JsonDim.MONO),
 	SECOND("second", STRING, JsonDim.MONO),
 	MAX_VALUE("maxValue", NUMBER, JsonDim.MONO),
 	MIN_VALUE("minValue", NUMBER, JsonDim.MONO),
+	ELEMENT_NAME("elementName", STRING, JsonDim.MONO, true),
+	ELEMENT_QUALITY("elementQuality", STRING, JsonDim.MONO, true),
+	ELEMENT_CONDITION("elementCondition", RestrictionType.ELEMENT_CONDITION, JsonDim.MONO, true),
+	CONTEXT_CONDITION("contextCondition", RestrictionType.CONTEXT_CONDITION, JsonDim.MONO, true),
+	ELEMENT_CHOICE("elementChoice", RestrictionType.ELEMENT_CHOICE, JsonDim.MONO, true),
 	CONNECTIONS("connections", RestrictionType.CONNECTION, JsonDim.ARRAY),
 	ELEMENT_SETS("elementSets", RestrictionType.ELEMENT_SET, JsonDim.ARRAY, true),
 	MEMBERS("members", RestrictionType.ELEMENT_SET_MEMBER, JsonDim.ARRAY),
 	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO, true);
 	
-	private final boolean noneable;
+	private final boolean optional;
 	private final JsonDim jsonDim;
 	private final JsonType jsonType;
 	public JsonType getJsonType() {
@@ -79,9 +87,9 @@ public enum Restriction
 		return jsonDim;
 	}
 	
-	public boolean getNoneable()
+	public boolean getOptional()
 	{
-		return noneable;
+		return this.optional;
 	}
 
 	private Restriction(String name, JsonType jsonType, JsonDim jsonDim)
@@ -89,11 +97,11 @@ public enum Restriction
 		this(name, jsonType, jsonDim, false);
 	}
 	
-	private Restriction(String name, JsonType jsonType, JsonDim jsonDim, boolean noneable)
+	private Restriction(String name, JsonType jsonType, JsonDim jsonDim, boolean optional)
 	{
 		this.name = name;
 		this.jsonType = jsonType;
 		this.jsonDim = jsonDim;
-		this.noneable = noneable;
+		this.optional = optional;
 	}
 }

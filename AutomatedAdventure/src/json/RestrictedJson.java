@@ -40,7 +40,8 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 			{
 				Restriction restriction = restrictionPointer.getRestriction();
 				String restrictionName = restriction.getName();
-				if (restriction.getNoneable() && json.get(restrictionName) == null)
+				
+				if (restriction.getOptional() && json.get(restrictionName) == null)
 					continue;
 				this.loadJson(json, restrictionPointer);
 				if (restrictionPointer instanceof SuperRestriction)

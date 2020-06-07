@@ -12,6 +12,8 @@ import javax.swing.JTextArea;
 import backend.Scenario;
 import backend.pages.PageContext;
 import backend.pages.PageInstance;
+import json.RestrictedJson;
+import json.restrictions.PageRestriction;
 
 public class PagePanel extends JPanel
 {
@@ -59,8 +61,8 @@ public class PagePanel extends JPanel
 		{
 			PageContext pageContext = pageInstance.getPageContext();
 			Scenario scenario = pageInstance.getScenario();
-			String pageTemplate = scenario.getPageTemplate(redirectPage);
-			PageInstance newInstance = new PageInstance(scenario, pageContext, pageTemplate);
+			RestrictedJson<PageRestriction> pageJson = scenario.getPageTemplate(redirectPage);
+			PageInstance newInstance = new PageInstance(scenario, pageContext, pageJson);
 			this.update(newInstance);
 		}
 		else

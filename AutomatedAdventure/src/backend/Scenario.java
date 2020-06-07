@@ -144,13 +144,10 @@ public class Scenario
 		}
 	}
 	
-	public String getPageTemplate(String key)
+	public RestrictedJson<PageRestriction> getPageTemplate(String key)
 	{
 		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PAGES, PageRestriction.class);
-
-		RestrictedJson<PageRestriction> pageJson = pageTemplateMap.getMemberBy(key);
-		String pageValue = pageJson.getString(PageRestriction.VALUE);
-		return pageValue;
+		return pageTemplateMap.getMemberBy(key);
 	}
 	
 	public int getIntervalTime(int intervalIndex)
