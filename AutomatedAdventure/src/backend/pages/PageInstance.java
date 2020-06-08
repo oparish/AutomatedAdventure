@@ -19,6 +19,7 @@ import json.restrictions.ConditionRestriction;
 import json.restrictions.ContextConditionRestriction;
 import json.restrictions.ElementChoiceRestriction;
 import json.restrictions.ElementConditionRestriction;
+import json.restrictions.MakeConnectionRestriction;
 import json.restrictions.MakeElementRestriction;
 import json.restrictions.PageRestriction;
 import main.Main;
@@ -38,7 +39,6 @@ public class PageInstance
 	private static final Pattern randomRedirectOuterPattern = Pattern.compile("(<randomRedirect:([^<>]*):(\\d+)>)+");
 	private static final Pattern randomRedirectInnerPattern = Pattern.compile("<randomRedirect:([^<>]*):(\\d+)>");
 	
-	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
 	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	private static final Pattern adjustSelectedElementPattern = Pattern.compile("selectedElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	private static final Pattern adjustConnectedElementPattern = Pattern.compile("connectedElementAdjust:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
@@ -76,6 +76,7 @@ public class PageInstance
 	{
 		this.setupChoices();
 		this.makeElements();
+		this.makeConnections();
 		
 		Matcher matcher = mainPattern.matcher(this.pageJson.getString(PageRestriction.VALUE));
 		matcher.find();
@@ -395,8 +396,6 @@ public class PageInstance
 		
 		for (String line : lines)
 		{
-			if (this.checkForConnection(line))
-				continue;
 			if (this.checkForEachElementAdjust(line))
 				continue;
 			if (this.checkForSelectedElementAdjust(line))
@@ -482,20 +481,21 @@ public class PageInstance
 		this.addChoice(keyString, elementChoice);
 	}
 	
-	private boolean checkForConnection(String line) throws Exception
+	private void makeConnections() throws Exception
 	{
-		Matcher matcher = connectionHeadPattern.matcher(line);
-		if (matcher.find())
-		{	
-			String connectionName = matcher.group(1);
-			int connectionNumber = Integer.valueOf(matcher.group(2));
+		JsonEntityArray<RestrictedJson<MakeConnectionRestriction>> makeConnectionArray = 
+				this.pageJson.getRestrictedJsonArray(PageRestriction.MAKE_CONNECTIONS, MakeConnectionRestriction.class);
+		
+		if (makeConnectionArray == null)
+			return;
+			
+		for (int i = 0; i < makeConnectionArray.size(); i++)
+		{
+			RestrictedJson<MakeConnectionRestriction> makeConnectionData = makeConnectionArray.getMemberAt(i);
+			int connectionNumber = makeConnectionData.getNumber(MakeConnectionRestriction.NUMBER_VALUE);
+			String connectionName = makeConnectionData.getString(MakeConnectionRestriction.NAME);
 			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
 			connectionSet.makeUniqueConnections(connectionNumber);
-			return true;
-		}
-		else
-		{
-			return false;
 		}
 	}
 	
