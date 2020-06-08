@@ -38,7 +38,6 @@ public class PageInstance
 	private static final Pattern randomRedirectOuterPattern = Pattern.compile("(<randomRedirect:([^<>]*):(\\d+)>)+");
 	private static final Pattern randomRedirectInnerPattern = Pattern.compile("<randomRedirect:([^<>]*):(\\d+)>");
 	
-	private static final Pattern elementHeadPattern = Pattern.compile("element:(.*):(\\d+)");
 	private static final Pattern connectionHeadPattern = Pattern.compile("connectionList:(.*):(\\d+)");
 	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	private static final Pattern adjustSelectedElementPattern = Pattern.compile("selectedElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
