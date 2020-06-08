@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum PageRestriction implements RestrictionPointer
 {
-	VALUE(Restriction.VALUE), CHOICES(Restriction.CHOICES);
+	VALUE(Restriction.VALUE), CHOICES(Restriction.CHOICES), MAKE_ELEMENTS(Restriction.MAKE_ELEMENTS);
 	
 	private Restriction restriction;
 	

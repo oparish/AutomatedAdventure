@@ -19,6 +19,7 @@ import json.restrictions.ConditionRestriction;
 import json.restrictions.ContextConditionRestriction;
 import json.restrictions.ElementChoiceRestriction;
 import json.restrictions.ElementConditionRestriction;
+import json.restrictions.MakeElementRestriction;
 import json.restrictions.PageRestriction;
 import main.Main;
 
@@ -75,6 +76,7 @@ public class PageInstance
 	public String getText() throws Exception
 	{
 		this.setupChoices();
+		this.makeElements();
 		
 		Matcher matcher = mainPattern.matcher(this.pageJson.getString(PageRestriction.VALUE));
 		matcher.find();
@@ -394,8 +396,6 @@ public class PageInstance
 		
 		for (String line : lines)
 		{
-			if (this.checkForElement(line))
-				continue;
 			if (this.checkForConnection(line))
 				continue;
 			if (this.checkForEachElementAdjust(line))
@@ -500,20 +500,21 @@ public class PageInstance
 		}
 	}
 	
-	private boolean checkForElement(String line) throws Exception
+	private void makeElements() throws Exception
 	{
-		Matcher matcher = elementHeadPattern.matcher(line);
-		if (matcher.find())
-		{	
-			String elementName = matcher.group(1);
-			int elementNumber = Integer.valueOf(matcher.group(2));
-			Element element = this.scenario.getElement(elementName);
-			element.makeInstances(elementNumber);
-			return true;
-		}
-		else
+		JsonEntityArray<RestrictedJson<MakeElementRestriction>> makeElementArray = 
+				this.pageJson.getRestrictedJsonArray(PageRestriction.MAKE_ELEMENTS, MakeElementRestriction.class);
+		
+		if (makeElementArray == null)
+			return;
+		
+		for (int i = 0; i < makeElementArray.size(); i++)
 		{
-			return false;
+			RestrictedJson<MakeElementRestriction> makeElementData = makeElementArray.getMemberAt(i);
+			String elementName = makeElementData.getString(MakeElementRestriction.ELEMENT_NAME);
+			int numberValue = makeElementData.getNumber(MakeElementRestriction.NUMBER_VALUE);
+			Element element = this.scenario.getElement(elementName);
+			element.makeInstances(numberValue);
 		}
 	}
 	
