@@ -23,6 +23,7 @@ import json.restrictions.ElementConditionRestriction;
 import json.restrictions.MakeConnectionRestriction;
 import json.restrictions.MakeElementRestriction;
 import json.restrictions.PageRestriction;
+import json.restrictions.SelectedElementAdjustmentRestriction;
 import main.Main;
 
 public class PageInstance
@@ -40,7 +41,6 @@ public class PageInstance
 	private static final Pattern randomRedirectOuterPattern = Pattern.compile("(<randomRedirect:([^<>]*):(\\d+)>)+");
 	private static final Pattern randomRedirectInnerPattern = Pattern.compile("<randomRedirect:([^<>]*):(\\d+)>");
 	
-	private static final Pattern adjustSelectedElementPattern = Pattern.compile("selectedElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	private static final Pattern adjustConnectedElementPattern = Pattern.compile("connectedElementAdjust:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	
 	Scenario scenario;
@@ -78,6 +78,7 @@ public class PageInstance
 		this.makeElements();
 		this.makeConnections();
 		this.makeEachElementAdjustments();
+		this.makeSelectedElementAdjustments();
 		
 		Matcher matcher = mainPattern.matcher(this.pageJson.getString(PageRestriction.VALUE));
 		matcher.find();
@@ -420,30 +421,30 @@ public class PageInstance
 		
 		for (String line : lines)
 		{
-			if (this.checkForSelectedElementAdjust(line))
-				continue;
 			if (this.checkForConnectedlementAdjust(line))
 				continue;
 		}
 	}
 
-	private boolean checkForSelectedElementAdjust(String line)
+	private void makeSelectedElementAdjustments()
 	{
-		Matcher matcher = adjustSelectedElementPattern.matcher(line);
-		if (matcher.find())
+		JsonEntityArray<RestrictedJson<SelectedElementAdjustmentRestriction>> selectedElementAdjustmentArray = 
+				this.pageJson.getRestrictedJsonArray(PageRestriction.SELECTED_ELEMENT_ADJUSTMENTS, SelectedElementAdjustmentRestriction.class);
+		
+		if (selectedElementAdjustmentArray == null)
+			return;
+		
+		for (int i = 0; i < selectedElementAdjustmentArray.size(); i++)
 		{
-			String elementType = matcher.group(1);
-			String elementNumberName = matcher.group(2);
-			String valueText = matcher.group(3);
-			Element element = this.scenario.getElement(elementType);
-			int value = Integer.valueOf(valueText);
+			RestrictedJson<SelectedElementAdjustmentRestriction> selectedElementAdjustmentData = 
+					selectedElementAdjustmentArray.getMemberAt(i);
+			String elementType = selectedElementAdjustmentData.getString(SelectedElementAdjustmentRestriction.ELEMENT_NAME);
+			String elementNumberName = selectedElementAdjustmentData.getString(SelectedElementAdjustmentRestriction.ELEMENT_QUALITY);			
+			int value = selectedElementAdjustmentData.getNumber(SelectedElementAdjustmentRestriction.NUMBER_VALUE);
+			
+			Element element = this.scenario.getElement(elementType);		
 			ElementInstance elementInstance = this.getSelectedElementInstance(element);
 			elementInstance.adjustNumber(elementNumberName, value);
-			return true;
-		}
-		else
-		{
-			return false;
 		}
 	}
 	
