@@ -17,6 +17,7 @@ import json.RestrictedJson;
 import json.restrictions.ChoiceRestriction;
 import json.restrictions.ConditionRestriction;
 import json.restrictions.ContextConditionRestriction;
+import json.restrictions.EachElementAdjustmentRestriction;
 import json.restrictions.ElementChoiceRestriction;
 import json.restrictions.ElementConditionRestriction;
 import json.restrictions.MakeConnectionRestriction;
@@ -39,7 +40,6 @@ public class PageInstance
 	private static final Pattern randomRedirectOuterPattern = Pattern.compile("(<randomRedirect:([^<>]*):(\\d+)>)+");
 	private static final Pattern randomRedirectInnerPattern = Pattern.compile("<randomRedirect:([^<>]*):(\\d+)>");
 	
-	private static final Pattern eachElementAdjustPattern = Pattern.compile("eachElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	private static final Pattern adjustSelectedElementPattern = Pattern.compile("selectedElementAdjust:([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	private static final Pattern adjustConnectedElementPattern = Pattern.compile("connectedElementAdjust:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	
@@ -77,6 +77,7 @@ public class PageInstance
 		this.setupChoices();
 		this.makeElements();
 		this.makeConnections();
+		this.makeEachElementAdjustments();
 		
 		Matcher matcher = mainPattern.matcher(this.pageJson.getString(PageRestriction.VALUE));
 		matcher.find();
@@ -109,6 +110,29 @@ public class PageInstance
 		for (int i = 0; i < choiceDataArray.size(); i++)
 		{
 			this.setupChoice(choiceDataArray.getMemberAt(i));
+		}
+	}
+	
+	private void makeEachElementAdjustments()
+	{
+		JsonEntityArray<RestrictedJson<EachElementAdjustmentRestriction>> eachElementAdjustmentArray = 
+				this.pageJson.getRestrictedJsonArray(PageRestriction.EACH_ELEMENT_ADJUSTMENTS, EachElementAdjustmentRestriction.class);
+		
+		if (eachElementAdjustmentArray == null)
+			return;
+		
+		for (int i = 0; i < eachElementAdjustmentArray.size(); i++)
+		{
+			RestrictedJson<EachElementAdjustmentRestriction> eachElementAdjustment = eachElementAdjustmentArray.getMemberAt(i);
+			String elementType = eachElementAdjustment.getString(EachElementAdjustmentRestriction.ELEMENT_NAME);
+			String elementNumberType = eachElementAdjustment.getString(EachElementAdjustmentRestriction.ELEMENT_QUALITY);
+			int value = eachElementAdjustment.getNumber(EachElementAdjustmentRestriction.NUMBER_VALUE);
+			
+			Element element = this.scenario.getElement(elementType);
+			for (ElementInstance instance : element.getInstances())
+			{
+				instance.adjustNumber(elementNumberType, value);
+			}
 		}
 	}
 	
@@ -396,8 +420,6 @@ public class PageInstance
 		
 		for (String line : lines)
 		{
-			if (this.checkForEachElementAdjust(line))
-				continue;
 			if (this.checkForSelectedElementAdjust(line))
 				continue;
 			if (this.checkForConnectedlementAdjust(line))
@@ -440,27 +462,6 @@ public class PageInstance
 			ElementInstance connectedInstance = connectionSet.get(selectedInstance);		
 			int value = Integer.valueOf(valueText);
 			connectedInstance.adjustNumber(elementNumberName, value);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	
-	private boolean checkForEachElementAdjust(String line)
-	{
-		Matcher matcher = eachElementAdjustPattern.matcher(line);
-		if (matcher.find())
-		{
-			String elementType = matcher.group(1);
-			String elementNumberType = matcher.group(2);
-			int value = Integer.valueOf(matcher.group(3));
-			Element element = this.scenario.getElement(elementType);
-			for (ElementInstance instance : element.getInstances())
-			{
-				instance.adjustNumber(elementNumberType, value);
-			}
 			return true;
 		}
 		else

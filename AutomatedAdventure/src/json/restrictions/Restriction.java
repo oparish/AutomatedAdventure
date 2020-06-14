@@ -69,6 +69,7 @@ public enum Restriction
 	MEMBERS("members", RestrictionType.ELEMENT_SET_MEMBER, JsonDim.ARRAY),
 	MAKE_ELEMENTS("makeElements", RestrictionType.MAKE_ELEMENT, JsonDim.ARRAY, true),
 	MAKE_CONNECTIONS("makeConnections", RestrictionType.MAKE_CONNECTION, JsonDim.ARRAY, true),
+	EACH_ELEMENT_ADJUSTMENTS("eachElementAdjustments", RestrictionType.EACH_ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
 	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO, true);
 	
 	private final boolean optional;
