@@ -16,6 +16,7 @@ import json.JsonEntityMap;
 import json.RestrictedJson;
 import json.restrictions.ChoiceRestriction;
 import json.restrictions.ConditionRestriction;
+import json.restrictions.ConnectedElementAdjustmentRestriction;
 import json.restrictions.ContextConditionRestriction;
 import json.restrictions.EachElementAdjustmentRestriction;
 import json.restrictions.ElementChoiceRestriction;
@@ -40,8 +41,6 @@ public class PageInstance
 	private static final Pattern redirectInnerPattern = Pattern.compile("<redirect:([^<>]*):([^<>]*):([^<>]*):([<>]?=?):(-?\\d+)>");
 	private static final Pattern randomRedirectOuterPattern = Pattern.compile("(<randomRedirect:([^<>]*):(\\d+)>)+");
 	private static final Pattern randomRedirectInnerPattern = Pattern.compile("<randomRedirect:([^<>]*):(\\d+)>");
-	
-	private static final Pattern adjustConnectedElementPattern = Pattern.compile("connectedElementAdjust:([\\s\\S]*):([\\s\\S]*):([\\s\\S]*):(-?\\d+)");
 	
 	Scenario scenario;
 	RestrictedJson<PageRestriction> pageJson;
@@ -79,12 +78,12 @@ public class PageInstance
 		this.makeConnections();
 		this.makeEachElementAdjustments();
 		this.makeSelectedElementAdjustments();
+		this.makeConnectedElementAdjustments();
 		
 		Matcher matcher = mainPattern.matcher(this.pageJson.getString(PageRestriction.VALUE));
 		matcher.find();
 		String headerText = matcher.group(1);
 		String bodyText = matcher.group(2);
-		this.assessHead(headerText);
 		String adjustedText = this.checkPatterns(bodyText);
 		return adjustedText;
 	}
@@ -413,18 +412,6 @@ public class PageInstance
 		adjustedText = this.checkForConditionalRepeatForElementPattern(adjustedText);
 		return adjustedText;
 	}
-	
-	private void assessHead(String headerText) throws Exception
-	{
-		
-		String[] lines = headerText.split("\r\n");
-		
-		for (String line : lines)
-		{
-			if (this.checkForConnectedlementAdjust(line))
-				continue;
-		}
-	}
 
 	private void makeSelectedElementAdjustments()
 	{
@@ -448,26 +435,28 @@ public class PageInstance
 		}
 	}
 	
-	private boolean checkForConnectedlementAdjust(String line) throws Exception
+	private void makeConnectedElementAdjustments() throws Exception
 	{
-		Matcher matcher = adjustConnectedElementPattern.matcher(line);
-		if (matcher.find())
+		JsonEntityArray<RestrictedJson<ConnectedElementAdjustmentRestriction>> connectedElementAdjustmentArray = 
+				this.pageJson.getRestrictedJsonArray(PageRestriction.CONNECTED_ELEMENT_ADJUSTMENTS, ConnectedElementAdjustmentRestriction.class);
+		
+		if (connectedElementAdjustmentArray == null)
+			return;
+		
+		for (int i = 0; i < connectedElementAdjustmentArray.size(); i++)
 		{
-			String elementType = matcher.group(1);
-			String connectionType = matcher.group(2);
-			String elementNumberName = matcher.group(3);
-			String valueText = matcher.group(4);
+			RestrictedJson<ConnectedElementAdjustmentRestriction> connectedElementAdjustmentData = 
+					connectedElementAdjustmentArray.getMemberAt(i);
+			String connectionName = connectedElementAdjustmentData.getString(ConnectedElementAdjustmentRestriction.CONNECTION_NAME);
+			String elementType = connectedElementAdjustmentData.getString(ConnectedElementAdjustmentRestriction.ELEMENT_NAME);
+			String elementNumberName = connectedElementAdjustmentData.getString(ConnectedElementAdjustmentRestriction.ELEMENT_QUALITY);			
+			int value = connectedElementAdjustmentData.getNumber(ConnectedElementAdjustmentRestriction.NUMBER_VALUE);
+			
+			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
 			Element element = this.scenario.getElement(elementType);
-			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionType);
-			ElementInstance selectedInstance = this.getSelectedElementInstance(element);
-			ElementInstance connectedInstance = connectionSet.get(selectedInstance);		
-			int value = Integer.valueOf(valueText);
+			ElementInstance elementInstance = this.getSelectedElementInstance(element);
+			ElementInstance connectedInstance = connectionSet.get(elementInstance);
 			connectedInstance.adjustNumber(elementNumberName, value);
-			return true;
-		}
-		else
-		{
-			return false;
 		}
 	}
 	
