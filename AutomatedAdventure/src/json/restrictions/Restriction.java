@@ -10,7 +10,7 @@ import json.JsonType;
 public enum Restriction
 {	
 	NAME("name", STRING, JsonDim.MONO),
-	CONNECTION_NAME("connectionName", STRING, JsonDim.MONO),
+	CONNECTION_NAME("connectionName", STRING, JsonDim.MONO, true),
 	UNIQUE("unique", BOOLEAN, JsonDim.MONO),
 	ELEMENT_DATA("elementData", RestrictionType.ELEMENTDATA, JsonDim.ARRAY),
 	ELEMENT_NUMBERS("elementNumbers", RestrictionType.ELEMENT_NUMBER, JsonDim.ARRAY, true),
@@ -70,9 +70,7 @@ public enum Restriction
 	MEMBERS("members", RestrictionType.ELEMENT_SET_MEMBER, JsonDim.ARRAY),
 	MAKE_ELEMENTS("makeElements", RestrictionType.MAKE_ELEMENT, JsonDim.ARRAY, true),
 	MAKE_CONNECTIONS("makeConnections", RestrictionType.MAKE_CONNECTION, JsonDim.ARRAY, true),
-	EACH_ELEMENT_ADJUSTMENTS("eachElementAdjustments", RestrictionType.EACH_ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
-	SELECTED_ELEMENT_ADJUSTMENTS("selectedElementAdjustments", RestrictionType.SELECTED_ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
-	CONNECTED_ELEMENT_ADJUSTMENTS("connectedElementAdjustments", RestrictionType.CONNECTED_ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
+	ELEMENT_ADJUSTMENTS("elementAdjustments", RestrictionType.ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
 	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO, true);
 	
 	private final boolean optional;

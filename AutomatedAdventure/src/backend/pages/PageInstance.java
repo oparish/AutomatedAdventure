@@ -12,19 +12,16 @@ import backend.NumberRange;
 import backend.Scenario;
 import backend.component.ConnectionSet;
 import json.JsonEntityArray;
-import json.JsonEntityMap;
 import json.RestrictedJson;
 import json.restrictions.ChoiceRestriction;
-import json.restrictions.ConditionRestriction;
-import json.restrictions.ConnectedElementAdjustmentRestriction;
 import json.restrictions.ContextConditionRestriction;
-import json.restrictions.EachElementAdjustmentRestriction;
+import json.restrictions.ElementAdjustmentRestriction;
+import json.restrictions.ElementAdjustmentType;
 import json.restrictions.ElementChoiceRestriction;
 import json.restrictions.ElementConditionRestriction;
 import json.restrictions.MakeConnectionRestriction;
 import json.restrictions.MakeElementRestriction;
 import json.restrictions.PageRestriction;
-import json.restrictions.SelectedElementAdjustmentRestriction;
 import main.Main;
 
 public class PageInstance
@@ -76,9 +73,7 @@ public class PageInstance
 		this.setupChoices();
 		this.makeElements();
 		this.makeConnections();
-		this.makeEachElementAdjustments();
-		this.makeSelectedElementAdjustments();
-		this.makeConnectedElementAdjustments();
+		this.makeElementAdjustments();
 		
 		Matcher matcher = mainPattern.matcher(this.pageJson.getString(PageRestriction.VALUE));
 		matcher.find();
@@ -110,29 +105,6 @@ public class PageInstance
 		for (int i = 0; i < choiceDataArray.size(); i++)
 		{
 			this.setupChoice(choiceDataArray.getMemberAt(i));
-		}
-	}
-	
-	private void makeEachElementAdjustments()
-	{
-		JsonEntityArray<RestrictedJson<EachElementAdjustmentRestriction>> eachElementAdjustmentArray = 
-				this.pageJson.getRestrictedJsonArray(PageRestriction.EACH_ELEMENT_ADJUSTMENTS, EachElementAdjustmentRestriction.class);
-		
-		if (eachElementAdjustmentArray == null)
-			return;
-		
-		for (int i = 0; i < eachElementAdjustmentArray.size(); i++)
-		{
-			RestrictedJson<EachElementAdjustmentRestriction> eachElementAdjustment = eachElementAdjustmentArray.getMemberAt(i);
-			String elementType = eachElementAdjustment.getString(EachElementAdjustmentRestriction.ELEMENT_NAME);
-			String elementNumberType = eachElementAdjustment.getString(EachElementAdjustmentRestriction.ELEMENT_QUALITY);
-			int value = eachElementAdjustment.getNumber(EachElementAdjustmentRestriction.NUMBER_VALUE);
-			
-			Element element = this.scenario.getElement(elementType);
-			for (ElementInstance instance : element.getInstances())
-			{
-				instance.adjustNumber(elementNumberType, value);
-			}
 		}
 	}
 	
@@ -412,51 +384,45 @@ public class PageInstance
 		adjustedText = this.checkForConditionalRepeatForElementPattern(adjustedText);
 		return adjustedText;
 	}
-
-	private void makeSelectedElementAdjustments()
-	{
-		JsonEntityArray<RestrictedJson<SelectedElementAdjustmentRestriction>> selectedElementAdjustmentArray = 
-				this.pageJson.getRestrictedJsonArray(PageRestriction.SELECTED_ELEMENT_ADJUSTMENTS, SelectedElementAdjustmentRestriction.class);
-		
-		if (selectedElementAdjustmentArray == null)
-			return;
-		
-		for (int i = 0; i < selectedElementAdjustmentArray.size(); i++)
-		{
-			RestrictedJson<SelectedElementAdjustmentRestriction> selectedElementAdjustmentData = 
-					selectedElementAdjustmentArray.getMemberAt(i);
-			String elementType = selectedElementAdjustmentData.getString(SelectedElementAdjustmentRestriction.ELEMENT_NAME);
-			String elementNumberName = selectedElementAdjustmentData.getString(SelectedElementAdjustmentRestriction.ELEMENT_QUALITY);			
-			int value = selectedElementAdjustmentData.getNumber(SelectedElementAdjustmentRestriction.NUMBER_VALUE);
-			
-			Element element = this.scenario.getElement(elementType);		
-			ElementInstance elementInstance = this.getSelectedElementInstance(element);
-			elementInstance.adjustNumber(elementNumberName, value);
-		}
-	}
 	
-	private void makeConnectedElementAdjustments() throws Exception
+	private void makeElementAdjustments() throws Exception
 	{
-		JsonEntityArray<RestrictedJson<ConnectedElementAdjustmentRestriction>> connectedElementAdjustmentArray = 
-				this.pageJson.getRestrictedJsonArray(PageRestriction.CONNECTED_ELEMENT_ADJUSTMENTS, ConnectedElementAdjustmentRestriction.class);
+		JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray = 
+				this.pageJson.getRestrictedJsonArray(PageRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
 		
-		if (connectedElementAdjustmentArray == null)
+		if (elementAdjustmentArray == null)
 			return;
 		
-		for (int i = 0; i < connectedElementAdjustmentArray.size(); i++)
+		for (int i = 0; i < elementAdjustmentArray.size(); i++)
 		{
-			RestrictedJson<ConnectedElementAdjustmentRestriction> connectedElementAdjustmentData = 
-					connectedElementAdjustmentArray.getMemberAt(i);
-			String connectionName = connectedElementAdjustmentData.getString(ConnectedElementAdjustmentRestriction.CONNECTION_NAME);
-			String elementType = connectedElementAdjustmentData.getString(ConnectedElementAdjustmentRestriction.ELEMENT_NAME);
-			String elementNumberName = connectedElementAdjustmentData.getString(ConnectedElementAdjustmentRestriction.ELEMENT_QUALITY);			
-			int value = connectedElementAdjustmentData.getNumber(ConnectedElementAdjustmentRestriction.NUMBER_VALUE);
-			
-			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
+			RestrictedJson<ElementAdjustmentRestriction> elementAdjustmentData = elementAdjustmentArray.getMemberAt(i);
+			String typeString = elementAdjustmentData.getString(ElementAdjustmentRestriction.TYPE);
+			ElementAdjustmentType elementAdjustmentType = ElementAdjustmentType.stringToType(typeString);
+			String elementType = elementAdjustmentData.getString(ElementAdjustmentRestriction.ELEMENT_NAME);
+			String elementNumberName = elementAdjustmentData.getString(ElementAdjustmentRestriction.ELEMENT_QUALITY);			
+			int value = elementAdjustmentData.getNumber(ElementAdjustmentRestriction.NUMBER_VALUE);
 			Element element = this.scenario.getElement(elementType);
-			ElementInstance elementInstance = this.getSelectedElementInstance(element);
-			ElementInstance connectedInstance = connectionSet.get(elementInstance);
-			connectedInstance.adjustNumber(elementNumberName, value);
+			
+			switch(elementAdjustmentType)
+			{
+			case CONNECTED:
+				String connectionName = elementAdjustmentData.getString(ElementAdjustmentRestriction.CONNECTION_NAME);
+				ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
+				ElementInstance elementInstance = this.getSelectedElementInstance(element);
+				ElementInstance connectedInstance = connectionSet.get(elementInstance);
+				connectedInstance.adjustNumber(elementNumberName, value);
+				break;
+			case EACH:
+				for (ElementInstance instance : element.getInstances())
+				{
+					instance.adjustNumber(elementNumberName, value);
+				}
+				break;
+			case SELECTED:
+				ElementInstance selectedInstance = this.getSelectedElementInstance(element);
+				selectedInstance.adjustNumber(elementNumberName, value);
+				break;
+			}
 		}
 	}
 	
