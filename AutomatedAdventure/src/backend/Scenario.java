@@ -6,23 +6,33 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 
 import backend.Element.ElementInstance;
 import backend.component.ConnectionSet;
+import backend.pages.ElementChoice;
+import backend.pages.PageContext;
+import backend.pages.PageInstance;
 import json.JsonEntityArray;
 import json.JsonEntityMap;
+import json.JsonEntityNumber;
 import json.JsonEntityString;
 import json.RestrictedJson;
 import json.restrictions.ChanceRestriction;
+import json.restrictions.ContextConditionRestriction;
+import json.restrictions.ElementConditionRestriction;
 import json.restrictions.ElementRestriction;
 import json.restrictions.IntervalRestriction;
 import json.restrictions.PageRestriction;
+import json.restrictions.RandomRedirectRestriction;
+import json.restrictions.RedirectRestriction;
 import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
 import json.restrictions.component.ComponentRestriction;
 import json.restrictions.component.ConnectionRestriction;
 import json.restrictions.room.RoomRestriction;
 import main.Main;
+import main.Pages;
 import main.Rooms;
 
 public class Scenario
@@ -148,6 +158,117 @@ public class Scenario
 	{
 		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PAGES, PageRestriction.class);
 		return pageTemplateMap.getMemberBy(key);
+	}
+	
+	public RestrictedJson<RedirectRestriction> getRedirect(String key)
+	{
+		JsonEntityMap<RestrictedJson<RedirectRestriction>> redirectMap = 
+				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.REDIRECTS, RedirectRestriction.class);
+		return redirectMap.getMemberBy(key);
+	}
+	
+	public RestrictedJson<RandomRedirectRestriction> getRandomRedirect(String key)
+	{
+		JsonEntityMap<RestrictedJson<RandomRedirectRestriction>> redirectMap = 
+				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.RANDOM_REDIRECTS, RandomRedirectRestriction.class);
+		return redirectMap.getMemberBy(key);
+	}
+	
+	public void loadPage(String keyword, PageContext oldContext, ElementInstance elementInstance) throws Exception
+	{
+		RestrictedJson<PageRestriction> pageJson = this.getPageTemplate(keyword);
+		RestrictedJson<RedirectRestriction> redirectJson = this.getRedirect(keyword);
+		RestrictedJson<RandomRedirectRestriction> randomRedirectJson = this.getRandomRedirect(keyword);
+		
+		PageContext pageContext;
+		
+		if (oldContext != null)
+			pageContext = oldContext;
+		else
+			pageContext = new PageContext();
+		
+		if (elementInstance != null)
+			pageContext.addElementInstance(elementInstance);
+		
+		if (pageJson != null)
+		{		
+			PageInstance pageInstance = new PageInstance(this, pageContext, pageJson);
+			try
+			{
+				Pages.getPageWindow().update(pageInstance);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		else if (redirectJson != null)
+		{
+			this.loadRedirect(elementInstance, redirectJson, pageContext);				
+		}
+		else if (randomRedirectJson != null)
+		{
+			this.loadRandomRedirect(elementInstance, randomRedirectJson, pageContext);				
+		}
+	}
+	
+	private void loadRandomRedirect(ElementInstance elementInstance, RestrictedJson<RandomRedirectRestriction> randomRedirectJson, PageContext pageContext) throws Exception
+	{
+		JsonEntityMap<JsonEntityNumber> jsonMap = randomRedirectJson.getNumberMap(RandomRedirectRestriction.NUMBER_MAP);
+		HashMap<String, JsonEntityNumber> numberMap = jsonMap.getEntityMap();
+		HashMap<Integer, String> dataMap = new HashMap<Integer, String>();
+		int total = 0;
+
+		for (Entry<String, JsonEntityNumber> entry : numberMap.entrySet())
+		{
+			JsonEntityNumber jsonEntityNumber = entry.getValue();
+			int number = jsonEntityNumber.getValue();
+			total += number;
+			dataMap.put(new Integer(total), entry.getKey());
+		}
+		
+		int value = Main.getRndm(total);
+		
+		for (Entry<Integer, String> entry : dataMap.entrySet())
+		{
+			if (value < entry.getKey())
+			{
+				this.loadPage(entry.getValue(), pageContext, elementInstance);
+				return;
+			}
+		}
+		
+		throw new Exception("Random number out of range.");
+	}
+
+	private void loadRedirect(ElementInstance elementInstance, RestrictedJson<RedirectRestriction> redirectJson,
+			PageContext pageContext) throws Exception
+	{
+		RestrictedJson<ContextConditionRestriction> contextConditionData = 
+				redirectJson.getRestrictedJson(RedirectRestriction.CONTEXT_CONDITION, ContextConditionRestriction.class);
+			
+		String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
+		Element element = this.getElement(elementName);
+		String comparatorText = contextConditionData.getString(ContextConditionRestriction.TYPE);
+		String elementNumberName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_QUALITY);
+		int value = contextConditionData.getNumber(ContextConditionRestriction.NUMBER_VALUE);
+		
+		ElementInstance selectedInstance;
+		if (element.getUnique())
+			selectedInstance = element.getUniqueInstance();
+		else
+			selectedInstance = pageContext.getElementInstance(element);
+		
+		if (Pages.checkComparison(selectedInstance, comparatorText, elementNumberName, value))
+		{
+			String ifPageWord = redirectJson.getString(RedirectRestriction.FIRST);
+			this.loadPage(ifPageWord, pageContext, elementInstance);
+		}				
+		else
+		{
+			String elsePageWord = redirectJson.getString(RedirectRestriction.SECOND);
+			this.loadPage(elsePageWord, pageContext, elementInstance);
+		}
 	}
 	
 	public int getIntervalTime(int intervalIndex)

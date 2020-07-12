@@ -1,10 +1,16 @@
 package main;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
 
 import javax.json.JsonObject;
 
+import backend.Element;
+import backend.NumberRange;
 import backend.Scenario;
+import backend.Element.ElementInstance;
+import backend.pages.Comparator;
 import backend.pages.ElementChoice;
 import backend.pages.PageContext;
 import backend.pages.PageInstance;
@@ -13,6 +19,7 @@ import json.JsonEntityMap;
 import json.JsonEntityString;
 import json.RestrictedJson;
 import json.restrictions.PageRestriction;
+import json.restrictions.RedirectRestriction;
 import json.restrictions.ScenarioRestriction;
 
 public class Pages
@@ -36,26 +43,40 @@ public class Pages
 		Pages.pageWindow.update(pageInstance);
 	}
 	
-	public static void loadPage(ElementChoice elementChoice)
+	public static Scenario getScenario()
 	{
-		RestrictedJson<PageRestriction> pageJson = Pages.scenario.getPageTemplate(elementChoice.keyword);
-		PageContext pageContext;
-		
-		if (elementChoice.context != null)
-			pageContext = elementChoice.context;
-		else
-			pageContext = new PageContext();
-		
-		if (elementChoice.elementInstance != null)
-			pageContext.addElementInstance(elementChoice.elementInstance);
-		
-		PageInstance pageInstance = new PageInstance(Pages.scenario, pageContext, pageJson);
-		try {
-			Pages.pageWindow.update(pageInstance);
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		return Pages.scenario;
 	}
 	
+	public static boolean checkComparison(ElementInstance elementInstance, String comparatorText, String elementNumberName, int value) throws Exception
+	{
+		Comparator comparator = Comparator.fromText(comparatorText);		
+		int elementNumber = elementInstance.getNumberValueByName(elementNumberName);
+		return Pages.checkComparison(comparator, elementNumber, value);
+	}
+	
+	public static boolean checkComparison(Comparator comparator, int elementNumber, int value) throws Exception
+	{
+		switch(comparator)
+		{
+			case GREATER_THAN:
+				return (elementNumber > value);
+			case GREATER_THAN_OR_EQUAL:
+				return (elementNumber >= value);
+			case LESS_THAN:
+				return (elementNumber < value);
+			case LESS_THAN_OR_EQUAL:
+				return (elementNumber <= value);
+			case EQUAL:
+				return (elementNumber == value);
+			case NOT_EQUAL:
+				return (elementNumber != value);
+		}
+		throw new Exception("Unrecognised comparator type.");
+	}
+	
+	public static PageWindow getPageWindow()
+	{
+		return Pages.pageWindow;
+	}
 }

@@ -50,26 +50,8 @@ public class PagePanel extends JPanel
 	
 	public void update(PageInstance pageInstance) throws Exception
 	{
-		String redirectPage = pageInstance.getRedirect();
-		
-		if (redirectPage == null)
-		{
-			redirectPage = pageInstance.getRandomRedirect();
-		}
-		
-		if (redirectPage != null)
-		{
-			PageContext pageContext = pageInstance.getPageContext();
-			Scenario scenario = pageInstance.getScenario();
-			RestrictedJson<PageRestriction> pageJson = scenario.getPageTemplate(redirectPage);
-			PageInstance newInstance = new PageInstance(scenario, pageContext, pageJson);
-			this.update(newInstance);
-		}
-		else
-		{
-			this.textArea.setText(pageInstance.getText());
-			this.choiceBox.updateChoiceBox(pageInstance);
-		}
+		this.textArea.setText(pageInstance.getText());
+		this.choiceBox.updateChoiceBox(pageInstance);
 	}
 	
 	public void clear()

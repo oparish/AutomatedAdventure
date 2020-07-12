@@ -29,6 +29,8 @@ public enum RestrictionType implements JsonType
 	STATE(StateRestriction.class),
 	ROOM(RoomRestriction.class),
 	PAGE(PageRestriction.class),
+	REDIRECT(RedirectRestriction.class),
+	RANDOM_REDIRECT(RandomRedirectRestriction.class),
 	CHOICE(ChoiceRestriction.class),
 	SCENARIO(ScenarioRestriction.class),
 	CHANCE(ChanceRestriction.class),

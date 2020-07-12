@@ -54,6 +54,8 @@ public enum Restriction
 	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO, true),
 	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY),
 	PAGES("pages", RestrictionType.PAGE, JsonDim.MAP),
+	REDIRECTS("redirects", RestrictionType.REDIRECT, JsonDim.MAP),
+	RANDOM_REDIRECTS("randomRedirects", RestrictionType.RANDOM_REDIRECT, JsonDim.MAP),
 	CHOICES("choices", RestrictionType.CHOICE, JsonDim.ARRAY, true),
 	WITH_CONTEXT("withContext", BOOLEAN, JsonDim.MONO),
 	FIRST("first", STRING, JsonDim.MONO),
@@ -71,6 +73,7 @@ public enum Restriction
 	MAKE_ELEMENTS("makeElements", RestrictionType.MAKE_ELEMENT, JsonDim.ARRAY, true),
 	MAKE_CONNECTIONS("makeConnections", RestrictionType.MAKE_CONNECTION, JsonDim.ARRAY, true),
 	ELEMENT_ADJUSTMENTS("elementAdjustments", RestrictionType.ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
+	NUMBER_MAP("numberMap", NUMBER, JsonDim.MAP),
 	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO, true);
 	
 	private final boolean optional;

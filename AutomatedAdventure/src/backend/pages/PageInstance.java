@@ -23,21 +23,16 @@ import json.restrictions.MakeConnectionRestriction;
 import json.restrictions.MakeElementRestriction;
 import json.restrictions.PageRestriction;
 import main.Main;
+import main.Pages;
 
 public class PageInstance
 {
-	private static final Pattern mainPattern = Pattern.compile("<head>([\\s\\S]*)</head><body>([\\s\\S]*)</body>");
 	private static final Pattern selectedElementPattern = Pattern.compile("<selectedElement:([^<>]*):([^<>]*)>");
 	private static final Pattern connectionToSelectedElementPattern = Pattern.compile("<connectionToSelectedElement:([^<>]*):([^<>]*):([^<>]*)>");
 	private static final Pattern connectionToRepeatedElementPattern = Pattern.compile("<connectionToRepeatedElement:([^<>]*):([^<>]*)>");
 	private static final Pattern repeatForElementPattern = Pattern.compile("<repeatForElement:([^<>]*)>([\\s\\S]*)</repeatForElement>");
 	private static final Pattern conditionalRepeatForElementPattern = Pattern.compile("<conditionalRepeatForElement:([^<>]*):([^<>]*):([<>!]?=?):(-?\\d+)>([\\s\\S]*)</conditionalRepeatForElement>");
 	private static final Pattern repeatedElementPattern = Pattern.compile("<repeatedElement:([^<>]*)>");
-	
-	private static final Pattern redirectOuterPattern = Pattern.compile("((?:<redirect:(?:.*)))+<else:([^<>]*)>");
-	private static final Pattern redirectInnerPattern = Pattern.compile("<redirect:([^<>]*):([^<>]*):([^<>]*):([<>]?=?):(-?\\d+)>");
-	private static final Pattern randomRedirectOuterPattern = Pattern.compile("(<randomRedirect:([^<>]*):(\\d+)>)+");
-	private static final Pattern randomRedirectInnerPattern = Pattern.compile("<randomRedirect:([^<>]*):(\\d+)>");
 	
 	Scenario scenario;
 	RestrictedJson<PageRestriction> pageJson;
@@ -75,11 +70,7 @@ public class PageInstance
 		this.makeConnections();
 		this.makeElementAdjustments();
 		
-		Matcher matcher = mainPattern.matcher(this.pageJson.getString(PageRestriction.VALUE));
-		matcher.find();
-		String headerText = matcher.group(1);
-		String bodyText = matcher.group(2);
-		String adjustedText = this.checkPatterns(bodyText);
+		String adjustedText = this.checkPatterns(this.pageJson.getString(PageRestriction.VALUE));
 		return adjustedText;
 	}
 	
@@ -91,7 +82,7 @@ public class PageInstance
 		String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
 		Element element = this.scenario.getElement(elementName);
 		ElementInstance elementInstance = this.getSelectedElementInstance(element);
-		return this.checkComparison(elementInstance, comparatorText, elementQualityText, value);
+		return Pages.checkComparison(elementInstance, comparatorText, elementQualityText, value);
 	}
 	
 	private void setupChoices() throws Exception
@@ -139,7 +130,7 @@ public class PageInstance
 			
 				for (ElementInstance elementInstance : element.getInstances())
 				{
-					if (this.checkComparison(elementInstance, comparatorText, elementQualityText, value))
+					if (Pages.checkComparison(elementInstance, comparatorText, elementQualityText, value))
 						this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second);
 				}	
 			}
@@ -160,102 +151,6 @@ public class PageInstance
 				elementChoice.context = this.pageContext;
 			this.addChoice(first, elementChoice);
 		}
-	}
-	
-	public String getRandomRedirect() throws Exception
-	{
-		String pageText = this.pageJson.getString(PageRestriction.VALUE);
-		Matcher outerMatcher = randomRedirectOuterPattern.matcher(pageText);
-		if (outerMatcher.find())
-		{		
-			Matcher innerMatcher = randomRedirectInnerPattern.matcher(pageText);
-			
-			HashMap<String, NumberRange> pages = new HashMap<String, NumberRange>();
-			int total = 0;
-			
-			while(innerMatcher.find())
-			{
-				String pageName = innerMatcher.group(1);
-				String numberString = innerMatcher.group(2);
-				int number = Integer.valueOf(numberString);
-				pages.put(pageName, new NumberRange(total, total + number));
-				total += number;
-			}
-			
-			int result = Main.getRndm(total) + 1;
-			
-			for (Entry<String, NumberRange> entry: pages.entrySet())
-			{
-				NumberRange numberRange = entry.getValue();
-				if (numberRange.check(result))
-				{
-					return entry.getKey();
-				}
-			}
-			
-			return null;
-		}
-		else
-		{
-			return null;
-		}
-	}
-	
-	public String getRedirect() throws Exception
-	{
-		String pageText = this.pageJson.getString(PageRestriction.VALUE);
-		Matcher outerMatcher = redirectOuterPattern.matcher(pageText);
-		if (outerMatcher.find())
-		{
-			String redirects = outerMatcher.group(1);			
-			Matcher innerMatcher = redirectInnerPattern.matcher(redirects);
-			
-			while(innerMatcher.find())
-			{
-				String pageName = innerMatcher.group(1);
-				String elementType = innerMatcher.group(2);
-				String elementNumberName = innerMatcher.group(3);
-				String comparatorText = innerMatcher.group(4);
-				int value = Integer.valueOf(innerMatcher.group(5));
-				
-				Element element = this.scenario.getElement(elementType);
-				if (this.checkComparison(this.getSelectedElementInstance(element), comparatorText, elementNumberName, value))
-					return pageName;
-			}
-			
-			return outerMatcher.group(2);
-		}
-		else
-		{
-			return null;
-		}
-	}
-	
-	private boolean checkComparison(ElementInstance elementInstance, String comparatorText, String elementNumberName, int value) throws Exception
-	{
-		Comparator comparator = Comparator.fromText(comparatorText);		
-		int elementNumber = elementInstance.getNumberValueByName(elementNumberName);
-		return this.checkComparison(comparator, elementNumber, value);
-	}
-	
-	private boolean checkComparison(Comparator comparator, int elementNumber, int value) throws Exception
-	{
-		switch(comparator)
-		{
-			case GREATER_THAN:
-				return (elementNumber > value);
-			case GREATER_THAN_OR_EQUAL:
-				return (elementNumber >= value);
-			case LESS_THAN:
-				return (elementNumber < value);
-			case LESS_THAN_OR_EQUAL:
-				return (elementNumber <= value);
-			case EQUAL:
-				return (elementNumber == value);
-			case NOT_EQUAL:
-				return (elementNumber != value);
-		}
-		throw new Exception("Unrecognised comparator type.");
 	}
 	
 	private String checkForSelectedElementPattern(String bodyText)
@@ -342,7 +237,7 @@ public class PageInstance
 			Element element = this.scenario.getElement(elementName);
 			for (ElementInstance elementInstance : element.getInstances())
 			{
-				if (this.checkComparison(elementInstance, comparatorText, elementNumberName, number))
+				if (Pages.checkComparison(elementInstance, comparatorText, elementNumberName, number))
 					this.processRepeatedElementInstance(text, stringBuffer, elementInstance);
 			}		
 			adjustedText = repeatMatcher.replaceFirst(stringBuffer.toString());

@@ -223,6 +223,11 @@ public class RestrictedJson<R extends RestrictionPointer> implements JsonEntity
 		return (JsonEntityMap<JsonEntityString>) this.contents.get(r.getRestriction());
 	}
 	
+	public JsonEntityMap<JsonEntityNumber> getNumberMap(R r)
+	{
+		return (JsonEntityMap<JsonEntityNumber>) this.contents.get(r.getRestriction());
+	}
+	
 	public JsonEntityArray<JsonEntityString> getStringArray(R r)
 	{
 		return (JsonEntityArray<JsonEntityString>) this.contents.get(r.getRestriction());
