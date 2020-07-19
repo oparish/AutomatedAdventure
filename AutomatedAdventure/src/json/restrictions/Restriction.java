@@ -62,6 +62,11 @@ public enum Restriction
 	SECOND("second", STRING, JsonDim.MONO),
 	MAX_VALUE("maxValue", NUMBER, JsonDim.MONO),
 	MIN_VALUE("minValue", NUMBER, JsonDim.MONO),
+	X("x", NUMBER, JsonDim.MONO),
+	Y("y", NUMBER, JsonDim.MONO),
+	WIDTH("width", NUMBER, JsonDim.MONO),
+	HEIGHT("height", NUMBER, JsonDim.MONO),
+	PANEL_NAME("panelName", STRING, JsonDim.MONO),
 	ELEMENT_NAME("elementName", STRING, JsonDim.MONO, true),
 	ELEMENT_QUALITY("elementQuality", STRING, JsonDim.MONO, true),
 	ELEMENT_CONDITION("elementCondition", RestrictionType.ELEMENT_CONDITION, JsonDim.MONO, true),
@@ -74,6 +79,7 @@ public enum Restriction
 	MAKE_CONNECTIONS("makeConnections", RestrictionType.MAKE_CONNECTION, JsonDim.ARRAY, true),
 	ELEMENT_ADJUSTMENTS("elementAdjustments", RestrictionType.ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
 	NUMBER_MAP("numberMap", NUMBER, JsonDim.MAP),
+	PANELS("panels", RestrictionType.PANEL, JsonDim.MAP),
 	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO, true);
 	
 	private final boolean optional;

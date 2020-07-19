@@ -36,6 +36,10 @@ public class PageInstance
 	
 	Scenario scenario;
 	RestrictedJson<PageRestriction> pageJson;
+	public RestrictedJson<PageRestriction> getPageJson() {
+		return pageJson;
+	}
+
 	PageContext pageContext;
 	HashMap<String, ElementChoice> choiceMap = new HashMap<String, ElementChoice>();
 	ArrayList<String> choiceList = new ArrayList<String>();

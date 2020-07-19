@@ -19,6 +19,7 @@ import json.JsonEntityMap;
 import json.JsonEntityString;
 import json.RestrictedJson;
 import json.restrictions.PageRestriction;
+import json.restrictions.PanelRestriction;
 import json.restrictions.RedirectRestriction;
 import json.restrictions.ScenarioRestriction;
 
@@ -37,8 +38,10 @@ public class Pages
 		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PAGES, PageRestriction.class);
 		RestrictedJson<PageRestriction> pageJson = pageTemplateMap.getMemberBy("initial");
 		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(), pageJson);
+		JsonEntityMap<RestrictedJson<PanelRestriction>> panelMap = 
+				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PANELS, PanelRestriction.class);
 		
-		Pages.pageWindow = new PageWindow();
+		Pages.pageWindow = new PageWindow(panelMap);
 		Pages.pageWindow.showWindow();
 		Pages.pageWindow.update(pageInstance);
 	}
