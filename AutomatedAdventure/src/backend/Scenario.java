@@ -22,7 +22,10 @@ import json.restrictions.ChanceRestriction;
 import json.restrictions.ContextConditionRestriction;
 import json.restrictions.ElementConditionRestriction;
 import json.restrictions.ElementRestriction;
+import json.restrictions.ImageRestriction;
 import json.restrictions.IntervalRestriction;
+import json.restrictions.MapElementRestriction;
+import json.restrictions.MapRestriction;
 import json.restrictions.PageRestriction;
 import json.restrictions.RandomRedirectRestriction;
 import json.restrictions.RedirectRestriction;
@@ -45,11 +48,17 @@ public class Scenario
 	HashMap<String, Chance> chances = new HashMap<String, Chance>();
 	HashMap<Integer, Chance> chanceByPriority = new HashMap<Integer, Chance>();
 	HashMap<String, ConnectionSet> connections = new HashMap<String, ConnectionSet>();
+	HashMap<String, Map> mapMap = new HashMap<String, Map>();
 	int chanceRange;
 	
 	public ConnectionSet getConnectionSet(String connectionSetName)
 	{
 		return this.connections.get(connectionSetName);
+	}
+	
+	public Map getMapByName(String mapName)
+	{
+		return this.mapMap.get(mapName);
 	}
 	
 	public int getChanceRange() {
@@ -87,6 +96,17 @@ public class Scenario
 		this.loadRooms();
 		this.loadMode();
 		this.loadConnections();
+		this.loadMaps();
+		this.loadUniqueInstances();
+	}
+	
+	private void loadUniqueInstances() throws Exception
+	{
+		for (Element element : this.elementMap.values())
+		{
+			if (element.getUnique())
+				element.makeInstances(1);
+		}			
 	}
 	
 	private void loadConnections() throws Exception
@@ -101,6 +121,31 @@ public class Scenario
 			Element firstElement = this.elementMap.get(firstString);
 			Element secondElement = this.elementMap.get(secondString);
 			this.connections.put(connectionJson.getString(ConnectionRestriction.NAME), new ConnectionSet(firstElement, secondElement));
+		}
+	}
+	
+	private void loadMaps()
+	{
+		JsonEntityMap<RestrictedJson<MapRestriction>> mapMap = 
+				this.scenarioJson.getRestrictedJsonMap(ScenarioRestriction.MAPS, MapRestriction.class);
+		HashMap<String, RestrictedJson<MapRestriction>> innerMap = mapMap.getEntityMap();
+		for (Entry<String, RestrictedJson<MapRestriction>> entry : innerMap.entrySet())
+		{
+			String mapName = entry.getKey();
+			RestrictedJson<MapRestriction> mapJson = entry.getValue();
+			Map map = new Map(this, mapJson);
+			this.mapMap.put(mapName, map);
+			JsonEntityMap<RestrictedJson<MapElementRestriction>> mapElementMap = 
+					mapJson.getRestrictedJsonMap(MapRestriction.MAP_ELEMENTS, MapElementRestriction.class);
+			HashMap<String, RestrictedJson<MapElementRestriction>> innerMapElementMap = mapElementMap.getEntityMap();
+			for (Entry<String, RestrictedJson<MapElementRestriction>> innerEntry : innerMapElementMap.entrySet())
+			{
+				String elementName = innerEntry.getKey();
+				Element element = this.getElement(elementName);
+				RestrictedJson<MapElementRestriction> mapData = innerEntry.getValue();
+				RestrictedJson<ImageRestriction> imageData = mapData.getRestrictedJson(MapElementRestriction.IMAGE, ImageRestriction.class);
+				element.addMap(map, imageData);
+			}
 		}
 	}
 	
@@ -172,6 +217,11 @@ public class Scenario
 		JsonEntityMap<RestrictedJson<RandomRedirectRestriction>> redirectMap = 
 				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.RANDOM_REDIRECTS, RandomRedirectRestriction.class);
 		return redirectMap.getMemberBy(key);
+	}
+	
+	public void loadPage(ElementChoice elementChoice) throws Exception
+	{
+		Pages.getScenario().loadPage(elementChoice.keyword, elementChoice.context, elementChoice.elementInstance);
 	}
 	
 	public void loadPage(String keyword, PageContext oldContext, ElementInstance elementInstance) throws Exception

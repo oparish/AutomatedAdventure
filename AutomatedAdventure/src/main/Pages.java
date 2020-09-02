@@ -41,7 +41,7 @@ public class Pages
 		JsonEntityMap<RestrictedJson<PanelRestriction>> panelMap = 
 				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PANELS, PanelRestriction.class);
 		
-		Pages.pageWindow = new PageWindow(panelMap);
+		Pages.pageWindow = new PageWindow(Pages.scenario, panelMap);
 		Pages.pageWindow.showWindow();
 		Pages.pageWindow.update(pageInstance);
 	}

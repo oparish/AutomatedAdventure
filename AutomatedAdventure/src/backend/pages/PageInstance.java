@@ -333,7 +333,15 @@ public class PageInstance
 		if (withContext)
 			elementChoice.context = this.getPageContext();
 		String qualityString = elementInstance.getDetailValueByName(elementNamingQuality);
-		String keyString = startString + qualityString + endString;
+		String keyString;
+		if (elementInstance.getElement().getUnique())
+		{
+			keyString = startString;
+		}
+		else
+		{
+			keyString = startString + qualityString + endString;
+		}		
 		this.addChoice(keyString, elementChoice);
 	}
 	

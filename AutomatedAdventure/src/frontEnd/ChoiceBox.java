@@ -42,7 +42,7 @@ public class ChoiceBox extends JList<ChoiceEntry> implements ListSelectionListen
 			ElementChoice elementChoice = choiceEntry.elementChoice;
 			try
 			{
-				Pages.getScenario().loadPage(elementChoice.keyword, elementChoice.context, elementChoice.elementInstance);
+				Pages.getScenario().loadPage(elementChoice);
 			}
 			catch (Exception e)
 			{

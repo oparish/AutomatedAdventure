@@ -1,7 +1,12 @@
 package backend;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import javax.json.JsonObject;
+
+import backend.Map.MapPosition;
 import json.JsonEntityArray;
 import json.JsonEntityString;
 import json.RestrictedJson;
@@ -10,6 +15,7 @@ import json.restrictions.ElementNumberRestriction;
 import json.restrictions.ElementRestriction;
 import json.restrictions.ElementSetMemberRestriction;
 import json.restrictions.ElementSetRestriction;
+import json.restrictions.ImageRestriction;
 import json.restrictions.ScenarioRestriction;
 import main.Main;
 
@@ -17,6 +23,7 @@ public class Element
 {
 	RestrictedJson<ElementRestriction> elementJson;
 	ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
+	HashMap<Map, RestrictedJson<ImageRestriction>> mapMap = new HashMap<Map, RestrictedJson<ImageRestriction>>();
 	
 	public ArrayList<ElementInstance> getInstances() {
 		return instances;
@@ -25,10 +32,11 @@ public class Element
 	public Element(RestrictedJson<ElementRestriction> elementJson) throws Exception
 	{
 		this.elementJson = elementJson;
-		if (this.getUnique())
-		{
-			this.makeInstances(1);
-		}
+	}
+	
+	public void addMap(Map map, RestrictedJson<ImageRestriction> imageData)
+	{
+		mapMap.put(map, imageData);
 	}
 	
 	public void makeInstances(int number) throws Exception
@@ -55,7 +63,25 @@ public class Element
 		ArrayList<Integer> detailValues = this.getElementDataValues(number, existingInstances);
 		ArrayList<Integer> numberValues = this.getElementNumberValues();
 		ArrayList<Integer> setValues = this.getElementSetValues(number, existingInstances);
-		this.instances.add(new ElementInstance(detailValues, numberValues, setValues));
+		HashMap<Map, MapPosition> positionMap = this.getPositionMap();
+		this.instances.add(new ElementInstance(detailValues, numberValues, setValues, positionMap));
+	}
+	
+	public RestrictedJson<ImageRestriction> getMapImageData(Map map)
+	{
+		return this.mapMap.get(map);
+	}
+	
+	private HashMap<Map, MapPosition> getPositionMap() throws Exception
+	{
+		HashMap<Map, MapPosition> positionMap = new HashMap<Map, MapPosition>();
+		for(Entry<Map, RestrictedJson<ImageRestriction>> entry : this.mapMap.entrySet())
+		{
+			Map map = entry.getKey();
+			MapPosition mapPosition = map.getRandomPosition();
+			positionMap.put(map, mapPosition);
+		}
+		return positionMap;
 	}
 	
 	private ArrayList<Integer> getElementNumberValues()
@@ -190,17 +216,25 @@ public class Element
 		ArrayList<Integer> detailValues;
 		ArrayList<Integer> numberValues;
 		ArrayList<Integer> setValues;
+		HashMap<Map, MapPosition> positionMap = new HashMap<Map, MapPosition>();
 		
-		private ElementInstance(ArrayList<Integer> detailValues, ArrayList<Integer> numberValues, ArrayList<Integer> setValues)
+		private ElementInstance(ArrayList<Integer> detailValues, ArrayList<Integer> numberValues, ArrayList<Integer> setValues, 
+				HashMap<Map, MapPosition> positionMap)
 		{
 			this.detailValues = detailValues;
 			this.numberValues = numberValues;
 			this.setValues = setValues;
+			this.positionMap = positionMap;
 		}
 		
 		public Element getElement()
 		{
 			return Element.this;
+		}
+		
+		public MapPosition getMapPosition(Map map)
+		{
+			return this.positionMap.get(map);
 		}
 		
 		public void adjustNumber(String elementNumber, int value)

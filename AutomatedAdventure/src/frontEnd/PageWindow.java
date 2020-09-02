@@ -10,6 +10,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import backend.Map;
 import backend.Scenario;
 import backend.pages.PageContext;
 import backend.pages.PageInstance;
@@ -22,15 +23,28 @@ public class PageWindow extends MyWindow
 {
 	HashMap<String, PagePanel> panelMap = new HashMap<String, PagePanel>();
 	
-	public PageWindow(JsonEntityMap<RestrictedJson<PanelRestriction>> panelMap)
+	public PageWindow(Scenario scenario, JsonEntityMap<RestrictedJson<PanelRestriction>> panelMap)
 	{
 		super();
 		this.setLayout(new GridBagLayout());
 		
 		for(Entry<String, RestrictedJson<PanelRestriction>> entry : panelMap.getEntityMap().entrySet())
 		{
+			PagePanel pagePanel;
 			RestrictedJson<PanelRestriction> panelJson = entry.getValue();
-			PagePanel pagePanel = new PagePanel();
+			
+			String mapName = panelJson.getString(PanelRestriction.MAP_NAME);
+			
+			if (mapName != null)
+			{
+				Map map = scenario.getMapByName(mapName);
+				pagePanel = new PageWithMapPanel(map);
+			}
+			else
+			{
+				pagePanel = new PageWithChoicesPanel();
+			}
+			
 			int x = panelJson.getNumber(PanelRestriction.X);
 			int y = panelJson.getNumber(PanelRestriction.Y);
 			int width = panelJson.getNumber(PanelRestriction.WIDTH);
@@ -46,13 +60,14 @@ public class PageWindow extends MyWindow
 		String panelName = panelJson.getString(PageRestriction.PANEL_NAME);
 		for(Entry<String, PagePanel> entry : this.panelMap.entrySet())
 		{
+			PagePanel pagePanel = entry.getValue();
 			if (panelName.equals(entry.getKey()))
 			{
-				entry.getValue().update(pageInstance);
+				pagePanel.update(pageInstance);
 			}
 			else
 			{
-				entry.getValue().clear();
+				pagePanel.clear();
 			}
 		}
 	}
@@ -62,9 +77,11 @@ public class PageWindow extends MyWindow
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = x;
 		gridBagConstraints.gridy = y;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = width;
-		gridBagConstraints.weighty = height;
+		gridBagConstraints.gridwidth = width;
+		gridBagConstraints.gridheight = height;
 		return gridBagConstraints;
 	}
 }
