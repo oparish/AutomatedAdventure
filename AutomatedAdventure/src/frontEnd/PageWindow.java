@@ -1,14 +1,25 @@
 package frontEnd;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.MetalTheme;
 
 import backend.Map;
 import backend.Scenario;
@@ -18,14 +29,28 @@ import json.JsonEntityMap;
 import json.RestrictedJson;
 import json.restrictions.PageRestriction;
 import json.restrictions.PanelRestriction;
+import main.Pages;
 
 public class PageWindow extends MyWindow
-{
+{		
 	HashMap<String, PagePanel> panelMap = new HashMap<String, PagePanel>();
 	
 	public PageWindow(Scenario scenario, JsonEntityMap<RestrictedJson<PanelRestriction>> panelMap)
 	{
 		super();
+
+		MetalLookAndFeel.setCurrentTheme(new WoodTheme());
+		try
+		{
+			UIManager.setLookAndFeel(new MetalLookAndFeel());
+		}
+		catch (UnsupportedLookAndFeelException e)
+		{
+			e.printStackTrace();
+		}
+
+		SwingUtilities.updateComponentTreeUI(this);
+		
 		this.setLayout(new GridBagLayout());
 		
 		for(Entry<String, RestrictedJson<PanelRestriction>> entry : panelMap.getEntityMap().entrySet())
