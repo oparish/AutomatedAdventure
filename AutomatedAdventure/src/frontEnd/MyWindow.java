@@ -10,7 +10,7 @@ import main.Main;
 
 public abstract class MyWindow extends JFrame
 {
-	private static final int WIDTH = 1000;	
+	private static final int WIDTH = 1500;	
 	private static final int HEIGHT = 1000;
 	
 	public MyWindow()
