@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -118,9 +119,19 @@ public class MapPanel extends JPanel implements ActionListener
 			MapButton button = (MapButton) e.getSource();
 			HashMap<String, ElementChoice> choices = this.elementMap.get(button.elementInstance);
 			JPopupMenu popupMenu = new JPopupMenu();
-			for (Entry<String, ElementChoice> entry : choices.entrySet())
+			
+			ArrayList<String> sortedList = new ArrayList<String>();
+			for (String key : choices.keySet())
 			{
-				ChoiceItem choiceItem = new ChoiceItem(entry.getKey(), entry.getValue());
+				sortedList.add(key);
+			}
+			
+			Collections.sort(sortedList);
+			
+			for (String key : sortedList)
+			{
+				ElementChoice choice = choices.get(key);
+				ChoiceItem choiceItem = new ChoiceItem(key, choice);
 				choiceItem.addActionListener(this);
 				popupMenu.add(choiceItem);
 			}	
