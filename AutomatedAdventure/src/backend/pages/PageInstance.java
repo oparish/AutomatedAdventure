@@ -80,13 +80,10 @@ public class PageInstance
 	
 	private boolean checkContextCondition(RestrictedJson<ContextConditionRestriction> contextConditionData) throws Exception
 	{
-		String comparatorText = contextConditionData.getString(ContextConditionRestriction.TYPE);
-		int value = contextConditionData.getNumber(ContextConditionRestriction.NUMBER_VALUE);
-		String elementQualityText = contextConditionData.getString(ContextConditionRestriction.ELEMENT_QUALITY);
 		String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
 		Element element = this.scenario.getElement(elementName);
 		ElementInstance elementInstance = this.getSelectedElementInstance(element);
-		return Pages.checkComparison(elementInstance, comparatorText, elementQualityText, value);
+		return ContextConditionRestriction.checkCondition(this.scenario, contextConditionData, elementInstance);
 	}
 	
 	private void setupChoices() throws Exception

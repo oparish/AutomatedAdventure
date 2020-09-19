@@ -296,24 +296,19 @@ public class Scenario
 	{
 		RestrictedJson<ContextConditionRestriction> contextConditionData = 
 				redirectJson.getRestrictedJson(RedirectRestriction.CONTEXT_CONDITION, ContextConditionRestriction.class);
-			
 		String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
 		Element element = this.getElement(elementName);
-		String comparatorText = contextConditionData.getString(ContextConditionRestriction.TYPE);
-		String elementNumberName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_QUALITY);
-		int value = contextConditionData.getNumber(ContextConditionRestriction.NUMBER_VALUE);
-		
 		ElementInstance selectedInstance;
 		if (element.getUnique())
 			selectedInstance = element.getUniqueInstance();
 		else
 			selectedInstance = pageContext.getElementInstance(element);
 		
-		if (Pages.checkComparison(selectedInstance, comparatorText, elementNumberName, value))
+		if (ContextConditionRestriction.checkCondition(this, contextConditionData, selectedInstance))
 		{
 			String ifPageWord = redirectJson.getString(RedirectRestriction.FIRST);
 			this.loadPage(ifPageWord, pageContext, elementInstance);
-		}				
+		}
 		else
 		{
 			String elsePageWord = redirectJson.getString(RedirectRestriction.SECOND);
