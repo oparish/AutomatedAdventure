@@ -116,8 +116,13 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		if (e.getSource() instanceof MapButton)
 		{
+
 			MapButton button = (MapButton) e.getSource();
 			HashMap<String, ElementChoice> choices = this.elementMap.get(button.elementInstance);
+			if (choices == null || choices.size() == 0)
+			{
+				return;
+			}
 			JPopupMenu popupMenu = new JPopupMenu();
 			
 			ArrayList<String> sortedList = new ArrayList<String>();
