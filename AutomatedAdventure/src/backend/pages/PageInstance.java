@@ -69,10 +69,10 @@ public class PageInstance
 
 	public String getText() throws Exception
 	{
-		this.setupChoices();
 		this.makeElements();
 		this.makeConnections();
 		this.makeElementAdjustments();
+		this.setupChoices();
 		
 		String adjustedText = this.checkPatterns(this.pageJson.getString(PageRestriction.VALUE));
 		return adjustedText;
