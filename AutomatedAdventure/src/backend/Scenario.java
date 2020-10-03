@@ -31,6 +31,7 @@ import json.restrictions.RandomRedirectRestriction;
 import json.restrictions.RedirectRestriction;
 import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
+import json.restrictions.SumRestriction;
 import json.restrictions.component.ComponentRestriction;
 import json.restrictions.component.ConnectionRestriction;
 import json.restrictions.room.RoomRestriction;
@@ -54,6 +55,13 @@ public class Scenario
 	public ConnectionSet getConnectionSet(String connectionSetName)
 	{
 		return this.connections.get(connectionSetName);
+	}
+	
+	public RestrictedJson<SumRestriction> getSum(String sumKey)
+	{
+		JsonEntityMap<RestrictedJson<SumRestriction>> sums = 
+				this.scenarioJson.getRestrictedJsonMap(ScenarioRestriction.SUMS, SumRestriction.class);
+		return sums.getMemberBy(sumKey);
 	}
 	
 	public Map getMapByName(String mapName)

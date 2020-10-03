@@ -32,6 +32,8 @@ public enum RestrictionType implements JsonType
 	PAGE(PageRestriction.class),
 	MAP(MapRestriction.class),
 	MAP_ELEMENT(MapElementRestriction.class),
+	SUM_COMPONENT(SumComponentRestriction.class),
+	SUM(SumRestriction.class),
 	REDIRECT(RedirectRestriction.class),
 	RANDOM_REDIRECT(RandomRedirectRestriction.class),
 	CHOICE(ChoiceRestriction.class),

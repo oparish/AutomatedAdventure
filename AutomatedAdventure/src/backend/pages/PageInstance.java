@@ -22,6 +22,8 @@ import json.restrictions.ElementConditionRestriction;
 import json.restrictions.MakeConnectionRestriction;
 import json.restrictions.MakeElementRestriction;
 import json.restrictions.PageRestriction;
+import json.restrictions.SumComponentRestriction;
+import json.restrictions.SumRestriction;
 import main.Main;
 import main.Pages;
 
@@ -33,6 +35,7 @@ public class PageInstance
 	private static final Pattern repeatForElementPattern = Pattern.compile("<repeatForElement:([^<>]*)>([\\s\\S]*)</repeatForElement>");
 	private static final Pattern conditionalRepeatForElementPattern = Pattern.compile("<conditionalRepeatForElement:([^<>]*):([^<>]*):([<>!]?=?):(-?\\d+)>([\\s\\S]*)</conditionalRepeatForElement>");
 	private static final Pattern repeatedElementPattern = Pattern.compile("<repeatedElement:([^<>]*)>");
+	private static final Pattern numberReferencePattern = Pattern.compile("^(.*):(.*)$");
 	
 	Scenario scenario;
 	RestrictedJson<PageRestriction> pageJson;
@@ -296,7 +299,15 @@ public class PageInstance
 			ElementAdjustmentType elementAdjustmentType = ElementAdjustmentType.stringToType(typeString);
 			String elementType = elementAdjustmentData.getString(ElementAdjustmentRestriction.ELEMENT_NAME);
 			String elementNumberName = elementAdjustmentData.getString(ElementAdjustmentRestriction.ELEMENT_QUALITY);			
-			int value = elementAdjustmentData.getNumber(ElementAdjustmentRestriction.NUMBER_VALUE);
+			Integer value = elementAdjustmentData.getNumber(ElementAdjustmentRestriction.NUMBER_VALUE);
+			if (value == null)
+			{
+				value = this.assessSum(elementAdjustmentData.getString(ElementAdjustmentRestriction.SUM_NAME));
+			}
+			if (value == null)
+			{
+				throw new Exception("No number available for element adjustment.");
+			}
 			Element element = this.scenario.getElement(elementType);
 			
 			switch(elementAdjustmentType)
@@ -320,6 +331,92 @@ public class PageInstance
 				break;
 			}
 		}
+	}
+	
+	private Integer assessSum(String sumName) throws Exception
+	{
+		RestrictedJson<SumRestriction> sumData = this.scenario.getSum(sumName);
+		Integer value = sumData.getNumber(SumRestriction.NUMBER_VALUE);
+		if (value == null)
+		{
+			value = this.assessReference(sumData.getString(SumRestriction.NUMBER_REFERENCE));
+		}
+		if (value == null)
+		{
+			throw new Exception("No number available for sum.");
+		}
+		
+		JsonEntityArray<RestrictedJson<SumComponentRestriction>> sumComponents = 
+				sumData.getRestrictedJsonArray(SumRestriction.SUM_COMPONENTS, SumComponentRestriction.class);
+		
+		for (int i = 0; i < sumComponents.getLength(); i++)
+		{
+			RestrictedJson<SumComponentRestriction> sumComponentData = sumComponents.getMemberAt(i);
+			value = this.assessSumComponent(sumComponentData, value);
+		}
+		
+		return value;
+	}
+	
+	private Integer assessSumComponent(RestrictedJson<SumComponentRestriction> sumComponentData, Integer value) throws Exception
+	{
+		Integer adjustmentValue = sumComponentData.getNumber(SumComponentRestriction.NUMBER_VALUE);
+		if (adjustmentValue == null)
+		{
+			String numberReferenceString = sumComponentData.getString(SumComponentRestriction.NUMBER_REFERENCE);
+			if (numberReferenceString == null)
+			{
+				throw new Exception("No number available for sum component.");
+			}
+			adjustmentValue = this.assessReference(numberReferenceString);
+		}
+
+		String sumSign = sumComponentData.getString(SumComponentRestriction.SUM_SIGN);
+		if (sumSign.equals("+"))
+		{
+			value = value + adjustmentValue;
+		}
+		else if (sumSign.equals("-"))
+		{
+			value = value - adjustmentValue;
+		}
+		else if (sumSign.equals("*"))
+		{
+			value = value * adjustmentValue;
+		}
+		else if (sumSign.equals("/"))
+		{
+			value = value / adjustmentValue;
+		}
+		else
+		{
+			throw new Exception("No sign available for sum component.");
+		}
+		return value;
+	}
+	
+	private Integer assessReference(String numberReference) throws Exception
+	{
+		Matcher numberRefMatcher = numberReferencePattern.matcher(numberReference);
+		
+		if (!numberRefMatcher.find())
+		{
+			throw new Exception("No valid number reference.");
+		}
+		
+		String elementType = numberRefMatcher.group(1);
+		String elementQualityName = numberRefMatcher.group(2);
+		
+		Element element = this.scenario.getElement(elementType);
+		ElementInstance elementInstance = this.getSelectedElementInstance(element);
+		Integer numberValue = elementInstance.getNumberValueByName(elementQualityName);
+		
+		if (numberValue == null)
+		{
+			throw new Exception("No valid number reference.");
+		}
+		
+		return numberValue;
 	}
 	
 	private void makeElementChoice(ElementInstance elementInstance, String keyword, boolean withContext, String elementNamingQuality, String startString, String endString)
