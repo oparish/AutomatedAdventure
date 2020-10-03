@@ -35,6 +35,7 @@ public class PageInstance
 	private static final Pattern repeatForElementPattern = Pattern.compile("<repeatForElement:([^<>]*)>([\\s\\S]*)</repeatForElement>");
 	private static final Pattern conditionalRepeatForElementPattern = Pattern.compile("<conditionalRepeatForElement:([^<>]*):([^<>]*):([<>!]?=?):(-?\\d+)>([\\s\\S]*)</conditionalRepeatForElement>");
 	private static final Pattern repeatedElementPattern = Pattern.compile("<repeatedElement:([^<>]*)>");
+	private static final Pattern numberAdjustmentPattern = Pattern.compile("<numberAdjustment:([0-9]*)>");
 	private static final Pattern numberReferencePattern = Pattern.compile("^(.*):(.*)$");
 	
 	Scenario scenario;
@@ -74,10 +75,10 @@ public class PageInstance
 	{
 		this.makeElements();
 		this.makeConnections();
-		this.makeElementAdjustments();
+		ArrayList<Integer> adjustments = this.makeElementAdjustments();
 		this.setupChoices();
 		
-		String adjustedText = this.checkPatterns(this.pageJson.getString(PageRestriction.VALUE));
+		String adjustedText = this.checkPatterns(this.pageJson.getString(PageRestriction.VALUE), adjustments);
 		return adjustedText;
 	}
 	
@@ -275,22 +276,38 @@ public class PageInstance
 		stringBuffer.append(innerText);
 	}
 	
-	private String checkPatterns(String bodyText) throws Exception
+	private String checkPatterns(String bodyText, ArrayList<Integer> adjustments) throws Exception
 	{		
 		String adjustedText = this.checkForSelectedElementPattern(bodyText);
 		adjustedText = this.checkForConnectionToSelectedElementPattern(adjustedText);
 		adjustedText = this.checkForRepeatForElementPattern(adjustedText);
 		adjustedText = this.checkForConditionalRepeatForElementPattern(adjustedText);
+		adjustedText = this.checkForElementAdjustmentText(adjustedText, adjustments);
 		return adjustedText;
 	}
 	
-	private void makeElementAdjustments() throws Exception
+	private String checkForElementAdjustmentText(String bodyText, ArrayList<Integer> adjustmentValues)
 	{
+		String adjustedText = bodyText;
+		Matcher adjustmentMatcher = numberAdjustmentPattern.matcher(adjustedText);
+		while (adjustmentMatcher.find())
+		{
+			String numberString = adjustmentMatcher.group(1);
+			int number = Integer.valueOf(numberString);
+			String adjustmentValueString = String.valueOf(adjustmentValues.get(number)); 
+			adjustedText = adjustmentMatcher.replaceAll(adjustmentValueString);
+		}		
+		return adjustedText;
+	}
+	
+	private ArrayList<Integer> makeElementAdjustments() throws Exception
+	{
+		ArrayList<Integer> adjustmentValues = new ArrayList<Integer>();
 		JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray = 
 				this.pageJson.getRestrictedJsonArray(PageRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
 		
 		if (elementAdjustmentArray == null)
-			return;
+			return adjustmentValues;
 		
 		for (int i = 0; i < elementAdjustmentArray.size(); i++)
 		{
@@ -308,29 +325,32 @@ public class PageInstance
 			{
 				throw new Exception("No number available for element adjustment.");
 			}
+			adjustmentValues.add(value);
 			Element element = this.scenario.getElement(elementType);
 			
 			switch(elementAdjustmentType)
 			{
-			case CONNECTED:
-				String connectionName = elementAdjustmentData.getString(ElementAdjustmentRestriction.CONNECTION_NAME);
-				ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
-				ElementInstance elementInstance = this.getSelectedElementInstance(element);
-				ElementInstance connectedInstance = connectionSet.get(elementInstance);
-				connectedInstance.adjustNumber(elementNumberName, value);
-				break;
-			case EACH:
-				for (ElementInstance instance : element.getInstances())
-				{
-					instance.adjustNumber(elementNumberName, value);
-				}
-				break;
-			case SELECTED:
-				ElementInstance selectedInstance = this.getSelectedElementInstance(element);
-				selectedInstance.adjustNumber(elementNumberName, value);
-				break;
+				case CONNECTED:
+					String connectionName = elementAdjustmentData.getString(ElementAdjustmentRestriction.CONNECTION_NAME);
+					ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
+					ElementInstance elementInstance = this.getSelectedElementInstance(element);
+					ElementInstance connectedInstance = connectionSet.get(elementInstance);
+					connectedInstance.adjustNumber(elementNumberName, value);
+					break;
+				case EACH:
+					for (ElementInstance instance : element.getInstances())
+					{
+						instance.adjustNumber(elementNumberName, value);
+					}
+					break;
+				case SELECTED:
+					ElementInstance selectedInstance = this.getSelectedElementInstance(element);
+					selectedInstance.adjustNumber(elementNumberName, value);
+					break;
 			}
 		}
+		
+		return adjustmentValues;
 	}
 	
 	private Integer assessSum(String sumName) throws Exception
