@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import javax.json.JsonObject;
 
 import backend.Map.MapPosition;
+import backend.pages.PageInstance;
 import json.JsonEntityArray;
 import json.JsonEntityString;
 import json.RestrictedJson;
@@ -237,11 +238,11 @@ public class Element
 			return this.positionMap.get(map);
 		}
 		
-		public void adjustNumber(String elementNumber, int value)
+		public void adjustNumber(String elementNumber, String sumSign, int value) throws Exception
 		{
 			Integer id = this.getNumberIDByName(elementNumber);
 			int number = this.numberValues.get(id);
-			number += value;
+			number = PageInstance.performSum(number, sumSign, value);
 			this.numberValues.set(id, number);
 		}
 		

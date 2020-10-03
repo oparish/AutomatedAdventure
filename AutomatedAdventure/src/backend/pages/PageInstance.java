@@ -317,6 +317,7 @@ public class PageInstance
 			String elementType = elementAdjustmentData.getString(ElementAdjustmentRestriction.ELEMENT_NAME);
 			String elementNumberName = elementAdjustmentData.getString(ElementAdjustmentRestriction.ELEMENT_QUALITY);			
 			Integer value = elementAdjustmentData.getNumber(ElementAdjustmentRestriction.NUMBER_VALUE);
+			String sumSign = elementAdjustmentData.getString(ElementAdjustmentRestriction.SUM_SIGN);
 			if (value == null)
 			{
 				value = this.assessSum(elementAdjustmentData.getString(ElementAdjustmentRestriction.SUM_NAME));
@@ -335,17 +336,17 @@ public class PageInstance
 					ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
 					ElementInstance elementInstance = this.getSelectedElementInstance(element);
 					ElementInstance connectedInstance = connectionSet.get(elementInstance);
-					connectedInstance.adjustNumber(elementNumberName, value);
+					connectedInstance.adjustNumber(elementNumberName, sumSign, value);
 					break;
 				case EACH:
 					for (ElementInstance instance : element.getInstances())
 					{
-						instance.adjustNumber(elementNumberName, value);
+						instance.adjustNumber(elementNumberName, sumSign, value);
 					}
 					break;
 				case SELECTED:
 					ElementInstance selectedInstance = this.getSelectedElementInstance(element);
-					selectedInstance.adjustNumber(elementNumberName, value);
+					selectedInstance.adjustNumber(elementNumberName, sumSign, value);
 					break;
 			}
 		}
@@ -392,6 +393,12 @@ public class PageInstance
 		}
 
 		String sumSign = sumComponentData.getString(SumComponentRestriction.SUM_SIGN);
+		value = PageInstance.performSum(value, sumSign, adjustmentValue);
+		return value;
+	}
+	
+	public static Integer performSum(Integer value, String sumSign, Integer adjustmentValue) throws Exception
+	{
 		if (sumSign.equals("+"))
 		{
 			value = value + adjustmentValue;
