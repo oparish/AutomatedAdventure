@@ -2,6 +2,7 @@ package backend.pages;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,12 +83,25 @@ public class PageInstance
 		return adjustedText;
 	}
 	
-	private boolean checkContextCondition(RestrictedJson<ContextConditionRestriction> contextConditionData) throws Exception
+	private boolean checkContextCondition(JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray)
+			throws Exception
 	{
-		String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
-		Element element = this.scenario.getElement(elementName);
-		ElementInstance elementInstance = this.getSelectedElementInstance(element);
-		return ContextConditionRestriction.checkCondition(this.scenario, contextConditionData, elementInstance);
+		boolean check = true;
+		
+		for (int i = 0; i < contextConditionDataArray.getLength(); i++)
+		{
+			RestrictedJson<ContextConditionRestriction> contextConditionData = contextConditionDataArray.getMemberAt(i);
+			String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
+			Element element = this.scenario.getElement(elementName);
+			ElementInstance elementInstance = this.getSelectedElementInstance(element);
+			if (!ContextConditionRestriction.checkCondition(this.scenario, contextConditionData, elementInstance))
+			{
+				check = false;
+				break;
+			}
+		}
+		
+		return check;
 	}
 	
 	private void setupChoices() throws Exception
@@ -108,8 +122,8 @@ public class PageInstance
 	{	
 		boolean withContext = choiceData.getBoolean(ChoiceRestriction.WITH_CONTEXT);
 		
-		RestrictedJson<ContextConditionRestriction> contextConditionData = choiceData.getRestrictedJson(ChoiceRestriction.CONTEXT_CONDITION, ContextConditionRestriction.class);
-		if (contextConditionData != null && !this.checkContextCondition(contextConditionData))
+		JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray = choiceData.getRestrictedJsonArray(ChoiceRestriction.CONTEXT_CONDITIONS, ContextConditionRestriction.class);
+		if (contextConditionDataArray != null && !this.checkContextCondition(contextConditionDataArray))
 			return;
 		
 		String keyword = choiceData.getString(ChoiceRestriction.VALUE);
@@ -124,20 +138,33 @@ public class PageInstance
 			
 			Element element = this.scenario.getElement(elementName);
 			
-			RestrictedJson<ElementConditionRestriction> elementConditionData = elementChoiceData.getRestrictedJson(
-					ElementChoiceRestriction.ELEMENT_CONDITION, ElementConditionRestriction.class);
+			JsonEntityArray<RestrictedJson<ElementConditionRestriction>> elementConditionArray = 
+					elementChoiceData.getRestrictedJsonArray(ElementChoiceRestriction.ELEMENT_CONDITIONS, ElementConditionRestriction.class);
 			
-			if (elementConditionData != null)
+			if (elementConditionArray != null)
 			{
-				String elementQualityText = elementConditionData.getString(ElementConditionRestriction.ELEMENT_QUALITY);
-				String comparatorText = elementConditionData.getString(ElementConditionRestriction.TYPE);
-				int value = elementConditionData.getNumber(ElementConditionRestriction.NUMBER_VALUE);		
-			
+				HashSet<ElementInstance> failCheckSet = new HashSet<ElementInstance>();
+				for (int i = 0; i < elementConditionArray.getLength(); i++)
+				{
+					RestrictedJson<ElementConditionRestriction> elementConditionData = elementConditionArray.getMemberAt(i);
+					String elementQualityText = elementConditionData.getString(ElementConditionRestriction.ELEMENT_QUALITY);
+					String comparatorText = elementConditionData.getString(ElementConditionRestriction.TYPE);
+					int value = elementConditionData.getNumber(ElementConditionRestriction.NUMBER_VALUE);		
+				
+					for (ElementInstance elementInstance : element.getInstances())
+					{
+						if (!Pages.checkComparison(elementInstance, comparatorText, elementQualityText, value))
+						{
+							failCheckSet.add(elementInstance);
+						}
+					}
+				}
+				
 				for (ElementInstance elementInstance : element.getInstances())
 				{
-					if (Pages.checkComparison(elementInstance, comparatorText, elementQualityText, value))
+					if (!failCheckSet.contains(elementInstance))
 						this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second);
-				}	
+				}
 			}
 			else
 			{
@@ -295,7 +322,8 @@ public class PageInstance
 			String numberString = adjustmentMatcher.group(1);
 			int number = Integer.valueOf(numberString);
 			String adjustmentValueString = String.valueOf(adjustmentValues.get(number)); 
-			adjustedText = adjustmentMatcher.replaceAll(adjustmentValueString);
+			adjustedText = adjustmentMatcher.replaceFirst(adjustmentValueString);
+			adjustmentMatcher = numberAdjustmentPattern.matcher(adjustedText);
 		}		
 		return adjustedText;
 	}

@@ -13,6 +13,10 @@ import main.Main;
 public class Map
 {
 	Scenario scenario;
+	public Scenario getScenario() {
+		return scenario;
+	}
+
 	RestrictedJson<MapRestriction> mapData;
 	public RestrictedJson<MapRestriction> getMapData() {
 		return mapData;

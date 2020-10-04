@@ -32,6 +32,7 @@ import json.restrictions.RedirectRestriction;
 import json.restrictions.ScenarioRestriction;
 import json.restrictions.StateRestriction;
 import json.restrictions.SumRestriction;
+import json.restrictions.TooltipRestriction;
 import json.restrictions.component.ComponentRestriction;
 import json.restrictions.component.ConnectionRestriction;
 import json.restrictions.room.RoomRestriction;
@@ -153,6 +154,9 @@ public class Scenario
 				RestrictedJson<MapElementRestriction> mapData = innerEntry.getValue();
 				RestrictedJson<ImageRestriction> imageData = mapData.getRestrictedJson(MapElementRestriction.IMAGE, ImageRestriction.class);
 				element.addMap(map, imageData);
+				RestrictedJson<TooltipRestriction> tooltipData = 
+						mapData.getRestrictedJson(MapElementRestriction.TOOLTIP, TooltipRestriction.class);
+				element.addTooltip(map, tooltipData);
 			}
 		}
 	}
@@ -302,17 +306,29 @@ public class Scenario
 	private void loadRedirect(ElementInstance elementInstance, RestrictedJson<RedirectRestriction> redirectJson,
 			PageContext pageContext) throws Exception
 	{
-		RestrictedJson<ContextConditionRestriction> contextConditionData = 
-				redirectJson.getRestrictedJson(RedirectRestriction.CONTEXT_CONDITION, ContextConditionRestriction.class);
-		String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
-		Element element = this.getElement(elementName);
-		ElementInstance selectedInstance;
-		if (element.getUnique())
-			selectedInstance = element.getUniqueInstance();
-		else
-			selectedInstance = pageContext.getElementInstance(element);
+		JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray = 
+				redirectJson.getRestrictedJsonArray(RedirectRestriction.CONTEXT_CONDITIONS, ContextConditionRestriction.class);
 		
-		if (ContextConditionRestriction.checkCondition(this, contextConditionData, selectedInstance))
+		boolean check = true;
+		
+		for (int i = 0; i < contextConditionDataArray.getLength(); i++)
+		{
+			RestrictedJson<ContextConditionRestriction> contextConditionData = contextConditionDataArray.getMemberAt(i);
+			String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
+			Element element = this.getElement(elementName);
+			ElementInstance selectedInstance;
+			if (element.getUnique())
+				selectedInstance = element.getUniqueInstance();
+			else
+				selectedInstance = pageContext.getElementInstance(element);
+			if (!ContextConditionRestriction.checkCondition(this, contextConditionData, selectedInstance))
+			{
+				check = false;
+				break;
+			}		
+		}
+		
+		if (check)
 		{
 			String ifPageWord = redirectJson.getString(RedirectRestriction.FIRST);
 			this.loadPage(ifPageWord, pageContext, elementInstance);

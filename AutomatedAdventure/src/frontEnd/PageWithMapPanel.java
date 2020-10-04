@@ -19,7 +19,7 @@ public class PageWithMapPanel extends PagePanel
 {
 	MapPanel mapPanel;
 	
-	public PageWithMapPanel(Map map)
+	public PageWithMapPanel(Map map) throws Exception
 	{
 		super();
 	

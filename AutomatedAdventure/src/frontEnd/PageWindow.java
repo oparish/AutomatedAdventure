@@ -32,10 +32,10 @@ import json.restrictions.PanelRestriction;
 import main.Pages;
 
 public class PageWindow extends MyWindow
-{		
+{	
 	HashMap<String, PagePanel> panelMap = new HashMap<String, PagePanel>();
 	
-	public PageWindow(Scenario scenario, JsonEntityMap<RestrictedJson<PanelRestriction>> panelMap)
+	public PageWindow(Scenario scenario, JsonEntityMap<RestrictedJson<PanelRestriction>> panelMap) throws Exception
 	{
 		super();
 

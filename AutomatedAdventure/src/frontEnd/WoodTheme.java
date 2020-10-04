@@ -66,22 +66,22 @@ public class WoodTheme extends MetalTheme
 
 	@Override
 	public FontUIResource getSubTextFont() {
-		return null;
+		return WoodTheme.mainFont;
 	}
 
 	@Override
 	public FontUIResource getSystemTextFont() {
-		return null;
+		return WoodTheme.mainFont;
 	}
 
 	@Override
 	public FontUIResource getUserTextFont() {
-		return null;
+		return WoodTheme.mainFont;
 	}
 
 	@Override
 	public FontUIResource getWindowTitleFont() {
-		return null;
+		return WoodTheme.mainFont;
 	}
 	
 	public ColorUIResource getMenuSelectedBackground()

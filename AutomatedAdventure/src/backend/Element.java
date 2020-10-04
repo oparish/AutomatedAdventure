@@ -18,6 +18,7 @@ import json.restrictions.ElementSetMemberRestriction;
 import json.restrictions.ElementSetRestriction;
 import json.restrictions.ImageRestriction;
 import json.restrictions.ScenarioRestriction;
+import json.restrictions.TooltipRestriction;
 import main.Main;
 
 public class Element
@@ -25,6 +26,7 @@ public class Element
 	RestrictedJson<ElementRestriction> elementJson;
 	ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
 	HashMap<Map, RestrictedJson<ImageRestriction>> mapMap = new HashMap<Map, RestrictedJson<ImageRestriction>>();
+	HashMap<Map, RestrictedJson<TooltipRestriction>> tooltipMap = new HashMap<Map, RestrictedJson<TooltipRestriction>>();
 	
 	public ArrayList<ElementInstance> getInstances() {
 		return instances;
@@ -38,6 +40,11 @@ public class Element
 	public void addMap(Map map, RestrictedJson<ImageRestriction> imageData)
 	{
 		mapMap.put(map, imageData);
+	}
+	
+	public void addTooltip(Map map, RestrictedJson<TooltipRestriction> tooltip)
+	{
+		tooltipMap.put(map, tooltip);
 	}
 	
 	public void makeInstances(int number) throws Exception
@@ -71,6 +78,11 @@ public class Element
 	public RestrictedJson<ImageRestriction> getMapImageData(Map map)
 	{
 		return this.mapMap.get(map);
+	}
+	
+	public RestrictedJson<TooltipRestriction> getTooltip(Map map)
+	{
+		return this.tooltipMap.get(map);
 	}
 	
 	private HashMap<Map, MapPosition> getPositionMap() throws Exception
@@ -323,6 +335,14 @@ public class Element
 			if (id == null)
 				return null;
 			return this.numberValues.get(id);
+		}
+		
+		public String getValue(String key)
+		{
+			String value = this.getDetailValueByName(key);
+			if (value == null)
+				value = String.valueOf(this.getNumberValueByName(key));
+			return value;
 		}
 		
 		public String renderAsString()

@@ -1,12 +1,12 @@
 package json.restrictions;
 
-public enum MapElementRestriction implements RestrictionPointer
+public enum TooltipRestriction implements RestrictionPointer
 {
-	IMAGE(Restriction.IMAGE), TOOLTIP(Restriction.TOOLTIP);
+	TOOLTIP_COMPONENTS(Restriction.TOOLTIP_COMPONENTS);	
 
 	private Restriction restriction;
 	
-	private MapElementRestriction(Restriction restriction)
+	private TooltipRestriction(Restriction restriction)
 	{
 		this.restriction = restriction;
 	}

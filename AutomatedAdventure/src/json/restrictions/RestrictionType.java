@@ -26,6 +26,8 @@ public enum RestrictionType implements JsonType
 	ELEMENT_CHOICE(ElementChoiceRestriction.class),
 	INTERVAL(IntervalRestriction.class),
 	IMAGE(ImageRestriction.class),
+	TOOLTIP(TooltipRestriction.class),
+	TOOLTIP_COMPONENT(TooltipComponentRestriction.class),
 	RULE(RuleRestriction.class),
 	STATE(StateRestriction.class),
 	ROOM(RoomRestriction.class),

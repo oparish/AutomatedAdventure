@@ -5,6 +5,7 @@ import backend.Element.ElementInstance;
 import backend.Scenario;
 import backend.component.ConnectionSet;
 import backend.pages.PageContext;
+import json.JsonEntityArray;
 import json.RestrictedJson;
 import main.Pages;
 
@@ -24,6 +25,25 @@ public enum ContextConditionRestriction implements RestrictionPointer
 	public Restriction getRestriction()
 	{
 		return this.restriction;
+	}
+	
+	public static boolean checkCondition(Scenario scenario, 
+			JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray, ElementInstance selectedInstance) 
+					throws Exception
+	{
+		boolean check = true;
+		
+		for (int i = 0; i < contextConditionDataArray.getLength(); i++)
+		{
+			RestrictedJson<ContextConditionRestriction> contextConditionData = contextConditionDataArray.getMemberAt(i);
+			if (!ContextConditionRestriction.checkCondition(scenario, contextConditionData, selectedInstance))
+			{
+				check = false;
+				break;
+			}
+		}
+		
+		return check;
 	}
 	
 	public static boolean checkCondition(Scenario scenario, RestrictedJson<ContextConditionRestriction> contextConditionData, 
