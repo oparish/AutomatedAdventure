@@ -35,6 +35,8 @@ import backend.Element;
 import backend.Element.ElementInstance;
 import backend.Map;
 import backend.Map.MapPosition;
+import backend.Scenario;
+import backend.component.ConnectionSet;
 import backend.pages.ElementChoice;
 import backend.pages.PageInstance;
 import json.JsonEntityArray;
@@ -49,7 +51,8 @@ import main.Pages;
 
 public class MapPanel extends JPanel implements ActionListener
 {
-	private static final Pattern tooltipTextPattern = Pattern.compile("<element:(.*)>");
+	private static final Pattern tooltipElementPattern = Pattern.compile("<element:(.*)>");
+	private static final Pattern tooltipConnectionPattern = Pattern.compile("<connection:([^<>]*):([^<>]*)>");
 	
 	ArrayList<MapButton> mapButtons;
 	HashMap<ElementInstance, HashMap<String, ElementChoice>> elementMap;
@@ -162,16 +165,30 @@ public class MapPanel extends JPanel implements ActionListener
 		this.mapButtons.add(mapButton);
 	}
 
-	private String assessTooltipText(ElementInstance elementInstance, String tooltipText)
+	private String assessTooltipText(ElementInstance elementInstance, String tooltipText) throws Exception
 	{
-		Matcher tooltipMatcher = MapPanel.tooltipTextPattern.matcher(tooltipText);
+		Matcher tooltipMatcher = MapPanel.tooltipElementPattern.matcher(tooltipText);
 		while(tooltipMatcher.find())
 		{
 			String elementQualityName = tooltipMatcher.group(1);
 			String stringValue = elementInstance.getValue(elementQualityName);
 			tooltipText = tooltipMatcher.replaceFirst(stringValue);
-			tooltipMatcher = MapPanel.tooltipTextPattern.matcher(tooltipText);
+			tooltipMatcher = MapPanel.tooltipElementPattern.matcher(tooltipText);
 		}
+		
+		Scenario scenario = map.getScenario();
+		Matcher tooltipconnectionMatcher = MapPanel.tooltipConnectionPattern.matcher(tooltipText);
+		while(tooltipconnectionMatcher.find())
+		{
+			String connectionTypeName = tooltipconnectionMatcher.group(1);
+			String elementQualityName = tooltipconnectionMatcher.group(2);
+			ConnectionSet connectionSet = scenario.getConnectionSet(connectionTypeName);
+			ElementInstance connectedInstance = connectionSet.get(elementInstance);		
+			String stringValue = connectedInstance.getValue(elementQualityName);
+			tooltipText = tooltipconnectionMatcher.replaceFirst(stringValue);
+			tooltipconnectionMatcher = MapPanel.tooltipConnectionPattern.matcher(tooltipText);
+		}
+		
 		return tooltipText;
 	}
 	
