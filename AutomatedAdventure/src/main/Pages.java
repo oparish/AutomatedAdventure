@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 
 import javax.json.JsonObject;
+import javax.swing.ToolTipManager;
 
 import backend.Element;
 import backend.NumberRange;
@@ -30,6 +31,8 @@ public class Pages
 	
 	public static void main(String[] args) throws Exception
 	{
+		ToolTipManager.sharedInstance().setInitialDelay(0);
+		
 		JsonObject jsonObject = Main.openJsonFile(null);
 		RestrictedJson<ScenarioRestriction> scenarioJson = 
 				new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
