@@ -70,7 +70,7 @@ public class Element
 	private void makeInstance(int number, int existingInstances) throws Exception
 	{
 		HashMap<String, Integer> detailValues = this.getElementDataValues(number, existingInstances);
-		ArrayList<Integer> numberValues = this.getElementNumberValues();
+		HashMap<String, Integer> numberValues = this.getElementNumberValues();
 		ArrayList<Integer> setValues = this.getElementSetValues(number, existingInstances);
 		HashMap<Map, MapPosition> positionMap = this.getPositionMap();
 		this.instances.add(new ElementInstance(detailValues, numberValues, setValues, positionMap));
@@ -98,17 +98,19 @@ public class Element
 		return positionMap;
 	}
 	
-	private ArrayList<Integer> getElementNumberValues()
+	private HashMap<String, Integer> getElementNumberValues()
 	{
-		ArrayList<Integer> values = new ArrayList<Integer>();
-		JsonEntityArray<RestrictedJson<ElementNumberRestriction>> elementNumbers = 
-				this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_NUMBERS, ElementNumberRestriction.class);
+		HashMap<String, Integer> values = new HashMap<String, Integer>();
+		JsonEntityMap<RestrictedJson<ElementNumberRestriction>> elementNumbers = 
+				this.elementJson.getRestrictedJsonMap(ElementRestriction.ELEMENT_NUMBERS, ElementNumberRestriction.class);
 		if (elementNumbers == null)
 			return values;
 		
-		for (int j = 0; j < elementNumbers.getLength(); j++)
+		HashMap<String, RestrictedJson<ElementNumberRestriction>> elementMap = elementNumbers.getEntityMap();
+		for (Entry<String, RestrictedJson<ElementNumberRestriction>> entry : elementMap.entrySet())
 		{			
-			RestrictedJson<ElementNumberRestriction> elementNumber = elementNumbers.getMemberAt(j);
+			String key = entry.getKey();
+			RestrictedJson<ElementNumberRestriction> elementNumber = entry.getValue();
 			int minValue = elementNumber.getNumber(ElementNumberRestriction.MIN_VALUE);
 			int maxValue = elementNumber.getNumber(ElementNumberRestriction.MAX_VALUE);
 			Integer multiplier = elementNumber.getNumber(ElementNumberRestriction.MULTIPLIER);
@@ -117,7 +119,7 @@ public class Element
 			int result = minValue + rndm;
 			if (multiplier != null)
 				result = result * multiplier;
-			values.add(result);
+			values.put(key, result);
 		}
 		
 		return values;
@@ -262,11 +264,11 @@ public class Element
 	public class ElementInstance
 	{
 		HashMap<String, Integer> detailValues;
-		ArrayList<Integer> numberValues;
+		HashMap<String, Integer> numberValues;
 		ArrayList<Integer> setValues;
 		HashMap<Map, MapPosition> positionMap = new HashMap<Map, MapPosition>();
 		
-		private ElementInstance(HashMap<String, Integer> detailValues, ArrayList<Integer> numberValues, ArrayList<Integer> setValues, 
+		private ElementInstance(HashMap<String, Integer> detailValues, HashMap<String, Integer> numberValues, ArrayList<Integer> setValues, 
 				HashMap<Map, MapPosition> positionMap)
 		{
 			this.detailValues = detailValues;
@@ -287,10 +289,9 @@ public class Element
 		
 		public void adjustNumber(String elementNumber, String sumSign, int value) throws Exception
 		{
-			Integer id = this.getNumberIDByName(elementNumber);
-			int number = this.numberValues.get(id);
+			int number = this.numberValues.get(elementNumber);
 			number = PageInstance.performSum(number, sumSign, value);
-			this.numberValues.set(id, number);
+			this.numberValues.put(elementNumber, number);
 		}
 
 		public String getSetValue(int index, String key)
@@ -343,25 +344,9 @@ public class Element
 			return null;
 		}
 		
-		public Integer getNumberIDByName(String numberName)
-		{
-			JsonEntityArray<RestrictedJson<ElementNumberRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_NUMBERS, ElementNumberRestriction.class);
-			for (int i = 0; i < numberValues.size(); i++)
-			{
-				RestrictedJson<ElementNumberRestriction> elementNumber = elementJson.getMemberAt(i);
-				String name = elementNumber.getString(ElementNumberRestriction.NAME);
-				if (numberName.equals(name))
-					return i;
-			}
-			return null;
-		}
-		
 		public Integer getNumberValueByName(String numberName)
 		{
-			Integer id = this.getNumberIDByName(numberName);
-			if (id == null)
-				return null;
-			return this.numberValues.get(id);
+			return this.numberValues.get(numberName);
 		}
 		
 		public String getValue(String key)
