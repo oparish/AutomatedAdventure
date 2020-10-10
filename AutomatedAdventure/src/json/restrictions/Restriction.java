@@ -12,7 +12,7 @@ public enum Restriction
 	NAME("name", STRING, JsonDim.MONO),
 	CONNECTION_NAME("connectionName", STRING, JsonDim.MONO, true),
 	UNIQUE("unique", BOOLEAN, JsonDim.MONO),
-	ELEMENT_DATA("elementData", RestrictionType.ELEMENTDATA, JsonDim.ARRAY),
+	ELEMENT_DATA("elementData", RestrictionType.ELEMENTDATA, JsonDim.MAP),
 	ELEMENT_NUMBERS("elementNumbers", RestrictionType.ELEMENT_NUMBER, JsonDim.ARRAY, true),
 	OPTIONS("options", STRING, JsonDim.ARRAY),
 	ELEMENTS("elements", RestrictionType.ELEMENT, JsonDim.MAP),

@@ -69,7 +69,7 @@ public class Element
 	
 	private void makeInstance(int number, int existingInstances) throws Exception
 	{
-		ArrayList<Integer> detailValues = this.getElementDataValues(number, existingInstances);
+		HashMap<String, Integer> detailValues = this.getElementDataValues(number, existingInstances);
 		ArrayList<Integer> numberValues = this.getElementNumberValues();
 		ArrayList<Integer> setValues = this.getElementSetValues(number, existingInstances);
 		HashMap<Map, MapPosition> positionMap = this.getPositionMap();
@@ -151,7 +151,7 @@ public class Element
 				}
 				else
 				{
-					values.add(this.getUniqueValue(options.size(), j, true));
+					values.add(this.getUniqueValueForSet(options.size(), j));
 					break;
 				}		
 			}			
@@ -159,7 +159,7 @@ public class Element
 		return values;
 	}
 	
-	private int getUniqueValue(int optionsSize, int dataIndex, boolean setValues)
+	private int getUniqueValueForDetail(int optionsSize, String key)
 	{
 		ArrayList<Integer> valueIndexList = new ArrayList<Integer>();
 		
@@ -170,12 +170,7 @@ public class Element
 		
 		for (ElementInstance instance : this.instances)
 		{
-			int instanceValueIndex;
-			
-			if (setValues)
-				instanceValueIndex = instance.setValues.get(dataIndex);
-			else
-				instanceValueIndex = instance.detailValues.get(dataIndex);
+			int instanceValueIndex = instance.detailValues.get(key);
 				
 			for (int k = 0; k < optionsSize; k++)
 			{
@@ -191,28 +186,57 @@ public class Element
 		return valueIndexList.get(rnd);
 	}
 	
-	private ArrayList<Integer> getElementDataValues(int number, int existingInstances) throws Exception
+	private int getUniqueValueForSet(int optionsSize, int dataIndex)
 	{
-		ArrayList<Integer> values = new ArrayList<Integer>();
-		JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementData = 
-				this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
-		for (int j = 0; j < elementData.getLength(); j++)
+		ArrayList<Integer> valueIndexList = new ArrayList<Integer>();
+		
+		for (int k = 0; k < optionsSize; k++)
 		{
-			RestrictedJson<ElementDataRestriction> elementDetail = elementData.getMemberAt(j);
+			valueIndexList.add(k);
+		}
+		
+		for (ElementInstance instance : this.instances)
+		{
+			int instanceValueIndex = instance.setValues.get(dataIndex);
+				
+			for (int k = 0; k < optionsSize; k++)
+			{
+				if (valueIndexList.get(k) == instanceValueIndex)
+				{
+					valueIndexList.remove(k);
+					break;
+				}
+			}
+		}
+		
+		int rnd = Main.getRndm(valueIndexList.size());
+		return valueIndexList.get(rnd);
+	}
+	
+	private HashMap<String, Integer> getElementDataValues(int number, int existingInstances) throws Exception
+	{
+		HashMap<String, Integer> values = new HashMap<String, Integer>();
+		JsonEntityMap<RestrictedJson<ElementDataRestriction>> elementData = 
+				this.elementJson.getRestrictedJsonMap(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
+		HashMap<String, RestrictedJson<ElementDataRestriction>> elementMap = elementData.getEntityMap();
+		for (Entry<String, RestrictedJson<ElementDataRestriction>> entry : elementMap.entrySet())
+		{
+			String key = entry.getKey();
+			RestrictedJson<ElementDataRestriction> elementDetail = entry.getValue();
 			boolean unique = elementDetail.getBoolean(ElementDataRestriction.UNIQUE);			
 			JsonEntityArray<JsonEntityString> options = elementDetail.getStringArray(ElementDataRestriction.OPTIONS);
 			if (unique && (existingInstances + number) > options.size())
 			{
 				throw new Exception("Not enough element options for a unique selection in " + 
-						elementDetail.getString(ElementDataRestriction.NAME) + ".");
+						key + ".");
 			}
 			if (unique)
 			{
-				values.add(this.getUniqueValue(options.size(), j, false));
+				values.put(key, this.getUniqueValueForDetail(options.size(), key));
 			}
 			else
 			{
-				values.add(options.getRandomIndex());	
+				values.put(key, options.getRandomIndex());	
 			}			
 		}
 		return values;
@@ -237,12 +261,12 @@ public class Element
 	
 	public class ElementInstance
 	{
-		ArrayList<Integer> detailValues;
+		HashMap<String, Integer> detailValues;
 		ArrayList<Integer> numberValues;
 		ArrayList<Integer> setValues;
 		HashMap<Map, MapPosition> positionMap = new HashMap<Map, MapPosition>();
 		
-		private ElementInstance(ArrayList<Integer> detailValues, ArrayList<Integer> numberValues, ArrayList<Integer> setValues, 
+		private ElementInstance(HashMap<String, Integer> detailValues, ArrayList<Integer> numberValues, ArrayList<Integer> setValues, 
 				HashMap<Map, MapPosition> positionMap)
 		{
 			this.detailValues = detailValues;
@@ -268,16 +292,7 @@ public class Element
 			number = PageInstance.performSum(number, sumSign, value);
 			this.numberValues.set(id, number);
 		}
-		
-		public String getDetailValue(int index)
-		{
-			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
-			RestrictedJson<ElementDataRestriction> elementData = elementJson.getMemberAt(index);
-			JsonEntityArray<JsonEntityString> options = elementData.getStringArray(ElementDataRestriction.OPTIONS);				
-			JsonEntityString value = options.getMemberAt(this.detailValues.get(index));
-			return value.renderAsString();
-		}
-		
+
 		public String getSetValue(int index, String key)
 		{
 			JsonEntityArray<RestrictedJson<ElementSetRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_SETS, ElementSetRestriction.class);
@@ -291,15 +306,17 @@ public class Element
 				
 		public String getDetailValueByName(String dataName)
 		{
-			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
-			for (int i = 0; i < detailValues.size(); i++)
+			JsonEntityMap<RestrictedJson<ElementDataRestriction>> elementJson = 
+					Element.this.elementJson.getRestrictedJsonMap(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
+			HashMap<String, RestrictedJson<ElementDataRestriction>> elementMap = elementJson.getEntityMap();
+			if (elementMap.containsKey(dataName))
 			{
-				RestrictedJson<ElementDataRestriction> elementData = elementJson.getMemberAt(i);
-				String name = elementData.getString(ElementDataRestriction.NAME);
-				if (dataName.equals(name))
-					return this.getDetailValue(i);
+				RestrictedJson<ElementDataRestriction> elementData = elementJson.getMemberBy(dataName);
+				JsonEntityArray<JsonEntityString> options = elementData.getStringArray(ElementDataRestriction.OPTIONS);				
+				JsonEntityString value = options.getMemberAt(this.detailValues.get(dataName));
+				return value.renderAsString();
 			}
-			
+		
 			JsonEntityArray<RestrictedJson<ElementSetRestriction>> elementSetJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_SETS, ElementSetRestriction.class);
 			for (int i = 0; i < setValues.size(); i++)
 			{
@@ -357,16 +374,18 @@ public class Element
 		
 		public String renderAsString()
 		{
-			JsonEntityArray<RestrictedJson<ElementDataRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
+			JsonEntityMap<RestrictedJson<ElementDataRestriction>> elementJson = 
+					Element.this.elementJson.getRestrictedJsonMap(ElementRestriction.ELEMENT_DATA, ElementDataRestriction.class);
+			HashMap<String, RestrictedJson<ElementDataRestriction>> elementMap = elementJson.getEntityMap();
 			StringBuilder stringBuilder = new StringBuilder();
-			for (int i = 0; i < detailValues.size(); i++)
+			for (Entry<String, RestrictedJson<ElementDataRestriction>> entry : elementMap.entrySet())
 			{
-				RestrictedJson<ElementDataRestriction> elementData = elementJson.getMemberAt(i);
-				String name = elementData.getString(ElementDataRestriction.NAME);
+				String key = entry.getKey();
+				RestrictedJson<ElementDataRestriction> elementData = entry.getValue();
 				JsonEntityArray<JsonEntityString> options = elementData.getStringArray(ElementDataRestriction.OPTIONS);				
-				JsonEntityString value = options.getMemberAt(this.detailValues.get(i));
+				JsonEntityString value = options.getMemberAt(this.detailValues.get(key));
 				
-				stringBuilder.append(name + " : " + value.renderAsString() + "\r\n");
+				stringBuilder.append(key + " : " + value.renderAsString() + "\r\n");
 			}	
 			return stringBuilder.toString();
 		}
