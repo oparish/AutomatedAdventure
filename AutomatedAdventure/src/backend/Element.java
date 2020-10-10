@@ -9,6 +9,7 @@ import javax.json.JsonObject;
 import backend.Map.MapPosition;
 import backend.pages.PageInstance;
 import json.JsonEntityArray;
+import json.JsonEntityMap;
 import json.JsonEntityString;
 import json.RestrictedJson;
 import json.restrictions.ElementDataRestriction;
@@ -134,25 +135,35 @@ public class Element
 		for (int j = 0; j < elementSets.getLength(); j++)
 		{
 			RestrictedJson<ElementSetRestriction> elementSet = elementSets.getMemberAt(j);			
-			JsonEntityArray<RestrictedJson<ElementSetMemberRestriction>> members = elementSet.getRestrictedJsonArray(ElementSetRestriction.MEMBERS, ElementSetMemberRestriction.class);
-			RestrictedJson<ElementSetMemberRestriction> firstMember = members.getMemberAt(0);
-			JsonEntityArray<JsonEntityString> options = firstMember.getStringArray(ElementSetMemberRestriction.OPTIONS);
-			if (existingInstances + number > options.size())
-			{
-				throw new Exception("Not enough element set options for a unique selection in " + 
-						elementSet.getString(ElementSetRestriction.NAME) + ".");
-			}
-			values.add(this.getUniqueValue(options, j, true));
+			JsonEntityMap<RestrictedJson<ElementSetMemberRestriction>> members = 
+					elementSet.getRestrictedJsonMap(ElementSetRestriction.MEMBERS, ElementSetMemberRestriction.class);
+			HashMap<String, RestrictedJson<ElementSetMemberRestriction>> memberMap = members.getEntityMap();
 			
+			for (Entry<String, RestrictedJson<ElementSetMemberRestriction>> entry : memberMap.entrySet())
+			{
+				String key = entry.getKey();
+				RestrictedJson<ElementSetMemberRestriction> value= entry.getValue();
+				JsonEntityArray<JsonEntityString> options = value.getStringArray(ElementSetMemberRestriction.OPTIONS);
+				if (existingInstances + number > options.size())
+				{
+					throw new Exception("Not enough element set options for a unique selection in " + 
+							key + ".");
+				}
+				else
+				{
+					values.add(this.getUniqueValue(options.size(), j, true));
+					break;
+				}		
+			}			
 		}
 		return values;
 	}
 	
-	private int getUniqueValue(JsonEntityArray<JsonEntityString> options, int dataIndex, boolean setValues)
+	private int getUniqueValue(int optionsSize, int dataIndex, boolean setValues)
 	{
 		ArrayList<Integer> valueIndexList = new ArrayList<Integer>();
 		
-		for (int k = 0; k < options.size(); k++)
+		for (int k = 0; k < optionsSize; k++)
 		{
 			valueIndexList.add(k);
 		}
@@ -166,7 +177,7 @@ public class Element
 			else
 				instanceValueIndex = instance.detailValues.get(dataIndex);
 				
-			for (int k = 0; k < options.size(); k++)
+			for (int k = 0; k < optionsSize; k++)
 			{
 				if (valueIndexList.get(k) == instanceValueIndex)
 				{
@@ -197,7 +208,7 @@ public class Element
 			}
 			if (unique)
 			{
-				values.add(this.getUniqueValue(options, j, false));
+				values.add(this.getUniqueValue(options.size(), j, false));
 			}
 			else
 			{
@@ -267,12 +278,12 @@ public class Element
 			return value.renderAsString();
 		}
 		
-		public String getSetValue(int index, int innerIndex)
+		public String getSetValue(int index, String key)
 		{
 			JsonEntityArray<RestrictedJson<ElementSetRestriction>> elementJson = Element.this.elementJson.getRestrictedJsonArray(ElementRestriction.ELEMENT_SETS, ElementSetRestriction.class);
 			RestrictedJson<ElementSetRestriction> elementData = elementJson.getMemberAt(index);
-			JsonEntityArray<RestrictedJson<ElementSetMemberRestriction>> elementMembers = elementData.getRestrictedJsonArray(ElementSetRestriction.MEMBERS, ElementSetMemberRestriction.class);
-			RestrictedJson<ElementSetMemberRestriction> memberData = elementMembers.getMemberAt(innerIndex);
+			JsonEntityMap<RestrictedJson<ElementSetMemberRestriction>> elementMembers = elementData.getRestrictedJsonMap(ElementSetRestriction.MEMBERS, ElementSetMemberRestriction.class);
+			RestrictedJson<ElementSetMemberRestriction> memberData = elementMembers.getMemberBy(key);
 			JsonEntityArray<JsonEntityString> options = memberData.getStringArray(ElementSetMemberRestriction.OPTIONS);	
 			JsonEntityString value = options.getMemberAt(this.setValues.get(index));
 			return value.renderAsString();
@@ -293,13 +304,12 @@ public class Element
 			for (int i = 0; i < setValues.size(); i++)
 			{
 				RestrictedJson<ElementSetRestriction> elementData = elementSetJson.getMemberAt(i);
-				JsonEntityArray<RestrictedJson<ElementSetMemberRestriction>> membersJson = elementData.getRestrictedJsonArray(ElementSetRestriction.MEMBERS, ElementSetMemberRestriction.class);
-				for (int j = 0; j < membersJson.size(); j++)
+				JsonEntityMap<RestrictedJson<ElementSetMemberRestriction>> membersJson = 
+						elementData.getRestrictedJsonMap(ElementSetRestriction.MEMBERS, ElementSetMemberRestriction.class);
+				HashMap<String, RestrictedJson<ElementSetMemberRestriction>> membersMap = membersJson.getEntityMap();
+				if (membersMap.containsKey(dataName))
 				{
-					RestrictedJson<ElementSetMemberRestriction> memberJson = membersJson.getMemberAt(j);
-					String name = memberJson.getString(ElementSetMemberRestriction.NAME);
-					if (dataName.equals(name))
-						return this.getSetValue(i, j);
+					return this.getSetValue(i, dataName); 
 				}
 			}
 			return null;

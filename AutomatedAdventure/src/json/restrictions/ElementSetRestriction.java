@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum ElementSetRestriction implements RestrictionPointer
 {
-	MEMBERS(Restriction.MEMBERS), NAME(Restriction.NAME);
+	MEMBERS(Restriction.MEMBERS);
 	
 	private Restriction restriction;
 	

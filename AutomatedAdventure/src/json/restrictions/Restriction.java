@@ -89,7 +89,7 @@ public enum Restriction
 	ELEMENT_CHOICE("elementChoice", RestrictionType.ELEMENT_CHOICE, JsonDim.MONO, true),
 	CONNECTIONS("connections", RestrictionType.CONNECTION, JsonDim.ARRAY),
 	ELEMENT_SETS("elementSets", RestrictionType.ELEMENT_SET, JsonDim.ARRAY, true),
-	MEMBERS("members", RestrictionType.ELEMENT_SET_MEMBER, JsonDim.ARRAY),
+	MEMBERS("members", RestrictionType.ELEMENT_SET_MEMBER, JsonDim.MAP),
 	MAKE_ELEMENTS("makeElements", RestrictionType.MAKE_ELEMENT, JsonDim.ARRAY, true),
 	MAKE_CONNECTIONS("makeConnections", RestrictionType.MAKE_CONNECTION, JsonDim.ARRAY, true),
 	ELEMENT_ADJUSTMENTS("elementAdjustments", RestrictionType.ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
