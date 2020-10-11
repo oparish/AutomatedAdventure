@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum RandomRedirectRestriction implements RestrictionPointer
 {
-	NUMBER_MAP(Restriction.NUMBER_MAP);
+	NUMBER_MAP(Restriction.NUMBER_MAP), ELEMENT_ADJUSTMENTS(Restriction.ELEMENT_ADJUSTMENTS);
 	
 	private Restriction restriction;
 	

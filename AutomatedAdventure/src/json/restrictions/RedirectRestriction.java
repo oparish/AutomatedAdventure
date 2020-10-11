@@ -2,7 +2,8 @@ package json.restrictions;
 
 public enum RedirectRestriction implements RestrictionPointer
 {
-	CONTEXT_CONDITIONS(Restriction.CONTEXT_CONDITIONS), FIRST(Restriction.FIRST), SECOND(Restriction.SECOND);
+	CONTEXT_CONDITIONS(Restriction.CONTEXT_CONDITIONS), FIRST(Restriction.FIRST), SECOND(Restriction.SECOND), 
+	ELEMENT_ADJUSTMENTS(Restriction.ELEMENT_ADJUSTMENTS);
 	
 	private Restriction restriction;
 	
