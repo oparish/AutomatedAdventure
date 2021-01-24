@@ -26,6 +26,7 @@ import json.restrictions.ScenarioRestriction;
 
 public class Pages
 {
+	private static final String INITIAL = "initial";
 	private static Scenario scenario;
 	private static PageWindow pageWindow;
 	
@@ -39,8 +40,8 @@ public class Pages
 		Pages.scenario = new Scenario(scenarioJson);	
 		
 		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PAGES, PageRestriction.class);
-		RestrictedJson<PageRestriction> pageJson = pageTemplateMap.getMemberBy("initial");
-		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(), pageJson);
+		RestrictedJson<PageRestriction> pageJson = pageTemplateMap.getMemberBy(INITIAL);
+		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(INITIAL), pageJson);
 		JsonEntityMap<RestrictedJson<PanelRestriction>> panelMap = 
 				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PANELS, PanelRestriction.class);
 		

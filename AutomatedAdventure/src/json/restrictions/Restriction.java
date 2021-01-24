@@ -66,6 +66,7 @@ public enum Restriction
 	REDIRECTS("redirects", RestrictionType.REDIRECT, JsonDim.MAP),
 	RANDOM_REDIRECTS("randomRedirects", RestrictionType.RANDOM_REDIRECT, JsonDim.MAP),
 	CHOICES("choices", RestrictionType.CHOICE, JsonDim.ARRAY, true),
+	RETURN_TO("returnTo", STRING, JsonDim.MONO, true),
 	WITH_CONTEXT("withContext", BOOLEAN, JsonDim.MONO),
 	FIRST("first", STRING, JsonDim.MONO),
 	SECOND("second", STRING, JsonDim.MONO),

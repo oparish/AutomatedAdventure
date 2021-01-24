@@ -249,7 +249,7 @@ public class Scenario
 		if (oldContext != null)
 			pageContext = oldContext;
 		else
-			pageContext = new PageContext();
+			pageContext = new PageContext(keyword);
 		
 		if (elementInstance != null)
 			pageContext.addElementInstance(elementInstance);

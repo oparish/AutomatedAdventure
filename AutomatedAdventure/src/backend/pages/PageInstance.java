@@ -30,6 +30,8 @@ import main.Pages;
 
 public class PageInstance extends AbstractPageInstance
 {
+	private static String BACK = "Back";
+	
 	RestrictedJson<PageRestriction> pageJson;
 	HashMap<String, ElementChoice> choiceMap = new HashMap<String, ElementChoice>();
 	ArrayList<String> choiceList = new ArrayList<String>();
@@ -90,12 +92,40 @@ public class PageInstance extends AbstractPageInstance
 				this.pageJson.getRestrictedJsonArray(PageRestriction.CHOICES, ChoiceRestriction.class);
 		
 		if (choiceDataArray == null)
-			return;
-		
-		for (int i = 0; i < choiceDataArray.size(); i++)
 		{
-			this.setupChoice(choiceDataArray.getMemberAt(i));
+			String returnToString = this.pageJson.getString(PageRestriction.RETURN_TO);
+			if (returnToString != null)
+			{
+				this.setupReturnChoice(returnToString);
+			}
 		}
+		else
+		{
+			for (int i = 0; i < choiceDataArray.size(); i++)
+			{
+				this.setupChoice(choiceDataArray.getMemberAt(i));
+			}
+		}
+	}
+	
+	private void setupReturnChoice(String returnToString) throws Exception
+	{
+		ReturnChoiceType returnChoiceType = ReturnChoiceType.fromString(returnToString);	
+		
+		switch(returnChoiceType)
+		{
+			case CONTEXT_TOP:
+				this.setupContextTopChoice();
+			break;
+		}
+	}
+	
+	private void setupContextTopChoice()
+	{
+		ElementChoice elementChoice = new ElementChoice();
+		elementChoice.keyword = this.pageContext.getTopPage();
+		elementChoice.context = new PageContext(elementChoice.keyword);
+		this.addChoice(BACK, elementChoice);
 	}
 	
 	private void setupChoice(RestrictedJson<ChoiceRestriction> choiceData) throws Exception
@@ -392,5 +422,32 @@ public class PageInstance extends AbstractPageInstance
 	{
 		this.choiceMap.put(choiceName, elementChoice);
 		this.choiceList.add(choiceName);
+	}
+	
+	private enum ReturnChoiceType
+	{
+		CONTEXT_TOP("contextTop");
+		
+		private String name;
+		
+		private ReturnChoiceType(String name)
+		{
+			this.name = name;
+		}
+		
+		public String getName()
+		{
+			return this.name;
+		}
+		
+		public static ReturnChoiceType fromString(String name) throws Exception
+		{
+			for (ReturnChoiceType returnChoiceType : ReturnChoiceType.values())
+			{
+				if (returnChoiceType.getName().equals(name))
+					return returnChoiceType;
+			}
+			throw new Exception("Unrecognised return choice type: " + name);
+		}
 	}
 }
