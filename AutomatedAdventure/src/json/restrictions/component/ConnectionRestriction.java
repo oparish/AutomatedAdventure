@@ -5,7 +5,7 @@ import json.restrictions.RestrictionPointer;
 
 public enum ConnectionRestriction implements RestrictionPointer
 {
-	FIRST(Restriction.FIRST), SECOND(Restriction.SECOND), NAME(Restriction.NAME);
+	FIRST(Restriction.FIRST), SECOND(Restriction.SECOND);
 	
 	private Restriction restriction;
 	

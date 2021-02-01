@@ -122,16 +122,17 @@ public class Scenario
 	
 	private void loadConnections() throws Exception
 	{
-		JsonEntityArray<RestrictedJson<ConnectionRestriction>> connectionArray = 
-				this.scenarioJson.getRestrictedJsonArray(ScenarioRestriction.CONNECTIONS, ConnectionRestriction.class);
-		for (int i = 0; i < connectionArray.getLength(); i++)
+		JsonEntityMap<RestrictedJson<ConnectionRestriction>> connectionMap = 
+				this.scenarioJson.getRestrictedJsonMap(ScenarioRestriction.CONNECTIONS, ConnectionRestriction.class);		
+		HashMap<String, RestrictedJson<ConnectionRestriction>> innerMap = connectionMap.getEntityMap();
+		for (Entry<String, RestrictedJson<ConnectionRestriction>> entry : innerMap.entrySet())
 		{
-			RestrictedJson<ConnectionRestriction> connectionJson = connectionArray.getMemberAt(i);
+			RestrictedJson<ConnectionRestriction> connectionJson = entry.getValue();
 			String firstString = connectionJson.getString(ConnectionRestriction.FIRST);
 			String secondString = connectionJson.getString(ConnectionRestriction.SECOND);
 			Element firstElement = this.elementMap.get(firstString);
 			Element secondElement = this.elementMap.get(secondString);
-			this.connections.put(connectionJson.getString(ConnectionRestriction.NAME), new ConnectionSet(firstElement, secondElement));
+			this.connections.put(entry.getKey(), new ConnectionSet(firstElement, secondElement));
 		}
 	}
 	
