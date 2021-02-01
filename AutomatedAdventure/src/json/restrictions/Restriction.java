@@ -26,7 +26,7 @@ public enum Restriction
 	INTERVALS("intervals", RestrictionType.INTERVAL, JsonDim.ARRAY),
 	CHECKTIME("checktime", NUMBER, JsonDim.MONO),
 	PERCENTAGE("percentage", NUMBER, JsonDim.MONO),
-	CHANCES("chances", RestrictionType.CHANCE, JsonDim.ARRAY),
+	CHANCES("chances", RestrictionType.CHANCE, JsonDim.MAP),
 	CHANCE_NAME("chanceName", STRING, JsonDim.MONO),
 	PRIORITY("priority", NUMBER, JsonDim.MONO),
 	CONDITIONS("conditions", RestrictionType.CONDITION, JsonDim.ARRAY),

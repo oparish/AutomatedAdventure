@@ -170,16 +170,16 @@ public class Scenario
 	
 	private void loadChances()
 	{
-		JsonEntityArray<RestrictedJson<ChanceRestriction>> chanceArray = 
-				this.scenarioJson.getRestrictedJsonArray(ScenarioRestriction.CHANCES, ChanceRestriction.class);
-		for (int i = 0; i < chanceArray.getLength(); i++)
+		JsonEntityMap<RestrictedJson<ChanceRestriction>> chanceMap = 
+				this.scenarioJson.getRestrictedJsonMap(ScenarioRestriction.CHANCES, ChanceRestriction.class);
+		HashMap<String, RestrictedJson<ChanceRestriction>> innerMap = chanceMap.getEntityMap();
+		for (Entry<String, RestrictedJson<ChanceRestriction>> entry : innerMap.entrySet())
 		{
-			RestrictedJson<ChanceRestriction> chanceJson = chanceArray.getMemberAt(i);
-			String name = chanceJson.getString(ChanceRestriction.NAME);
+			RestrictedJson<ChanceRestriction> chanceJson = entry.getValue();
 			int priority = chanceJson.getJsonEntityNumber(ChanceRestriction.PRIORITY).getValue();
 			Chance chance = new Chance(chanceJson);
-			this.chances.put(name, chance);
-			this.chanceByPriority.put(priority, chance);	
+			this.chances.put(entry.getKey(), chance);
+			this.chanceByPriority.put(priority, chance);
 		}
 		
 		this.chanceRange = 0;
