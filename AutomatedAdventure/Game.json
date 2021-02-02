@@ -1,2 +1,21 @@
 {
+   "scenario" : {
+      "rooms" : [],
+      "states" : [],
+      "intervals" : [],
+      "elements" : {},
+      "checktime" : 0,
+      "chances" : {},
+      "mode" : "finite",
+      "actionTypes" : [],
+      "components" : {},
+      "endings" : [],
+      "pages" : {},
+      "connections" : {},
+      "redirects" : {},
+      "randomRedirects" : {},
+      "panels" : {},
+      "maps" : {},
+      "sums" : {}
+   }
 }
