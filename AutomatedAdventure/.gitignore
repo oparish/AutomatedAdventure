@@ -3,7 +3,6 @@
 *.json
 /BlackTile.png
 /Castle.png
-/Plains.png
 /WhiteTile.png
 /MyCastle.png
 !Game.json

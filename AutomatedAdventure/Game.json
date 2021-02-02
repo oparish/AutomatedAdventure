@@ -10,12 +10,35 @@
       "actionTypes" : [],
       "components" : {},
       "endings" : [],
-      "pages" : {},
+      "pages" : {
+         "initial" : {
+            "value" : "TEST",
+            "panelName" : "mapPanel"
+         }
+      },
       "connections" : {},
       "redirects" : {},
       "randomRedirects" : {},
-      "panels" : {},
-      "maps" : {},
+      "panels" : {
+         "mapPanel" : {
+            "x" : 0,
+            "y" : 0,
+            "width" : 1,
+            "height" : 1,
+            "mapName" : "testMap"
+         }
+      },
+      "maps" : {
+         "testMap" : {
+            "mapElements" : {},
+            "width" : 10,
+            "height" : 10,
+            "tileSize" : 40,
+            "image" : {
+               "filename" : "plains.png"
+            }
+         }
+      },
       "sums" : {}
    }
 }
