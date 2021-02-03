@@ -130,22 +130,11 @@ public class MapPanel extends JPanel implements ActionListener
 		String fileName = imageData.getString(ImageRestriction.FILENAME);
 		ImageIcon imageIcon = new ImageIcon(fileName);
 		RestrictedJson<TooltipRestriction> tooltipData = element.getTooltip(this.map);
-		JsonEntityArray<RestrictedJson<TooltipComponentRestriction>> components = 
-				tooltipData.getRestrictedJsonArray(TooltipRestriction.TOOLTIP_COMPONENTS, TooltipComponentRestriction.class);
-		
-		String tooltipText = null;
-		for (int i = 0; i < components.getLength(); i++)
-		{
-			RestrictedJson<TooltipComponentRestriction> tooltipComponentData = components.getMemberAt(i);
-			JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray = 
-					tooltipComponentData.getRestrictedJsonArray(TooltipComponentRestriction.CONTEXT_CONDITIONS, ContextConditionRestriction.class);
 
-			if (contextConditionDataArray == null || ContextConditionRestriction.checkCondition(this.map.getScenario(), contextConditionDataArray, elementInstance))
-			{
-				tooltipText = tooltipComponentData.getString(TooltipComponentRestriction.TOOLTIP_TEXT);
-				break;
-			}
-		}
+		String tooltipText = null;
+		
+		if (tooltipData != null)
+			tooltipText = this.createTooltipText(tooltipData, elementInstance);
 		
 		MapButton mapButton;
 		
@@ -163,6 +152,26 @@ public class MapPanel extends JPanel implements ActionListener
 		mapButton.addActionListener(this);
 		this.innerPanel.add(mapButton);
 		this.mapButtons.add(mapButton);
+	}
+	
+	private String createTooltipText(RestrictedJson<TooltipRestriction> tooltipData, ElementInstance elementInstance) throws Exception
+	{
+		String tooltipText = null;
+		JsonEntityArray<RestrictedJson<TooltipComponentRestriction>> components = 
+				tooltipData.getRestrictedJsonArray(TooltipRestriction.TOOLTIP_COMPONENTS, TooltipComponentRestriction.class);
+		for (int i = 0; i < components.getLength(); i++)
+		{
+			RestrictedJson<TooltipComponentRestriction> tooltipComponentData = components.getMemberAt(i);
+			JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray = 
+					tooltipComponentData.getRestrictedJsonArray(TooltipComponentRestriction.CONTEXT_CONDITIONS, ContextConditionRestriction.class);
+
+			if (contextConditionDataArray == null || ContextConditionRestriction.checkCondition(this.map.getScenario(), contextConditionDataArray, elementInstance))
+			{
+				tooltipText = tooltipComponentData.getString(TooltipComponentRestriction.TOOLTIP_TEXT);
+				break;
+			}
+		}
+		return tooltipText;
 	}
 
 	private String assessTooltipText(ElementInstance elementInstance, String tooltipText) throws Exception
