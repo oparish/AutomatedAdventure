@@ -3,7 +3,16 @@
       "rooms" : [],
       "states" : [],
       "intervals" : [],
-      "elements" : {},
+      "elements" : {
+         "village" : {
+            "elementData" : {
+               "name" : {
+                  "options" : [ "Example" ],
+                  "unique" : true
+               }
+            }
+         }
+      },
       "checktime" : 0,
       "chances" : {},
       "mode" : "finite",
@@ -13,7 +22,13 @@
       "pages" : {
          "initial" : {
             "value" : "TEST",
-            "panelName" : "mapPanel"
+            "panelName" : "mapPanel",
+            "makeElements" : [
+               {
+                  "elementName" : "village",
+                  "numberValue" : 1
+               }
+            ]
          }
       },
       "connections" : {},
@@ -30,7 +45,20 @@
       },
       "maps" : {
          "testMap" : {
-            "mapElements" : {},
+            "mapElements" : {
+               "village" : {
+                  "image" : {
+                     "filename" : "village.png"
+                  },
+                  "tooltip" : {
+                     "tooltipComponents" : [
+                        {
+                           "tooltipText" : "<element:name>"
+                        }
+                     ]
+                  }
+               }
+            },
             "width" : 10,
             "height" : 10,
             "tileSize" : 40,
