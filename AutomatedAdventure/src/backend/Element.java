@@ -27,6 +27,7 @@ public class Element
 	RestrictedJson<ElementRestriction> elementJson;
 	ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
 	HashMap<Map, RestrictedJson<ImageRestriction>> mapMap = new HashMap<Map, RestrictedJson<ImageRestriction>>();
+	HashMap<Map, MapElementType> typeMap = new HashMap<Map, MapElementType>();
 	HashMap<Map, RestrictedJson<TooltipRestriction>> tooltipMap = new HashMap<Map, RestrictedJson<TooltipRestriction>>();
 	
 	public ArrayList<ElementInstance> getInstances() {
@@ -38,9 +39,10 @@ public class Element
 		this.elementJson = elementJson;
 	}
 	
-	public void addMap(Map map, RestrictedJson<ImageRestriction> imageData)
+	public void addMap(Map map, RestrictedJson<ImageRestriction> imageData, MapElementType type)
 	{
 		mapMap.put(map, imageData);
+		typeMap.put(map, type);
 	}
 	
 	public void addTooltip(Map map, RestrictedJson<TooltipRestriction> tooltip)

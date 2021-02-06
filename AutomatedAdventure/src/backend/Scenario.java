@@ -136,7 +136,7 @@ public class Scenario
 		}
 	}
 	
-	private void loadMaps()
+	private void loadMaps() throws Exception
 	{
 		JsonEntityMap<RestrictedJson<MapRestriction>> mapMap = 
 				this.scenarioJson.getRestrictedJsonMap(ScenarioRestriction.MAPS, MapRestriction.class);
@@ -156,7 +156,13 @@ public class Scenario
 				Element element = this.getElement(elementName);
 				RestrictedJson<MapElementRestriction> mapData = innerEntry.getValue();
 				RestrictedJson<ImageRestriction> imageData = mapData.getRestrictedJson(MapElementRestriction.IMAGE, ImageRestriction.class);
-				element.addMap(map, imageData);
+				String mapElementTypeString = mapData.getString(MapElementRestriction.MAP_ELEMENT_TYPE);
+				MapElementType mapElementType = MapElementType.valueOf(mapElementTypeString.toUpperCase());
+				
+				if (mapElementType == null)
+					throw new Exception("Unrecognised map element type: " + mapElementTypeString);
+				
+				element.addMap(map, imageData, mapElementType);
 				RestrictedJson<TooltipRestriction> tooltipData = 
 						mapData.getRestrictedJson(MapElementRestriction.TOOLTIP, TooltipRestriction.class);
 				element.addTooltip(map, tooltipData);

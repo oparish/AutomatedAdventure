@@ -94,7 +94,8 @@
                            "tooltipText" : "<element:name>"
                         }
                      ]
-                  }
+                  },
+                  "mapElementType" : "location"
                }
             },
             "width" : 10,
