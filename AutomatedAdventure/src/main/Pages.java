@@ -1,5 +1,6 @@
 package main;
 
+import java.io.Console;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -46,8 +47,8 @@ public class Pages
 				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PANELS, PanelRestriction.class);
 		
 		Pages.pageWindow = new PageWindow(Pages.scenario, panelMap);
-		Pages.pageWindow.showWindow();
 		Pages.pageWindow.update(pageInstance);
+		Pages.pageWindow.showWindow();
 	}
 	
 	public static Scenario getScenario()

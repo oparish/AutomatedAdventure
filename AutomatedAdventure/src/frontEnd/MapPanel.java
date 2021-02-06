@@ -118,7 +118,7 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void createLabel(int x, int y, String imagePath)
 	{
-		ImageIcon imageIcon = new ImageIcon(imagePath);
+		ImageIcon imageIcon = Main.loadImageIcon(imagePath);
 		JLabel jLabel = new JLabel(imageIcon);
 		this.innerPanel.add(jLabel);
 	}
@@ -128,7 +128,7 @@ public class MapPanel extends JPanel implements ActionListener
 		Element element = elementInstance.getElement();
 		RestrictedJson<ImageRestriction> imageData = element.getMapImageData(this.map);
 		String fileName = imageData.getString(ImageRestriction.FILENAME);
-		ImageIcon imageIcon = new ImageIcon(fileName);
+		ImageIcon imageIcon = Main.loadImageIcon(fileName);
 		RestrictedJson<TooltipRestriction> tooltipData = element.getTooltip(this.map);
 
 		String tooltipText = null;
