@@ -26,6 +26,21 @@
                   "maxValue" : 1
                }
             }
+         },
+         "self" : {
+            "elementData" : {
+               "name" : {
+                  "options" : [ "Example" ],
+                  "unique" : true
+               }
+            },
+            "elementNumbers" : {
+               "mana" : {
+                  "minValue" : 1,
+                  "multiplier" : 10,
+                  "maxValue" : 1
+               }
+            }
          }
       },
       "checktime" : 0,
@@ -45,6 +60,10 @@
                },
                {
                   "elementName" : "troop",
+                  "numberValue" : 1
+               },
+               {
+                  "elementName" : "self",
                   "numberValue" : 1
                }
             ]
