@@ -96,7 +96,8 @@ public enum Restriction
 	ELEMENT_ADJUSTMENTS("elementAdjustments", RestrictionType.ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
 	NUMBER_MAP("numberMap", NUMBER, JsonDim.MAP),
 	PANELS("panels", RestrictionType.PANEL, JsonDim.MAP),
-	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO, true);
+	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO, true),
+	MAP_ELEMENT_TYPE("mapElementType", STRING, JsonDim.MONO);
 	
 	private final boolean optional;
 	private final JsonDim jsonDim;

@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum MapElementRestriction implements RestrictionPointer
 {
-	IMAGE(Restriction.IMAGE), TOOLTIP(Restriction.TOOLTIP);
+	IMAGE(Restriction.IMAGE), TOOLTIP(Restriction.TOOLTIP), MAP_ELEMENT_TYPE(Restriction.MAP_ELEMENT_TYPE);
 
 	private Restriction restriction;
 	
