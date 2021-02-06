@@ -11,6 +11,21 @@
                   "unique" : true
                }
             }
+         },
+         "troop" : {
+            "elementData" : {
+               "name" : {
+                  "options" : [ "Example" ],
+                  "unique" : true
+               }
+            },
+            "elementNumbers" : {
+               "quantity" : {
+                  "minValue" : 1,
+                  "multiplier" : 10,
+                  "maxValue" : 1
+               }
+            }
          }
       },
       "checktime" : 0,
@@ -26,6 +41,10 @@
             "makeElements" : [
                {
                   "elementName" : "village",
+                  "numberValue" : 1
+               },
+               {
+                  "elementName" : "troop",
                   "numberValue" : 1
                }
             ]
