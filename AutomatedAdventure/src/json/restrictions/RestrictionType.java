@@ -34,6 +34,7 @@ public enum RestrictionType implements JsonType
 	PAGE(PageRestriction.class),
 	MAP(MapRestriction.class),
 	MAP_ELEMENT(MapElementRestriction.class),
+	MAP_POSITION(MapPositionRestriction.class),
 	SUM_COMPONENT(SumComponentRestriction.class),
 	SUM(SumRestriction.class),
 	REDIRECT(RedirectRestriction.class),
@@ -53,6 +54,7 @@ public enum RestrictionType implements JsonType
 	ENDING(EndingRestriction.class),
 	TRIGGER(TriggerRestriction.class),
 	PANEL(PanelRestriction.class),
+	INSTANCE_DETAILS(InstanceDetailsRestriction.class),
 	CONNECTION(ConnectionRestriction.class);
 	
 	private final Class<? extends RestrictionPointer> clazz;

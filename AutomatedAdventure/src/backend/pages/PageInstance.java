@@ -20,6 +20,7 @@ import json.restrictions.ElementAdjustmentRestriction;
 import json.restrictions.ElementAdjustmentType;
 import json.restrictions.ElementChoiceRestriction;
 import json.restrictions.ElementConditionRestriction;
+import json.restrictions.InstanceDetailsRestriction;
 import json.restrictions.MakeConnectionRestriction;
 import json.restrictions.MakeElementRestriction;
 import json.restrictions.PageRestriction;
@@ -412,9 +413,19 @@ public class PageInstance extends AbstractPageInstance
 		{
 			RestrictedJson<MakeElementRestriction> makeElementData = makeElementArray.getMemberAt(i);
 			String elementName = makeElementData.getString(MakeElementRestriction.ELEMENT_NAME);
-			int numberValue = makeElementData.getNumber(MakeElementRestriction.NUMBER_VALUE);
 			Element element = this.scenario.getElement(elementName);
-			element.makeInstances(numberValue);
+			Integer numberValue = makeElementData.getNumber(MakeElementRestriction.NUMBER_VALUE);
+			
+			if (numberValue != null)
+			{
+				element.makeInstances(numberValue);
+			}
+			else
+			{
+				RestrictedJson<InstanceDetailsRestriction> instanceDetailsData = 
+						makeElementData.getRestrictedJson(MakeElementRestriction.INSTANCE_DETAILS, InstanceDetailsRestriction.class);
+				element.makeInstance(instanceDetailsData);
+			}				
 		}
 	}
 	

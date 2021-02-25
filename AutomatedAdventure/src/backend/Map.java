@@ -55,6 +55,11 @@ public class Map
 		return this.openMapPositions;
 	}
 	
+	public MapPosition createMapPosition(int x, int y)
+	{
+		return new MapPosition(x, y);
+	}
+	
 	public int getWidth()
 	{
 		return this.mapData.getNumber(MapRestriction.WIDTH);

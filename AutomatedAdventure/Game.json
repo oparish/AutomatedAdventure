@@ -7,7 +7,7 @@
          "village" : {
             "elementData" : {
                "name" : {
-                  "options" : [ "Example" ],
+                  "options" : [ "One", "Two", "Three" ],
                   "unique" : true
                }
             }
@@ -56,11 +56,33 @@
             "makeElements" : [
                {
                   "elementName" : "village",
-                  "numberValue" : 1
+                  "instanceDetails" : {
+                     "name" : "one",
+                     "mapMap" : {
+                        "testMap" : {
+                           "x" : 3,
+                           "y" : 3
+                        }
+                     },
+                     "stringMap" : {
+                        "name" : "Three"
+                     }
+                  }
                },
                {
                   "elementName" : "troop",
-                  "numberValue" : 1
+                  "instanceDetails" : {
+                     "name" : "one",
+                     "mapMap" : {
+                        "testMap" : {
+                           "x" : 3,
+                           "y" : 3
+                        }
+                     },
+                     "numberMap" : {
+                        "quantity" : 30
+                     }
+                  }
                },
                {
                   "elementName" : "self",
@@ -91,11 +113,24 @@
                   "tooltip" : {
                      "tooltipComponents" : [
                         {
-                           "tooltipText" : "<element:name>"
+                           "tooltipText" : "<element:name> "
                         }
                      ]
                   },
                   "mapElementType" : "location"
+               },
+               "troop" : {
+                  "image" : {
+                     "filename" : "wizard.png"
+                  },
+                  "tooltip" : {
+                     "tooltipComponents" : [
+                        {
+                           "tooltipText" : "<element:quantity>"
+                        }
+                     ]
+                  },
+                  "mapElementType" : "pc"
                }
             },
             "width" : 10,

@@ -2,9 +2,11 @@ package main;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +30,8 @@ import backend.Mode;
 import backend.Scenario;
 import frontEnd.RoomsWindow;
 import json.RestrictedJson;
+import json.restrictions.ImageRestriction;
+import json.restrictions.MapRestriction;
 import json.restrictions.ScenarioRestriction;
 
 public class Main
@@ -35,6 +39,7 @@ public class Main
 	public static Main main;
 	private static Random random = new Random();
 	private static HashMap<String, ImageIcon> icons = new HashMap<String, ImageIcon>();
+	private static HashMap<String, HashMap<String, ImageIcon>> combinedIcons = new HashMap<String, HashMap<String, ImageIcon>>();
 	
 	public static Dimension findScreenCentre()
 	{
@@ -73,6 +78,39 @@ public class Main
 		
 	    ImageIcon imageIcon = new ImageIcon(filename);
 	    Main.icons.put(filename, imageIcon);
+	    return imageIcon;
+	}
+	
+	
+	public static ImageIcon loadCombinedImageIcon(String baseFilename, String filename)
+	{		
+		if (Main.combinedIcons.containsKey(baseFilename))
+		{
+			HashMap<String, ImageIcon> innerIcons = Main.combinedIcons.get(baseFilename);
+			if (innerIcons.containsKey(filename))
+			{
+				return innerIcons.get(filename);
+			}
+		}
+		
+		BufferedImage baseImg = null;
+		BufferedImage img = null;
+		try {
+			baseImg = ImageIO.read(new File(baseFilename));
+			img = ImageIO.read(new File(filename));
+		} catch (IOException e) {
+		}
+		
+		Graphics2D graphics = baseImg.createGraphics();
+		graphics.drawImage(img, 0, 0, null);
+		ImageIcon imageIcon = new ImageIcon(baseImg);
+		
+		if (!Main.combinedIcons.containsKey(baseFilename))
+			Main.combinedIcons.put(baseFilename, new HashMap<String, ImageIcon>());
+		
+		HashMap<String, ImageIcon> innerIcons = Main.combinedIcons.get(baseFilename);
+		innerIcons.put(filename, imageIcon);
+		
 	    return imageIcon;
 	}
 }
