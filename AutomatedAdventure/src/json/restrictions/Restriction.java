@@ -101,6 +101,7 @@ public enum Restriction
 	MAP_MAP("mapMap", RestrictionType.MAP_POSITION, JsonDim.MAP, true),
 	PANELS("panels", RestrictionType.PANEL, JsonDim.MAP),
 	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO, true),
+	RANGE_ATTRIBUTE("rangeAttribute", STRING, JsonDim.MONO, true),
 	MAP_ELEMENT_TYPE("mapElementType", STRING, JsonDim.MONO);
 	
 	private final boolean optional;

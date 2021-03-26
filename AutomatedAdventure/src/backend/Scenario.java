@@ -11,10 +11,12 @@ import java.util.regex.Matcher;
 import backend.Element.ElementInstance;
 import backend.component.ConnectionSet;
 import backend.pages.ElementChoice;
+import backend.pages.ElementChoiceType;
 import backend.pages.PageContext;
 import backend.pages.PageInstance;
 import backend.pages.RandomRedirectInstance;
 import backend.pages.RedirectInstance;
+import frontEnd.Position;
 import json.JsonEntityArray;
 import json.JsonEntityMap;
 import json.JsonEntityNumber;
@@ -242,10 +244,18 @@ public class Scenario
 	
 	public void loadPage(ElementChoice elementChoice) throws Exception
 	{
-		Pages.getScenario().loadPage(elementChoice.keyword, elementChoice.context, elementChoice.elementInstance);
+		Pages.getScenario().loadPage(elementChoice.keyword, elementChoice.context, elementChoice.elementInstance, 
+				elementChoice, null);
 	}
 	
-	public void loadPage(String keyword, PageContext oldContext, ElementInstance elementInstance) throws Exception
+	public void loadPage(ElementChoice elementChoice, Position position) throws Exception
+	{
+		Pages.getScenario().loadPage(elementChoice.keyword, elementChoice.context, elementChoice.elementInstance, 
+				elementChoice, position);
+	}
+	
+	public void loadPage(String keyword, PageContext oldContext, ElementInstance elementInstance, 
+			ElementChoice elementChoice, Position position) throws Exception
 	{
 		RestrictedJson<PageRestriction> pageJson = this.getPageTemplate(keyword);
 		RestrictedJson<RedirectRestriction> redirectJson = this.getRedirect(keyword);
@@ -261,27 +271,23 @@ public class Scenario
 		if (elementInstance != null)
 			pageContext.addElementInstance(elementInstance);
 		
+		if (elementChoice != null)
+			pageContext.setElementChoice(elementChoice);
+		
 		if (pageJson != null)
 		{		
-			PageInstance pageInstance = new PageInstance(this, pageContext, pageJson);
-			try
-			{
-				Pages.getPageWindow().update(pageInstance);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			PageInstance pageInstance = new PageInstance(this, pageContext, pageJson, position);
+			Pages.getPageWindow().update(pageInstance);
 		}
 		else if (redirectJson != null)
 		{
 			RedirectInstance redirectInstance = new RedirectInstance(this, pageContext, redirectJson);
-			redirectInstance.load(elementInstance);
+			redirectInstance.load(elementInstance, elementChoice);
 		}
 		else if (randomRedirectJson != null)
 		{
 			RandomRedirectInstance randomRedirectInstance = new RandomRedirectInstance(this, pageContext, randomRedirectJson);
-			randomRedirectInstance.load(elementInstance);			
+			randomRedirectInstance.load(elementInstance, elementChoice);			
 		}
 	}
 	

@@ -24,6 +24,11 @@
                   "minValue" : 1,
                   "multiplier" : 10,
                   "maxValue" : 1
+               },
+               "move" : {
+                  "minValue" : 1,
+                  "multiplier" : 3,
+                  "maxValue" : 1
                }
             }
          },
@@ -87,6 +92,36 @@
                {
                   "elementName" : "self",
                   "numberValue" : 1
+               }
+            ],
+            "choices" : [
+               {
+                  "value" : "next",
+                  "first" : "Move ",
+                  "elementChoice" : {
+                     "elementName" : "troop",
+                     "second" : "",
+                     "type" : "MENU_RANGE",
+                     "elementQuality" : "name",
+                     "rangeAttribute" : "move"
+                  }
+               }
+            ]
+         },
+         "next" : {
+            "value" : "<selectedPosition:x>, <selectedPosition:y>",
+            "panelName" : "mapPanel",
+            "choices" : [
+               {
+                  "value" : "next",
+                  "first" : "Move ",
+                  "elementChoice" : {
+                     "elementName" : "troop",
+                     "second" : "",
+                     "type" : "MENU_RANGE",
+                     "elementQuality" : "name",
+                     "rangeAttribute" : "move"
+                  }
                }
             ]
          }

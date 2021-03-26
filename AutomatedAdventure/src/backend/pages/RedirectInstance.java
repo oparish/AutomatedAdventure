@@ -19,7 +19,7 @@ public class RedirectInstance extends AbstractPageInstance
 		this.redirectJson = redirectJson;
 	}
 		
-	public void load(ElementInstance elementInstance) throws Exception
+	public void load(ElementInstance elementInstance, ElementChoice elementChoice) throws Exception
 	{		
 		JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentDataArray = 
 				this.redirectJson.getRestrictedJsonArray(RedirectRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
@@ -51,12 +51,12 @@ public class RedirectInstance extends AbstractPageInstance
 		if (check)
 		{
 			String ifPageWord = redirectJson.getString(RedirectRestriction.FIRST);
-			this.scenario.loadPage(ifPageWord, pageContext, elementInstance);
+			this.scenario.loadPage(ifPageWord, pageContext, elementInstance, elementChoice, null);
 		}
 		else
 		{
 			String elsePageWord = redirectJson.getString(RedirectRestriction.SECOND);
-			this.scenario.loadPage(elsePageWord, pageContext, elementInstance);
+			this.scenario.loadPage(elsePageWord, pageContext, elementInstance, elementChoice, null);
 		}
 	}
 }

@@ -24,7 +24,7 @@ public class RandomRedirectInstance extends AbstractPageInstance
 		this.randomRedirectJson = randomRedirectJson;
 	}
 	
-	public void load(ElementInstance elementInstance) throws Exception
+	public void load(ElementInstance elementInstance, ElementChoice elementChoice) throws Exception
 	{
 		JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentDataArray = 
 				this.randomRedirectJson.getRestrictedJsonArray(RandomRedirectRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
@@ -50,7 +50,7 @@ public class RandomRedirectInstance extends AbstractPageInstance
 		{
 			if (value < entry.getKey())
 			{
-				this.scenario.loadPage(entry.getValue(), pageContext, elementInstance);
+				this.scenario.loadPage(entry.getValue(), pageContext, elementInstance, elementChoice, null);
 				return;
 			}
 		}

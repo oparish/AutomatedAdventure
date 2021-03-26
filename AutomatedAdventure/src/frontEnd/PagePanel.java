@@ -35,7 +35,7 @@ public abstract class PagePanel extends JPanel
 	
 	public void update(PageInstance pageInstance) throws Exception
 	{
-		this.textArea.setText(pageInstance.getText());
+		this.textArea.setText(pageInstance.parseText());
 	}
 	
 	public void clear()

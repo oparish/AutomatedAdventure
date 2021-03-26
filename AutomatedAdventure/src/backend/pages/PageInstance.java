@@ -12,6 +12,7 @@ import backend.Element.ElementInstance;
 import backend.NumberRange;
 import backend.Scenario;
 import backend.component.ConnectionSet;
+import frontEnd.Position;
 import json.JsonEntityArray;
 import json.RestrictedJson;
 import json.restrictions.ChoiceRestriction;
@@ -36,7 +37,13 @@ public class PageInstance extends AbstractPageInstance
 	RestrictedJson<PageRestriction> pageJson;
 	HashMap<String, ElementChoice> choiceMap = new HashMap<String, ElementChoice>();
 	ArrayList<String> choiceList = new ArrayList<String>();
+	ElementChoiceType elementChoiceType;
+	Position position;
 	
+	public ElementChoiceType getElementChoiceType() {
+		return elementChoiceType;
+	}
+
 	public ArrayList<String> getChoiceList() {
 		return choiceList;
 	}
@@ -49,13 +56,14 @@ public class PageInstance extends AbstractPageInstance
 		return pageJson;
 	}
 
-	public PageInstance(Scenario scenario, PageContext pageContext, RestrictedJson<PageRestriction> pageJson)
+	public PageInstance(Scenario scenario, PageContext pageContext, RestrictedJson<PageRestriction> pageJson, Position position)
 	{
 		super(scenario, pageContext);
 		this.pageJson = pageJson;
+		this.position = position;
 	}
 
-	public String getText() throws Exception
+	public String parseText() throws Exception
 	{
 		this.makeElements();
 		this.makeConnections();
@@ -146,6 +154,8 @@ public class PageInstance extends AbstractPageInstance
 			String elementName = elementChoiceData.getString(ElementChoiceRestriction.ELEMENT_NAME);
 			String elementQualityName = elementChoiceData.getString(ElementChoiceRestriction.ELEMENT_QUALITY);
 			String second = elementChoiceData.getString(ElementChoiceRestriction.SECOND);
+			String type = elementChoiceData.getString(ElementChoiceRestriction.TYPE);
+			String rangeAttribute = elementChoiceData.getString(ElementChoiceRestriction.RANGE_ATTRIBUTE);
 			
 			Element element = this.scenario.getElement(elementName);
 			
@@ -174,14 +184,14 @@ public class PageInstance extends AbstractPageInstance
 				for (ElementInstance elementInstance : element.getInstances())
 				{
 					if (!failCheckSet.contains(elementInstance))
-						this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second);
+						this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second, type, rangeAttribute);
 				}
 			}
 			else
 			{
 				for (ElementInstance elementInstance : element.getInstances())
 				{
-					this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second);
+					this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second, type, rangeAttribute);
 				}
 			}	
 					
@@ -209,6 +219,28 @@ public class PageInstance extends AbstractPageInstance
 			String elementQuality = elementInstance.getStringValue(elementQualityType);
 			adjustedText = elementMatcher.replaceFirst(elementQuality);
 			elementMatcher = selectedElementPattern.matcher(adjustedText);
+		}
+		return adjustedText;
+	}
+	
+	private String checkForSelectedPositionPattern(String bodyText)
+	{
+		String adjustedText = bodyText;
+		Matcher elementMatcher = selectedPositionPattern.matcher(adjustedText);
+		while(elementMatcher.find())
+		{
+			String posCoOrd = elementMatcher.group(1);
+			int number;
+			if (posCoOrd.equals("x"))
+			{
+				number = position.x;
+			}
+			else
+			{
+				number = position.y;
+			}
+			adjustedText = elementMatcher.replaceFirst(String.valueOf(number));
+			elementMatcher = selectedPositionPattern.matcher(adjustedText);
 		}
 		return adjustedText;
 	}
@@ -309,6 +341,7 @@ public class PageInstance extends AbstractPageInstance
 	private String checkPatterns(String bodyText, ArrayList<Integer> adjustments) throws Exception
 	{		
 		String adjustedText = this.checkForSelectedElementPattern(bodyText);
+		adjustedText = this.checkForSelectedPositionPattern(adjustedText);
 		adjustedText = this.checkForConnectionToSelectedElementPattern(adjustedText);
 		adjustedText = this.checkForRepeatForElementPattern(adjustedText);
 		adjustedText = this.checkForConditionalRepeatForElementPattern(adjustedText);
@@ -363,11 +396,16 @@ public class PageInstance extends AbstractPageInstance
 		return value;
 	}
 	
-	private void makeElementChoice(ElementInstance elementInstance, String keyword, boolean withContext, String elementNamingQuality, String startString, String endString)
+	private void makeElementChoice(ElementInstance elementInstance, String keyword, boolean withContext, String elementNamingQuality, 
+			String startString, String endString, String typeString, String rangeAttributeString)
 	{
+		ElementChoiceType elementChoiceType = ElementChoiceType.valueOf(typeString);
+		
 		ElementChoice elementChoice = new ElementChoice();
 		elementChoice.keyword = keyword;
 		elementChoice.elementInstance = elementInstance;
+		elementChoice.elementChoiceType = elementChoiceType;
+		elementChoice.rangeAttribute = rangeAttributeString;
 		if (withContext)
 			elementChoice.context = this.getPageContext();
 		String qualityString = elementInstance.getDetailValueByName(elementNamingQuality);

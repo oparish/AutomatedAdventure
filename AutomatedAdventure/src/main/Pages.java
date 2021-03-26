@@ -42,7 +42,7 @@ public class Pages
 		
 		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PAGES, PageRestriction.class);
 		RestrictedJson<PageRestriction> pageJson = pageTemplateMap.getMemberBy(INITIAL);
-		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(INITIAL), pageJson);
+		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(INITIAL), pageJson, null);
 		JsonEntityMap<RestrictedJson<PanelRestriction>> panelMap = 
 				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PANELS, PanelRestriction.class);
 		

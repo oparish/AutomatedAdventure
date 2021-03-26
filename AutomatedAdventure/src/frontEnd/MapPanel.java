@@ -39,6 +39,7 @@ import backend.MapElementType;
 import backend.Scenario;
 import backend.component.ConnectionSet;
 import backend.pages.ElementChoice;
+import backend.pages.ElementChoiceType;
 import backend.pages.PageInstance;
 import json.JsonEntityArray;
 import json.RestrictedJson;
@@ -55,9 +56,12 @@ public class MapPanel extends JPanel implements ActionListener
 	private static final Pattern tooltipElementPattern = Pattern.compile("<element:(.*)>");
 	private static final Pattern tooltipConnectionPattern = Pattern.compile("<connection:([^<>]*):([^<>]*)>");
 	
-	ArrayList<MapButton> mapButtons;
+	ArrayList<LocationButton> locationButtons;
 	HashMap<ElementInstance, HashMap<String, ElementChoice>> elementMap;
 	Map map;
+	MapMode mode = MapMode.LOCATION;
+	Position selectedPosition;
+	ElementChoice selectedChoice;
 	JPanel innerPanel = new JPanel();
 	
 	public MapPanel(Map map) throws Exception
@@ -69,11 +73,8 @@ public class MapPanel extends JPanel implements ActionListener
 		this.paintMap();
 	}
 	
-	private void paintMap() throws Exception
-	{	
-		HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>>();
-		this.mapButtons = new ArrayList<MapButton>();
-		
+	private void populateInstanceMap(HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap) throws Exception
+	{
 		ArrayList<Element> elements = this.map.getElements();
 		for (Element element : elements)
 		{
@@ -90,7 +91,7 @@ public class MapPanel extends JPanel implements ActionListener
 					innerMap = new HashMap<Integer, HashMap<MapElementType, ElementInstance>>();
 					instanceMap.put(mapPosition.x, innerMap);
 				}		
-
+		
 				HashMap<MapElementType, ElementInstance> dataMap;	
 				
 				if (innerMap.containsKey(mapPosition.y))
@@ -110,7 +111,18 @@ public class MapPanel extends JPanel implements ActionListener
 				dataMap.put(mapElementType, elementInstance);
 			}
 		}
-		
+	}
+	
+	private void paintMap() throws Exception
+	{	
+		HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>>();
+		this.populateInstanceMap(instanceMap);
+		this.paintLocationAndMapButtons(instanceMap);
+	}
+	
+	private void paintLocationAndMapButtons(HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap) throws Exception
+	{
+		this.locationButtons = new ArrayList<LocationButton>();	
 		RestrictedJson<MapRestriction> mapData = this.map.getMapData();
 		RestrictedJson<ImageRestriction> blankImageData = mapData.getRestrictedJson(MapRestriction.IMAGE, ImageRestriction.class);
 		String blankImageName = blankImageData.getString(ImageRestriction.FILENAME);
@@ -125,87 +137,59 @@ public class MapPanel extends JPanel implements ActionListener
 					if (innerMap.containsKey(j))
 					{
 						HashMap<MapElementType, ElementInstance> dataMap = innerMap.get(j);
-						this.createButton(i, j, dataMap);
+						this.createLocationButton(i, j, dataMap);
 						continue;
 					}
 				}
-				this.createLabel(i, j, blankImageName);
+				this.createEmptyLocationButton(i, j, blankImageName);
 			}
 		}
 	}
 	
-	private void createLabel(int x, int y, String imagePath)
+	private void createEmptyLocationButton(int x, int y, String imagePath)
 	{
 		ImageIcon imageIcon = Main.loadImageIcon(imagePath);
-		JLabel jLabel = new JLabel(imageIcon);
-		this.innerPanel.add(jLabel);
+		LocationButton locationButton = new LocationButton(imageIcon, new Position(x, y), new ArrayList<ElementInstance>());
+		this.innerPanel.add(locationButton);
+		this.locationButtons.add(locationButton);
+		locationButton.addActionListener(this);
 	}
 	
-	private void createButton(int x, int y, HashMap<MapElementType, ElementInstance> dataMap) throws Exception
+	private void repaintEmptyLocationButton(LocationButton locationButton, String blankImageName)
 	{
-		ImageIcon imageIcon = null;
+		ImageIcon blankImageIcon = Main.loadImageIcon(blankImageName);
+		locationButton.setToolTipText(null);
+		locationButton.setElementInstances(new ArrayList<ElementInstance>());
+		locationButton.setIcon(blankImageIcon);
+	}
+	
+	private void repaintLocationButton(LocationButton locationButton, HashMap<MapElementType, ElementInstance> dataMap) throws Exception
+	{
+		Position position = locationButton.getPosition();
+		LocationButtonData locationButtonData = this.createLocationButtonData(position.x, position.y, dataMap);
+		locationButton.setElementInstances(locationButtonData.elementInstances);
+		locationButton.setIcon(locationButtonData.imageIcon);
+		locationButton.setToolTipText(locationButtonData.tooltipText);
+	}
+	
+	private void createLocationButton(int x, int y, HashMap<MapElementType, ElementInstance> dataMap) throws Exception
+	{	
+		LocationButtonData locationButtonData = this.createLocationButtonData(x, y, dataMap);	
+		LocationButton locationButton;
 		
-		ArrayList<ElementInstance> elementInstances = new ArrayList<ElementInstance>();
-		ElementInstance locationInstance = null;
-		ElementInstance pcInstance = null;
-		String locationFileName = null;
-		String pcFileName = null;
-		String tooltipText = "";
-		
-		if (dataMap.containsKey(MapElementType.LOCATION))
+		if (locationButtonData.tooltipText.length() != 0)
 		{
-			locationInstance = dataMap.get(MapElementType.LOCATION);
-			Element locationElement = locationInstance.getElement();
-			RestrictedJson<ImageRestriction> locationImageData = locationElement.getMapImageData(this.map);
-			locationFileName = locationImageData.getString(ImageRestriction.FILENAME);
-			RestrictedJson<TooltipRestriction> tooltipData = locationElement.getTooltip(map);
-			String locationTooltip = this.createTooltipText(tooltipData, locationInstance);
-			tooltipText += this.assessTooltipText(locationInstance, locationTooltip);
-			elementInstances.add(locationInstance);
-		}
-		
-		if (dataMap.containsKey(MapElementType.PC))
-		{
-			pcInstance = dataMap.get(MapElementType.PC);
-			Element pcElement = pcInstance.getElement();
-			RestrictedJson<ImageRestriction> pcImageData = pcElement.getMapImageData(this.map);
-			pcFileName = pcImageData.getString(ImageRestriction.FILENAME);
-			RestrictedJson<TooltipRestriction> tooltipData = pcElement.getTooltip(map);
-			String pcTooltip = this.createTooltipText(tooltipData, pcInstance);
-			tooltipText += this.assessTooltipText(pcInstance, pcTooltip);
-			elementInstances.add(pcInstance);
-		}
-		
-		if (locationInstance != null && pcInstance != null)
-		{
-			imageIcon = Main.loadCombinedImageIcon(locationFileName, pcFileName);
-		}
-		else if (locationInstance != null)
-		{
-			imageIcon = Main.loadImageIcon(locationFileName);
+			locationButton = new LocationButton(locationButtonData.imageIcon, new Position(x, y), locationButtonData.elementInstances, 
+					locationButtonData.tooltipText);
 		}
 		else
 		{
-			RestrictedJson<ImageRestriction> imageRestriction = this.map.getMapData().getRestrictedJson((MapRestriction.IMAGE), ImageRestriction.class);
-			String baseFileName = imageRestriction.getString(ImageRestriction.FILENAME);
-			imageIcon = Main.loadCombinedImageIcon(baseFileName, pcFileName);
+			locationButton = new LocationButton(locationButtonData.imageIcon, new Position(x, y), locationButtonData.elementInstances);
 		}
 		
-		MapButton mapButton;
-		
-		if (tooltipText.length() != 0)
-		{
-			mapButton = new MapButton(imageIcon, elementInstances, tooltipText);
-		}
-		else
-		{
-			mapButton = new MapButton(imageIcon, elementInstances);
-		}
-		
-		mapButton.setMargin(new Insets(-4, -4, -4, -4));
-		mapButton.addActionListener(this);
-		this.innerPanel.add(mapButton);
-		this.mapButtons.add(mapButton);
+		locationButton.addActionListener(this);
+		this.innerPanel.add(locationButton);
+		this.locationButtons.add(locationButton);
 	}
 	
 	private String createTooltipText(RestrictedJson<TooltipRestriction> tooltipData, ElementInstance elementInstance) throws Exception
@@ -255,7 +239,7 @@ public class MapPanel extends JPanel implements ActionListener
 		return tooltipText;
 	}
 	
-	private void performMapButtonAction(MapButton button)
+	private void performLocationButtonAction(LocationButton button)
 	{
 		JPopupMenu popupMenu = new JPopupMenu();
 		HashMap<String, ElementChoice> combinedChoices = new HashMap<String, ElementChoice>();
@@ -283,32 +267,57 @@ public class MapPanel extends JPanel implements ActionListener
 		for (String key : sortedList)
 		{
 			ElementChoice choice = combinedChoices.get(key);
-			ChoiceItem choiceItem = new ChoiceItem(key, choice);
+			ChoiceItem choiceItem = new ChoiceItem(key, button.getPosition(), choice);
 			choiceItem.addActionListener(this);
 			popupMenu.add(choiceItem);
 		}	
 		popupMenu.show(button, this.map.getTileSize(), 0);
 	}
 	
-	private void performChoiceItemAction(ChoiceItem choiceItem)
+	private void performChoiceItemAction(ChoiceItem choiceItem) throws Exception
 	{
 		ElementChoice elementChoice = choiceItem.getElementChoice();
-		try
+		
+		if (elementChoice.elementChoiceType == ElementChoiceType.MENU_RANGE)
+		{
+			this.mode = MapMode.LOCATION_RANGE;
+			this.selectedPosition = choiceItem.getPosition();
+			this.selectedChoice = choiceItem.getElementChoice();
+		}
+		else
 		{
 			Pages.getScenario().loadPage(elementChoice);
-		}
-		catch (Exception e1)
-		{
-			e1.printStackTrace();
 		}
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		if (e.getSource() instanceof MapButton)
+		try
 		{
-			this.performMapButtonAction((MapButton) e.getSource());
+			switch (this.mode)
+			{
+			case LOCATION:
+				this.performLocationAction(e);
+				break;
+			case LOCATION_RANGE:
+				this.performLocationRangeAction(e);
+				break;
+			case DISABLED:
+				break;
+			}
+		}
+		catch (Exception exception)
+		{
+			exception.printStackTrace();
+		}
+	}
+	
+	private void performLocationAction(ActionEvent e) throws Exception
+	{
+		if (e.getSource() instanceof LocationButton)
+		{
+			this.performLocationButtonAction((LocationButton) e.getSource());
 		}
 		else if (e.getSource() instanceof ChoiceItem)
 		{
@@ -316,12 +325,123 @@ public class MapPanel extends JPanel implements ActionListener
 		}
 	}
 	
+	private void performLocationRangeAction(ActionEvent e) throws Exception
+	{
+		if (e.getSource() instanceof MapButton)
+		{
+			this.selectInRange((MapButton) e.getSource());
+		}
+	}
+	
+	private void selectInRange(MapButton mapButton) throws Exception
+	{
+		Position mapPosition = mapButton.getPosition();
+		Integer xDiff = (this.selectedPosition.x - mapPosition.x);
+		if (xDiff < 0)
+		{
+			xDiff = xDiff * -1;
+		}
+		Integer yDiff = (this.selectedPosition.y - mapPosition.y);
+		if (yDiff < 0)
+		{
+			yDiff = yDiff * -1;
+		}
+		int rangeLimit = this.selectedChoice.elementInstance.getNumberValueByName(this.selectedChoice.rangeAttribute);
+		if ((xDiff + yDiff) <= rangeLimit)
+		{
+			this.mode = MapMode.LOCATION;
+			Pages.getScenario().loadPage(this.selectedChoice, mapPosition);
+		}
+	}
+	
+	private LocationButtonData createLocationButtonData(int x, int y, HashMap<MapElementType, ElementInstance> dataMap) throws Exception
+	{
+		LocationButtonData locationButtonData = new LocationButtonData();	
+		locationButtonData.elementInstances = new ArrayList<ElementInstance>();
+		ElementInstance locationInstance = null;
+		ElementInstance pcInstance = null;
+		String locationFileName = null;
+		String pcFileName = null;
+		locationButtonData.tooltipText = "";
+		
+		if (dataMap.containsKey(MapElementType.LOCATION))
+		{
+			locationInstance = dataMap.get(MapElementType.LOCATION);
+			Element locationElement = locationInstance.getElement();
+			RestrictedJson<ImageRestriction> locationImageData = locationElement.getMapImageData(this.map);
+			locationFileName = locationImageData.getString(ImageRestriction.FILENAME);
+			RestrictedJson<TooltipRestriction> tooltipData = locationElement.getTooltip(map);
+			String locationTooltip = this.createTooltipText(tooltipData, locationInstance);
+			locationButtonData.tooltipText += this.assessTooltipText(locationInstance, locationTooltip);
+			locationButtonData.elementInstances.add(locationInstance);
+		}
+		
+		if (dataMap.containsKey(MapElementType.PC))
+		{
+			pcInstance = dataMap.get(MapElementType.PC);
+			Element pcElement = pcInstance.getElement();
+			RestrictedJson<ImageRestriction> pcImageData = pcElement.getMapImageData(this.map);
+			pcFileName = pcImageData.getString(ImageRestriction.FILENAME);
+			RestrictedJson<TooltipRestriction> tooltipData = pcElement.getTooltip(map);
+			String pcTooltip = this.createTooltipText(tooltipData, pcInstance);
+			locationButtonData.tooltipText += this.assessTooltipText(pcInstance, pcTooltip);
+			locationButtonData.elementInstances.add(pcInstance);
+		}
+		
+		if (locationInstance != null && pcInstance != null)
+		{
+			locationButtonData.imageIcon = Main.loadCombinedImageIcon(locationFileName, pcFileName);
+		}
+		else if (locationInstance != null)
+		{
+			locationButtonData.imageIcon = Main.loadImageIcon(locationFileName);
+		}
+		else
+		{
+			RestrictedJson<ImageRestriction> imageRestriction = this.map.getMapData().getRestrictedJson((MapRestriction.IMAGE), ImageRestriction.class);
+			String baseFileName = imageRestriction.getString(ImageRestriction.FILENAME);
+			locationButtonData.imageIcon = Main.loadCombinedImageIcon(baseFileName, pcFileName);
+		}
+		return locationButtonData;
+	}
+	
+	private void repaintMap() throws Exception
+	{		
+		HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap = 
+				new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>>();
+		RestrictedJson<MapRestriction> mapData = this.map.getMapData();
+		RestrictedJson<ImageRestriction> blankImageData = mapData.getRestrictedJson(MapRestriction.IMAGE, ImageRestriction.class);
+		String blankImageName = blankImageData.getString(ImageRestriction.FILENAME);
+		this.populateInstanceMap(instanceMap);
+		for (LocationButton locationButton : this.locationButtons)
+		{
+			Position position = locationButton.getPosition();
+			HashMap<Integer, HashMap<MapElementType, ElementInstance>> innerMap = instanceMap.get(position.x);
+			if (innerMap == null)
+			{
+				this.repaintEmptyLocationButton(locationButton, blankImageName);
+			}
+			else
+			{
+				HashMap<MapElementType, ElementInstance> dataMap = innerMap.get(position.y);
+				if (dataMap != null)
+				{
+					this.repaintLocationButton(locationButton, dataMap);
+				}
+				else
+				{
+					this.repaintEmptyLocationButton(locationButton, blankImageName);
+				}		
+			}		
+		}
+	}
+	
 	public void update(PageInstance pageInstance) throws Exception
 	{
-		this.innerPanel.removeAll();
-		this.paintMap();
+		this.repaintMap();
 		this.elementMap = new HashMap<ElementInstance, HashMap<String, ElementChoice>>();
 		HashMap<String, ElementChoice> choiceMap = pageInstance.getChoiceMap();
+		
 		for (Entry<String, ElementChoice> entry : choiceMap.entrySet())
 		{
 			ElementChoice elementChoice = entry.getValue();
@@ -342,28 +462,63 @@ public class MapPanel extends JPanel implements ActionListener
 	public void setEnabled(boolean value)
 	{
 		super.setEnabled(value);
-		for (MapButton mapButton : mapButtons)
+		for (LocationButton mapButton : locationButtons)
 		{
 			mapButton.setEnabled(value);
 		}
 	}
 	
+	private enum MapMode
+	{
+		DISABLED, LOCATION, LOCATION_RANGE;
+	}
+	
 	private class MapButton extends JButton
 	{
-		public ArrayList<ElementInstance> elementInstances;
+		private Position position;
 		
-		public MapButton(ImageIcon imageIcon, ArrayList<ElementInstance> elementInstances, String tooltipText)
+		public MapButton(ImageIcon imageIcon, Position position)
 		{
 			super(imageIcon);
 			this.setDisabledIcon(imageIcon);
+			this.setMargin(new Insets(-4, -4, -4, -4));
+			this.position = position;
+		}
+		
+		public Position getPosition()
+		{
+			return this.position;
+		}
+	}
+	
+	private class LocationButtonData
+	{
+		public ArrayList<ElementInstance> elementInstances;
+		public ImageIcon imageIcon;
+		public String tooltipText;
+	}
+	
+	@SuppressWarnings("serial")
+	private class LocationButton extends MapButton
+	{
+		public ArrayList<ElementInstance> elementInstances;
+		
+		public LocationButton(ImageIcon imageIcon, Position position, ArrayList<ElementInstance> elementInstances, String tooltipText)
+		{
+			super(imageIcon, position);
 			this.elementInstances = elementInstances;
 			if (tooltipText != null)
 				this.updateTooltip(tooltipText);
 		}
 		
-		public MapButton(ImageIcon imageIcon, ArrayList<ElementInstance> elementInstances)
+		public LocationButton(ImageIcon imageIcon, Position position, ArrayList<ElementInstance> elementInstances)
 		{
-			this(imageIcon, elementInstances, null);
+			this(imageIcon, position, elementInstances, null);
+		}
+		
+		public void updateTooltip(String tooltipText)
+		{
+			this.setToolTipText(tooltipText);
 		}
 		
 		public JToolTip createToolTip()
@@ -371,12 +526,13 @@ public class MapPanel extends JPanel implements ActionListener
 			return new MapToolTip();
 		}
 		
-		public void updateTooltip(String tooltipText)
+		public void setElementInstances(ArrayList<ElementInstance> elementInstances)
 		{
-			this.setToolTipText(tooltipText);
+			this.elementInstances = elementInstances;
 		}
 	}
 	
+	@SuppressWarnings("serial")
 	private class MapToolTip extends JToolTip
 	{
 		public MapToolTip()
