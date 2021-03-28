@@ -63,14 +63,14 @@
                   "elementName" : "village",
                   "instanceDetails" : {
                      "name" : "one",
+                     "stringMap" : {
+                        "name" : "Three"
+                     },
                      "mapMap" : {
                         "testMap" : {
                            "x" : 3,
                            "y" : 3
                         }
-                     },
-                     "stringMap" : {
-                        "name" : "Three"
                      }
                   }
                },
@@ -122,6 +122,12 @@
                      "elementQuality" : "name",
                      "rangeAttribute" : "move"
                   }
+               }
+            ],
+            "positionAdjustments" : [
+               {
+                  "mapName" : "testMap",
+                  "elementName" : "troop"
                }
             ]
          }

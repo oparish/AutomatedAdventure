@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import backend.Element;
 import backend.Element.ElementInstance;
+import backend.Map;
+import backend.Map.MapPosition;
 import backend.NumberRange;
 import backend.Scenario;
 import backend.component.ConnectionSet;
@@ -25,6 +27,7 @@ import json.restrictions.InstanceDetailsRestriction;
 import json.restrictions.MakeConnectionRestriction;
 import json.restrictions.MakeElementRestriction;
 import json.restrictions.PageRestriction;
+import json.restrictions.PositionAdjustmentRestriction;
 import json.restrictions.SumComponentRestriction;
 import json.restrictions.SumRestriction;
 import main.Main;
@@ -67,11 +70,31 @@ public class PageInstance extends AbstractPageInstance
 	{
 		this.makeElements();
 		this.makeConnections();
+		this.makePositionAdjustments();
 		ArrayList<Integer> adjustments = this.makeElementAdjustments();
 		this.setupChoices();
 		
 		String adjustedText = this.checkPatterns(this.pageJson.getString(PageRestriction.VALUE), adjustments);
 		return adjustedText;
+	}
+	
+	private void makePositionAdjustments()
+	{
+		JsonEntityArray<RestrictedJson<PositionAdjustmentRestriction>> positionAdjustmentArray = 
+				this.pageJson.getRestrictedJsonArray(PageRestriction.POSITION_ADJUSTMENTS, PositionAdjustmentRestriction.class);
+		if (positionAdjustmentArray == null)
+			return;
+		
+		for (int i = 0; i < positionAdjustmentArray.getLength(); i++)
+		{
+			RestrictedJson<PositionAdjustmentRestriction> adjustment = positionAdjustmentArray.getMemberAt(i);
+			String mapName = adjustment.getString(PositionAdjustmentRestriction.MAP_NAME);
+			String elementType = adjustment.getString(PositionAdjustmentRestriction.ELEMENT_NAME);
+			Element element = this.scenario.getElement(elementType);
+			ElementInstance elementInstance = this.getSelectedElementInstance(element);
+			Map map = this.scenario.getMapByName(mapName);
+			elementInstance.setMapPosition(map, this.position);
+		}
 	}
 	
 	private boolean checkContextCondition(JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray)

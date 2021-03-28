@@ -17,6 +17,7 @@ public enum RestrictionType implements JsonType
 	MAKE_ELEMENT(MakeElementRestriction.class),
 	MAKE_CONNECTION(MakeConnectionRestriction.class),
 	ELEMENT_ADJUSTMENT(ElementAdjustmentRestriction.class),
+	POSITION_ADJUSTMENT(PositionAdjustmentRestriction.class),
 	ELEMENT_NUMBER(ElementNumberRestriction.class),
 	ELEMENT_CONDITION(ElementConditionRestriction.class),
 	CONTEXT_CONDITION(ContextConditionRestriction.class),

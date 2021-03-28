@@ -95,6 +95,7 @@ public enum Restriction
 	MAKE_ELEMENTS("makeElements", RestrictionType.MAKE_ELEMENT, JsonDim.ARRAY, true),
 	MAKE_CONNECTIONS("makeConnections", RestrictionType.MAKE_CONNECTION, JsonDim.ARRAY, true),
 	ELEMENT_ADJUSTMENTS("elementAdjustments", RestrictionType.ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
+	POSITION_ADJUSTMENTS("positionAdjustments", RestrictionType.POSITION_ADJUSTMENT, JsonDim.ARRAY, true),
 	NUMBER_MAP("numberMap", NUMBER, JsonDim.MAP, true),
 	STRING_MAP("stringMap", STRING, JsonDim.MAP, true),
 	SET_MAP("setMap", NUMBER, JsonDim.MAP, true),

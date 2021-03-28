@@ -8,6 +8,7 @@ import javax.json.JsonObject;
 
 import backend.Map.MapPosition;
 import backend.pages.PageInstance;
+import frontEnd.Position;
 import json.JsonEntityArray;
 import json.JsonEntityMap;
 import json.JsonEntityNumber;
@@ -407,6 +408,12 @@ public class Element
 		public MapPosition getMapPosition(Map map)
 		{
 			return this.positionMap.get(map);
+		}
+		
+		public void setMapPosition(Map map, Position position)
+		{
+			MapPosition mapPosition = map.createMapPosition(position.x, position.y);
+			this.positionMap.put(map, mapPosition);
 		}
 		
 		public void adjustNumber(String elementNumber, String sumSign, int value) throws Exception
