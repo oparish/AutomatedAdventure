@@ -10,10 +10,10 @@ import json.JsonType;
 public enum Restriction
 {	
 	NAME("name", STRING, JsonDim.MONO),
-	CONNECTION_NAME("connectionName", STRING, JsonDim.MONO, true),
+	CONNECTION_NAME("connectionName", STRING, JsonDim.MONO),
 	UNIQUE("unique", BOOLEAN, JsonDim.MONO),
 	ELEMENT_DATA("elementData", RestrictionType.ELEMENTDATA, JsonDim.MAP),
-	ELEMENT_NUMBERS("elementNumbers", RestrictionType.ELEMENT_NUMBER, JsonDim.MAP, true),
+	ELEMENT_NUMBERS("elementNumbers", RestrictionType.ELEMENT_NUMBER, JsonDim.MAP),
 	OPTIONS("options", STRING, JsonDim.ARRAY),
 	ELEMENTS("elements", RestrictionType.ELEMENT, JsonDim.MAP),
 	TIME("time", NUMBER, JsonDim.MONO),
@@ -30,14 +30,14 @@ public enum Restriction
 	CHANCE_NAME("chanceName", STRING, JsonDim.MONO),
 	PRIORITY("priority", NUMBER, JsonDim.MONO),
 	CONDITIONS("conditions", RestrictionType.CONDITION, JsonDim.ARRAY),
-	TOOLTIP("tooltip", RestrictionType.TOOLTIP, JsonDim.MONO, true),
+	TOOLTIP("tooltip", RestrictionType.TOOLTIP, JsonDim.MONO),
 	TOOLTIP_COMPONENTS("tooltipComponents", RestrictionType.TOOLTIP_COMPONENT, JsonDim.ARRAY),
 	TOOLTIP_TEXT("tooltipText", STRING, JsonDim.MONO),
-	TYPE("type", STRING, JsonDim.MONO, true),
+	TYPE("type", STRING, JsonDim.MONO),
 	VALUE("value", STRING, JsonDim.MONO),
-	NUMBER_VALUE("numberValue", NUMBER, JsonDim.MONO, true),
-	SUM_NAME("sumName", STRING, JsonDim.MONO, true),
-	NUMBER_REFERENCE("numberReference", STRING, JsonDim.MONO, true),
+	NUMBER_VALUE("numberValue", NUMBER, JsonDim.MONO),
+	SUM_NAME("sumName", STRING, JsonDim.MONO),
+	NUMBER_REFERENCE("numberReference", STRING, JsonDim.MONO),
 	SUM_SIGN("sumSign", STRING, JsonDim.MONO),
 	COMPONENT_NUMBER("componentNumber", NUMBER, JsonDim.MONO),
 	SUM_COMPONENTS("sumComponents", RestrictionType.SUM_COMPONENT, JsonDim.ARRAY),
@@ -60,13 +60,13 @@ public enum Restriction
 	TRANSITION_TEXT("transitionText", STRING, JsonDim.MONO),
 	DESCRIPTION("description", STRING, JsonDim.MONO),
 	COMPONENTS("components", RestrictionType.COMPONENT, JsonDim.MAP),
-	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO, true),
+	TRIGGER("trigger", RestrictionType.TRIGGER, JsonDim.MONO),
 	ENDINGS("endings", RestrictionType.ENDING, JsonDim.ARRAY),
 	PAGES("pages", RestrictionType.PAGE, JsonDim.MAP),
 	REDIRECTS("redirects", RestrictionType.REDIRECT, JsonDim.MAP),
 	RANDOM_REDIRECTS("randomRedirects", RestrictionType.RANDOM_REDIRECT, JsonDim.MAP),
-	CHOICES("choices", RestrictionType.CHOICE, JsonDim.ARRAY, true),
-	RETURN_TO("returnTo", STRING, JsonDim.MONO, true),
+	CHOICES("choices", RestrictionType.CHOICE, JsonDim.ARRAY),
+	RETURN_TO("returnTo", STRING, JsonDim.MONO),
 	WITH_CONTEXT("withContext", BOOLEAN, JsonDim.MONO),
 	FIRST("first", STRING, JsonDim.MONO),
 	SECOND("second", STRING, JsonDim.MONO),
@@ -81,31 +81,30 @@ public enum Restriction
 	WIDTH("width", NUMBER, JsonDim.MONO),
 	HEIGHT("height", NUMBER, JsonDim.MONO),
 	TILE_SIZE("tileSize", NUMBER, JsonDim.MONO),
-	MAP_NAME("mapName", STRING, JsonDim.MONO, true),
+	MAP_NAME("mapName", STRING, JsonDim.MONO),
 	PANEL_NAME("panelName", STRING, JsonDim.MONO),
-	ELEMENT_NAME("elementName", STRING, JsonDim.MONO, true),
-	ELEMENT_QUALITY("elementQuality", STRING, JsonDim.MONO, true),
-	ELEMENT_CONDITIONS("elementConditions", RestrictionType.ELEMENT_CONDITION, JsonDim.ARRAY, true),
-	CONTEXT_CONDITIONS("contextConditions", RestrictionType.CONTEXT_CONDITION, JsonDim.ARRAY, true),
-	ELEMENT_CHOICE("elementChoice", RestrictionType.ELEMENT_CHOICE, JsonDim.MONO, true),
-	INSTANCE_DETAILS("instanceDetails", RestrictionType.INSTANCE_DETAILS, JsonDim.MONO, true),
+	ELEMENT_NAME("elementName", STRING, JsonDim.MONO),
+	ELEMENT_QUALITY("elementQuality", STRING, JsonDim.MONO),
+	ELEMENT_CONDITIONS("elementConditions", RestrictionType.ELEMENT_CONDITION, JsonDim.ARRAY),
+	CONTEXT_CONDITIONS("contextConditions", RestrictionType.CONTEXT_CONDITION, JsonDim.ARRAY),
+	ELEMENT_CHOICE("elementChoice", RestrictionType.ELEMENT_CHOICE, JsonDim.MONO),
+	INSTANCE_DETAILS("instanceDetails", RestrictionType.INSTANCE_DETAILS, JsonDim.MONO),
 	CONNECTIONS("connections", RestrictionType.CONNECTION, JsonDim.MAP),
-	ELEMENT_SETS("elementSets", RestrictionType.ELEMENT_SET, JsonDim.MAP, true),
+	ELEMENT_SETS("elementSets", RestrictionType.ELEMENT_SET, JsonDim.MAP),
 	MEMBERS("members", RestrictionType.ELEMENT_SET_MEMBER, JsonDim.MAP),
-	MAKE_ELEMENTS("makeElements", RestrictionType.MAKE_ELEMENT, JsonDim.ARRAY, true),
-	MAKE_CONNECTIONS("makeConnections", RestrictionType.MAKE_CONNECTION, JsonDim.ARRAY, true),
-	ELEMENT_ADJUSTMENTS("elementAdjustments", RestrictionType.ELEMENT_ADJUSTMENT, JsonDim.ARRAY, true),
-	POSITION_ADJUSTMENTS("positionAdjustments", RestrictionType.POSITION_ADJUSTMENT, JsonDim.ARRAY, true),
-	NUMBER_MAP("numberMap", NUMBER, JsonDim.MAP, true),
-	STRING_MAP("stringMap", STRING, JsonDim.MAP, true),
-	SET_MAP("setMap", NUMBER, JsonDim.MAP, true),
-	MAP_MAP("mapMap", RestrictionType.MAP_POSITION, JsonDim.MAP, true),
+	MAKE_ELEMENTS("makeElements", RestrictionType.MAKE_ELEMENT, JsonDim.ARRAY),
+	MAKE_CONNECTIONS("makeConnections", RestrictionType.MAKE_CONNECTION, JsonDim.ARRAY),
+	ELEMENT_ADJUSTMENTS("elementAdjustments", RestrictionType.ELEMENT_ADJUSTMENT, JsonDim.ARRAY),
+	POSITION_ADJUSTMENTS("positionAdjustments", RestrictionType.POSITION_ADJUSTMENT, JsonDim.ARRAY),
+	NUMBER_MAP("numberMap", NUMBER, JsonDim.MAP),
+	STRING_MAP("stringMap", STRING, JsonDim.MAP),
+	SET_MAP("setMap", NUMBER, JsonDim.MAP),
+	MAP_MAP("mapMap", RestrictionType.MAP_POSITION, JsonDim.MAP),
 	PANELS("panels", RestrictionType.PANEL, JsonDim.MAP),
-	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO, true),
-	RANGE_ATTRIBUTE("rangeAttribute", STRING, JsonDim.MONO, true),
+	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO),
+	RANGE_ATTRIBUTE("rangeAttribute", STRING, JsonDim.MONO),
 	MAP_ELEMENT_TYPE("mapElementType", STRING, JsonDim.MONO);
 	
-	private final boolean optional;
 	private final JsonDim jsonDim;
 	private final JsonType jsonType;
 	public JsonType getJsonType() {
@@ -123,21 +122,10 @@ public enum Restriction
 		return jsonDim;
 	}
 	
-	public boolean getOptional()
-	{
-		return this.optional;
-	}
-
 	private Restriction(String name, JsonType jsonType, JsonDim jsonDim)
-	{
-		this(name, jsonType, jsonDim, false);
-	}
-	
-	private Restriction(String name, JsonType jsonType, JsonDim jsonDim, boolean optional)
 	{
 		this.name = name;
 		this.jsonType = jsonType;
 		this.jsonDim = jsonDim;
-		this.optional = optional;
 	}
 }

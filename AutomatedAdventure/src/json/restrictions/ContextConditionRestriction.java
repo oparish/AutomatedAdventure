@@ -11,13 +11,27 @@ import main.Pages;
 
 public enum ContextConditionRestriction implements RestrictionPointer
 {
-	TYPE(Restriction.TYPE), NUMBER_VALUE(Restriction.NUMBER_VALUE), ELEMENT_NAME(Restriction.ELEMENT_NAME), 
-	ELEMENT_QUALITY(Restriction.ELEMENT_QUALITY), CONNECTION_NAME(Restriction.CONNECTION_NAME);
+	TYPE(Restriction.TYPE, true), NUMBER_VALUE(Restriction.NUMBER_VALUE, true), ELEMENT_NAME(Restriction.ELEMENT_NAME), 
+	ELEMENT_QUALITY(Restriction.ELEMENT_QUALITY, true), CONNECTION_NAME(Restriction.CONNECTION_NAME, true);
 	
 	private Restriction restriction;
+	private boolean optional;
+			
+	@Override
+	public boolean getOptional()
+	{
+		return this.optional;
+	}
+	
+	private ContextConditionRestriction(Restriction restriction, boolean optional)
+	{
+		this.optional = optional;
+		this.restriction = restriction;
+	}
 	
 	private ContextConditionRestriction(Restriction restriction)
 	{
+		this.optional = false;
 		this.restriction = restriction;
 	}
 

@@ -5,9 +5,23 @@ public enum PositionAdjustmentRestriction implements RestrictionPointer
 	MAP_NAME(Restriction.MAP_NAME), ELEMENT_NAME(Restriction.ELEMENT_NAME);
 	
 	private Restriction restriction;
+	private boolean optional;
+	
+	@Override
+	public boolean getOptional()
+	{
+		return this.optional;
+	}
+	
+	private PositionAdjustmentRestriction(Restriction restriction, boolean optional)
+	{
+		this.optional = optional;
+		this.restriction = restriction;
+	}
 	
 	private PositionAdjustmentRestriction(Restriction restriction)
 	{
+		this.optional = false;
 		this.restriction = restriction;
 	}
 

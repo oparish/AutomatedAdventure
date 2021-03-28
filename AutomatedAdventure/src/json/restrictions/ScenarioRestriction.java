@@ -9,9 +9,23 @@ public enum ScenarioRestriction implements RestrictionPointer
 	PANELS(Restriction.PANELS), MAPS(Restriction.MAPS), SUMS(Restriction.SUMS);
 	
 	private Restriction restriction;
+	private boolean optional;
+	
+	@Override
+	public boolean getOptional()
+	{
+		return this.optional;
+	}
+	
+	private ScenarioRestriction(Restriction restriction, boolean optional)
+	{
+		this.optional = optional;
+		this.restriction = restriction;
+	}
 	
 	private ScenarioRestriction(Restriction restriction)
 	{
+		this.optional = false;
 		this.restriction = restriction;
 	}
 
