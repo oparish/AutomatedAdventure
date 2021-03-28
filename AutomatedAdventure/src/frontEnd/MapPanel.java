@@ -53,6 +53,7 @@ import main.Pages;
 
 public class MapPanel extends JPanel implements ActionListener
 {
+	private static final String CANCEL = "Cancel";
 	private static final Pattern tooltipElementPattern = Pattern.compile("<element:(.*)>");
 	private static final Pattern tooltipConnectionPattern = Pattern.compile("<connection:([^<>]*):([^<>]*)>");
 	
@@ -63,6 +64,7 @@ public class MapPanel extends JPanel implements ActionListener
 	Position selectedPosition;
 	ElementChoice selectedChoice;
 	JPanel innerPanel = new JPanel();
+	JButton cancelButton;
 	
 	public MapPanel(Map map) throws Exception
 	{
@@ -70,7 +72,16 @@ public class MapPanel extends JPanel implements ActionListener
 		this.map = map;
 		this.innerPanel.setLayout(new GridLayout(this.map.getWidth(), this.map.getHeight()));
 		this.add(this.innerPanel);
+		this.addCancelButton();
 		this.paintMap();
+	}
+	
+	private void addCancelButton()
+	{
+		this.cancelButton = new JButton(CANCEL);
+		this.add(this.cancelButton);
+		this.cancelButton.addActionListener(this);
+		this.cancelButton.setEnabled(false);
 	}
 	
 	private void populateInstanceMap(HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap) throws Exception
@@ -286,6 +297,7 @@ public class MapPanel extends JPanel implements ActionListener
 			this.selectedPosition = choiceItem.getPosition();
 			this.selectedChoice = choiceItem.getElementChoice();
 			this.disableButtonsOutsideRange();
+			this.cancelButton.setEnabled(true);
 		}
 		else
 		{
@@ -313,9 +325,22 @@ public class MapPanel extends JPanel implements ActionListener
 		}
 	}
 	
+	private void endAction()
+	{
+		this.mode = MapMode.LOCATION;
+		this.selectedPosition = null;
+		this.cancelButton.setEnabled(false);
+		this.enableAllButtons();
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
+		if (e.getSource() == this.cancelButton)
+		{
+			this.endAction();
+			return;
+		}
 		try
 		{
 			switch (this.mode)
@@ -358,8 +383,7 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void selectInRange(MapButton mapButton) throws Exception
 	{
-		this.mode = MapMode.LOCATION;
-		this.enableAllButtons();
+		this.endAction();
 		Pages.getScenario().loadPage(this.selectedChoice, mapButton.getPosition());
 	}
 	
