@@ -435,7 +435,7 @@ public class MapPanel extends JPanel implements ActionListener
 			RestrictedJson<ImageRestriction> imageRestriction = this.map.getMapData().getRestrictedJson((MapRestriction.IMAGE), ImageRestriction.class);
 			String baseFileName = imageRestriction.getString(ImageRestriction.FILENAME);
 			locationButtonData.imageIcon = Main.loadCombinedImageIcon(baseFileName, pcFileName);
-			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(locationFileName, pcFileName);
+			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(baseFileName, pcFileName);
 		}
 		return locationButtonData;
 	}
