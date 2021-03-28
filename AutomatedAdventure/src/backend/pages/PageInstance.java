@@ -397,9 +397,9 @@ public class PageInstance extends AbstractPageInstance
 	}
 	
 	private void makeElementChoice(ElementInstance elementInstance, String keyword, boolean withContext, String elementNamingQuality, 
-			String startString, String endString, String typeString, String rangeAttributeString)
+			String startString, String endString, String typeString, String rangeAttributeString) throws Exception
 	{
-		ElementChoiceType elementChoiceType = ElementChoiceType.valueOf(typeString);
+		ElementChoiceType elementChoiceType = ElementChoiceType.getByName(typeString);
 		
 		ElementChoice elementChoice = new ElementChoice();
 		elementChoice.keyword = keyword;

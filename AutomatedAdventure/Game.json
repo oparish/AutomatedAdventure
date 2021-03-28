@@ -101,7 +101,7 @@
                   "elementChoice" : {
                      "elementName" : "troop",
                      "second" : "",
-                     "type" : "MENU_RANGE",
+                     "type" : "menuRange",
                      "elementQuality" : "name",
                      "rangeAttribute" : "move"
                   }
@@ -118,7 +118,7 @@
                   "elementChoice" : {
                      "elementName" : "troop",
                      "second" : "",
-                     "type" : "MENU_RANGE",
+                     "type" : "menuRange",
                      "elementQuality" : "name",
                      "rangeAttribute" : "move"
                   }
