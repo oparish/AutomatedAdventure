@@ -146,7 +146,7 @@ public class MapPanel extends JPanel implements ActionListener
 		}
 	}
 	
-	private void createEmptyLocationButton(int x, int y, String imagePath)
+	private void createEmptyLocationButton(int x, int y, String imagePath) throws Exception
 	{
 		ImageIcon imageIcon = Main.loadImageIcon(imagePath);
 		ImageIcon disabledImageIcon = Main.loadDisabledImageIcon(imagePath);
@@ -156,7 +156,7 @@ public class MapPanel extends JPanel implements ActionListener
 		locationButton.addActionListener(this);
 	}
 	
-	private void repaintEmptyLocationButton(LocationButton locationButton, String blankImageName)
+	private void repaintEmptyLocationButton(LocationButton locationButton, String blankImageName) throws Exception
 	{
 		ImageIcon blankImageIcon = Main.loadImageIcon(blankImageName);
 		locationButton.setToolTipText(null);

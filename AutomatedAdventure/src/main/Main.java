@@ -74,17 +74,12 @@ public class Main
 		}
 	}
 	
-	private static ImageIcon loadImageIcon(HashMap<String, ImageIcon> iconMap, String filename, boolean disabled)
+	private static ImageIcon loadImageIcon(HashMap<String, ImageIcon> iconMap, String filename, boolean disabled) throws Exception
 	{	
 		if (iconMap.containsKey(filename))
 			return iconMap.get(filename);
 		
-		BufferedImage baseImg = null;
-		
-		try {
-			baseImg = ImageIO.read(new File(filename));
-		} catch (IOException e) {
-		}
+		BufferedImage baseImg = Main.loadImageFromFile(filename);
 		
 		if (disabled)
 			Main.applyDisabledEffect(baseImg);
@@ -94,8 +89,20 @@ public class Main
 	    return imageIcon;
 	}
 	
+	private static BufferedImage loadImageFromFile(String filename) throws Exception
+	{
+		try
+		{
+			return ImageIO.read(new File(filename));
+		}
+		catch (IOException e)
+		{
+			throw new Exception("Can't load image with filename: " + filename, e);
+		}
+	}
+	
 	private static ImageIcon loadCombinedImageIcon(HashMap<String, HashMap<String, ImageIcon>> iconMap, String baseFilename, String filename, 
-			boolean disabled)
+			boolean disabled) throws Exception
 	{		
 		if (iconMap.containsKey(baseFilename))
 		{
@@ -106,13 +113,8 @@ public class Main
 			}
 		}
 		
-		BufferedImage baseImg = null;
-		BufferedImage img = null;
-		try {
-			baseImg = ImageIO.read(new File(baseFilename));
-			img = ImageIO.read(new File(filename));
-		} catch (IOException e) {
-		}
+		BufferedImage baseImg = Main.loadImageFromFile(baseFilename);
+		BufferedImage img = Main.loadImageFromFile(filename);
 		
 		Graphics2D graphics = baseImg.createGraphics();
 		graphics.drawImage(img, 0, 0, null);
@@ -145,22 +147,22 @@ public class Main
 		}
 	}
 	
-	public static ImageIcon loadCombinedImageIcon(String baseFilename, String filename)
+	public static ImageIcon loadCombinedImageIcon(String baseFilename, String filename) throws Exception
 	{		
 		return Main.loadCombinedImageIcon(Main.combinedIcons, baseFilename, filename, false);
 	}
 	
-	public static ImageIcon loadDisableCombinedImageIcon(String baseFilename, String filename)
+	public static ImageIcon loadDisableCombinedImageIcon(String baseFilename, String filename) throws Exception
 	{		
 		return Main.loadCombinedImageIcon(Main.combinedDisabledIcons, baseFilename, filename, true);
 	}
 	
-	public static ImageIcon loadImageIcon(String filename)
+	public static ImageIcon loadImageIcon(String filename) throws Exception
 	{
 		return Main.loadImageIcon(Main.icons, filename, false);
 	}
 	
-	public static ImageIcon loadDisabledImageIcon(String filename)
+	public static ImageIcon loadDisabledImageIcon(String filename) throws Exception
 	{
 		return Main.loadImageIcon(Main.disabledIcons, filename, true);
 	}
