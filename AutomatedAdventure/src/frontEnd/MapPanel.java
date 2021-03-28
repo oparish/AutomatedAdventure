@@ -149,7 +149,8 @@ public class MapPanel extends JPanel implements ActionListener
 	private void createEmptyLocationButton(int x, int y, String imagePath)
 	{
 		ImageIcon imageIcon = Main.loadImageIcon(imagePath);
-		LocationButton locationButton = new LocationButton(imageIcon, new Position(x, y), new ArrayList<ElementInstance>());
+		ImageIcon disabledImageIcon = Main.loadDisabledImageIcon(imagePath);
+		LocationButton locationButton = new LocationButton(imageIcon, disabledImageIcon, new Position(x, y), new ArrayList<ElementInstance>());
 		this.innerPanel.add(locationButton);
 		this.locationButtons.add(locationButton);
 		locationButton.addActionListener(this);
@@ -179,12 +180,13 @@ public class MapPanel extends JPanel implements ActionListener
 		
 		if (locationButtonData.tooltipText.length() != 0)
 		{
-			locationButton = new LocationButton(locationButtonData.imageIcon, new Position(x, y), locationButtonData.elementInstances, 
-					locationButtonData.tooltipText);
+			locationButton = new LocationButton(locationButtonData.imageIcon, locationButtonData.disabledImageIcon, new Position(x, y), 
+					locationButtonData.elementInstances, locationButtonData.tooltipText);
 		}
 		else
 		{
-			locationButton = new LocationButton(locationButtonData.imageIcon, new Position(x, y), locationButtonData.elementInstances);
+			locationButton = new LocationButton(locationButtonData.imageIcon, locationButtonData.disabledImageIcon, new Position(x, y), 
+					locationButtonData.elementInstances);
 		}
 		
 		locationButton.addActionListener(this);
@@ -283,10 +285,31 @@ public class MapPanel extends JPanel implements ActionListener
 			this.mode = MapMode.LOCATION_RANGE;
 			this.selectedPosition = choiceItem.getPosition();
 			this.selectedChoice = choiceItem.getElementChoice();
+			this.disableButtonsOutsideRange();
 		}
 		else
 		{
 			Pages.getScenario().loadPage(elementChoice);
+		}
+	}
+	
+	private void disableButtonsOutsideRange()
+	{
+		for (LocationButton locationButton : this.locationButtons)
+		{
+			Position position = locationButton.getPosition();
+			if (!this.checkInRange(position))
+			{
+				locationButton.setEnabled(false);
+			}
+		}
+	}
+	
+	private void enableAllButtons()
+	{
+		for (LocationButton locationButton : this.locationButtons)
+		{
+			locationButton.setEnabled(true);
 		}
 	}
 	
@@ -335,13 +358,19 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void selectInRange(MapButton mapButton) throws Exception
 	{
-		Position mapPosition = mapButton.getPosition();
-		Integer xDiff = (this.selectedPosition.x - mapPosition.x);
+		this.mode = MapMode.LOCATION;
+		this.enableAllButtons();
+		Pages.getScenario().loadPage(this.selectedChoice, mapButton.getPosition());
+	}
+	
+	private boolean checkInRange(Position position)
+	{
+		Integer xDiff = (this.selectedPosition.x - position.x);
 		if (xDiff < 0)
 		{
 			xDiff = xDiff * -1;
 		}
-		Integer yDiff = (this.selectedPosition.y - mapPosition.y);
+		Integer yDiff = (this.selectedPosition.y - position.y);
 		if (yDiff < 0)
 		{
 			yDiff = yDiff * -1;
@@ -349,8 +378,11 @@ public class MapPanel extends JPanel implements ActionListener
 		int rangeLimit = this.selectedChoice.elementInstance.getNumberValueByName(this.selectedChoice.rangeAttribute);
 		if ((xDiff + yDiff) <= rangeLimit)
 		{
-			this.mode = MapMode.LOCATION;
-			Pages.getScenario().loadPage(this.selectedChoice, mapPosition);
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 	
@@ -391,16 +423,19 @@ public class MapPanel extends JPanel implements ActionListener
 		if (locationInstance != null && pcInstance != null)
 		{
 			locationButtonData.imageIcon = Main.loadCombinedImageIcon(locationFileName, pcFileName);
+			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(locationFileName, pcFileName);
 		}
 		else if (locationInstance != null)
 		{
 			locationButtonData.imageIcon = Main.loadImageIcon(locationFileName);
+			locationButtonData.disabledImageIcon = Main.loadDisabledImageIcon(locationFileName);
 		}
 		else
 		{
 			RestrictedJson<ImageRestriction> imageRestriction = this.map.getMapData().getRestrictedJson((MapRestriction.IMAGE), ImageRestriction.class);
 			String baseFileName = imageRestriction.getString(ImageRestriction.FILENAME);
 			locationButtonData.imageIcon = Main.loadCombinedImageIcon(baseFileName, pcFileName);
+			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(locationFileName, pcFileName);
 		}
 		return locationButtonData;
 	}
@@ -477,10 +512,10 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		private Position position;
 		
-		public MapButton(ImageIcon imageIcon, Position position)
+		public MapButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, Position position)
 		{
 			super(imageIcon);
-			this.setDisabledIcon(imageIcon);
+			this.setDisabledIcon(disabledImageIcon);
 			this.setMargin(new Insets(-4, -4, -4, -4));
 			this.position = position;
 		}
@@ -495,6 +530,7 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		public ArrayList<ElementInstance> elementInstances;
 		public ImageIcon imageIcon;
+		public ImageIcon disabledImageIcon;
 		public String tooltipText;
 	}
 	
@@ -503,17 +539,17 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		public ArrayList<ElementInstance> elementInstances;
 		
-		public LocationButton(ImageIcon imageIcon, Position position, ArrayList<ElementInstance> elementInstances, String tooltipText)
+		public LocationButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, Position position, ArrayList<ElementInstance> elementInstances, String tooltipText)
 		{
-			super(imageIcon, position);
+			super(imageIcon, disabledImageIcon, position);
 			this.elementInstances = elementInstances;
 			if (tooltipText != null)
 				this.updateTooltip(tooltipText);
 		}
 		
-		public LocationButton(ImageIcon imageIcon, Position position, ArrayList<ElementInstance> elementInstances)
+		public LocationButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, Position position, ArrayList<ElementInstance> elementInstances)
 		{
-			this(imageIcon, position, elementInstances, null);
+			this(imageIcon, disabledImageIcon, position, elementInstances, null);
 		}
 		
 		public void updateTooltip(String tooltipText)

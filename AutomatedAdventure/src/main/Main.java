@@ -2,6 +2,7 @@ package main;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
@@ -39,7 +40,9 @@ public class Main
 	public static Main main;
 	private static Random random = new Random();
 	private static HashMap<String, ImageIcon> icons = new HashMap<String, ImageIcon>();
+	private static HashMap<String, ImageIcon> disabledIcons = new HashMap<String, ImageIcon>();
 	private static HashMap<String, HashMap<String, ImageIcon>> combinedIcons = new HashMap<String, HashMap<String, ImageIcon>>();
+	private static HashMap<String, HashMap<String, ImageIcon>> combinedDisabledIcons = new HashMap<String, HashMap<String, ImageIcon>>();
 	
 	public static Dimension findScreenCentre()
 	{
@@ -71,22 +74,32 @@ public class Main
 		}
 	}
 	
-	public static ImageIcon loadImageIcon(String filename)
+	private static ImageIcon loadImageIcon(HashMap<String, ImageIcon> iconMap, String filename, boolean disabled)
 	{	
-		if (Main.icons.containsKey(filename))
-			return Main.icons.get(filename);
+		if (iconMap.containsKey(filename))
+			return iconMap.get(filename);
 		
-	    ImageIcon imageIcon = new ImageIcon(filename);
-	    Main.icons.put(filename, imageIcon);
+		BufferedImage baseImg = null;
+		
+		try {
+			baseImg = ImageIO.read(new File(filename));
+		} catch (IOException e) {
+		}
+		
+		if (disabled)
+			Main.applyDisabledEffect(baseImg);
+		
+	    ImageIcon imageIcon = new ImageIcon(baseImg);
+	    iconMap.put(filename, imageIcon);
 	    return imageIcon;
 	}
 	
-	
-	public static ImageIcon loadCombinedImageIcon(String baseFilename, String filename)
+	private static ImageIcon loadCombinedImageIcon(HashMap<String, HashMap<String, ImageIcon>> iconMap, String baseFilename, String filename, 
+			boolean disabled)
 	{		
-		if (Main.combinedIcons.containsKey(baseFilename))
+		if (iconMap.containsKey(baseFilename))
 		{
-			HashMap<String, ImageIcon> innerIcons = Main.combinedIcons.get(baseFilename);
+			HashMap<String, ImageIcon> innerIcons = iconMap.get(baseFilename);
 			if (innerIcons.containsKey(filename))
 			{
 				return innerIcons.get(filename);
@@ -103,14 +116,52 @@ public class Main
 		
 		Graphics2D graphics = baseImg.createGraphics();
 		graphics.drawImage(img, 0, 0, null);
+		
+		if (disabled)
+			Main.applyDisabledEffect(baseImg);
+			
 		ImageIcon imageIcon = new ImageIcon(baseImg);
 		
-		if (!Main.combinedIcons.containsKey(baseFilename))
-			Main.combinedIcons.put(baseFilename, new HashMap<String, ImageIcon>());
+		if (!iconMap.containsKey(baseFilename))
+			iconMap.put(baseFilename, new HashMap<String, ImageIcon>());
 		
-		HashMap<String, ImageIcon> innerIcons = Main.combinedIcons.get(baseFilename);
+		HashMap<String, ImageIcon> innerIcons = iconMap.get(baseFilename);
 		innerIcons.put(filename, imageIcon);
-		
+
 	    return imageIcon;
+	} 
+	
+	private static void applyDisabledEffect(BufferedImage baseImg)
+	{
+		for (int i = 0; i < baseImg.getWidth(); i += 4)
+		{
+			for (int j = 0; j < baseImg.getHeight(); j += 4)
+			{
+				baseImg.setRGB(i, j, 0);
+				baseImg.setRGB(i + 1, j, 0);
+				baseImg.setRGB(i, j + 1, 0);
+				baseImg.setRGB(i + 1, j + 1, 0);
+			}
+		}
+	}
+	
+	public static ImageIcon loadCombinedImageIcon(String baseFilename, String filename)
+	{		
+		return Main.loadCombinedImageIcon(Main.combinedIcons, baseFilename, filename, false);
+	}
+	
+	public static ImageIcon loadDisableCombinedImageIcon(String baseFilename, String filename)
+	{		
+		return Main.loadCombinedImageIcon(Main.combinedDisabledIcons, baseFilename, filename, true);
+	}
+	
+	public static ImageIcon loadImageIcon(String filename)
+	{
+		return Main.loadImageIcon(Main.icons, filename, false);
+	}
+	
+	public static ImageIcon loadDisabledImageIcon(String filename)
+	{
+		return Main.loadImageIcon(Main.disabledIcons, filename, true);
 	}
 }
