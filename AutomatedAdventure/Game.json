@@ -110,6 +110,17 @@
                      "elementQuality" : "name",
                      "rangeAttribute" : "move"
                   }
+               },
+               {
+                  "value" : "next",
+                  "first" : "Order",
+                  "elementChoice" : {
+                     "elementName" : "troop",
+                     "second" : "",
+                     "type" : "routeSelection",
+                     "elementQuality" : "name",
+                     "rangeAttribute" : "move"
+                  }
                }
             ]
          },
@@ -124,6 +135,17 @@
                      "elementName" : "self",
                      "second" : "",
                      "type" : "menuRange",
+                     "elementQuality" : "name",
+                     "rangeAttribute" : "move"
+                  }
+               },
+               {
+                  "value" : "next",
+                  "first" : "Order",
+                  "elementChoice" : {
+                     "elementName" : "troop",
+                     "second" : "",
+                     "type" : "routeSelection",
                      "elementQuality" : "name",
                      "rangeAttribute" : "move"
                   }

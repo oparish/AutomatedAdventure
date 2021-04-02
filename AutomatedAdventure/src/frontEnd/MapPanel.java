@@ -287,21 +287,45 @@ public class MapPanel extends JPanel implements ActionListener
 		popupMenu.show(button, this.map.getTileSize(), 0);
 	}
 	
+	private void performMenuAction(ElementChoice elementChoice) throws Exception
+	{
+		Pages.getScenario().loadPage(elementChoice);
+	}
+	
+	private void performMenuRangeAction(ChoiceItem choiceItem, ElementChoice elementChoice) throws Exception
+	{
+		this.mode = MapMode.LOCATION_RANGE;
+		this.selectedPosition = choiceItem.getPosition();
+		this.selectedChoice = choiceItem.getElementChoice();
+		this.disableButtonsOutsideRange();
+		this.cancelButton.setEnabled(true);
+	}
+	
+	private void performRouteSelectionAction(ChoiceItem choiceItem, ElementChoice elementChoice)
+	{
+		this.mode = MapMode.ROUTE_SELECTION;
+		this.selectedPosition = choiceItem.getPosition();
+		this.selectedChoice = choiceItem.getElementChoice();
+		this.disableButtonsOutsideRange();
+		this.cancelButton.setEnabled(true);
+		elementChoice.elementInstance.clearRoute();
+	}
+	
 	private void performChoiceItemAction(ChoiceItem choiceItem) throws Exception
 	{
 		ElementChoice elementChoice = choiceItem.getElementChoice();
 		
-		if (elementChoice.elementChoiceType == ElementChoiceType.MENU_RANGE)
+		switch(elementChoice.elementChoiceType)
 		{
-			this.mode = MapMode.LOCATION_RANGE;
-			this.selectedPosition = choiceItem.getPosition();
-			this.selectedChoice = choiceItem.getElementChoice();
-			this.disableButtonsOutsideRange();
-			this.cancelButton.setEnabled(true);
-		}
-		else
-		{
-			Pages.getScenario().loadPage(elementChoice);
+			case ROUTE_SELECTION:
+				this.performRouteSelectionAction(choiceItem, elementChoice);
+				break;
+			case MENU_RANGE:
+				this.performMenuRangeAction(choiceItem, elementChoice);
+				break;
+			case MENU:
+				this.performMenuAction(elementChoice);
+				break;
 		}
 	}
 	
@@ -351,6 +375,9 @@ public class MapPanel extends JPanel implements ActionListener
 			case LOCATION_RANGE:
 				this.performLocationRangeAction(e);
 				break;
+			case ROUTE_SELECTION:
+				this.performStepSelectionAction(e);
+				break;
 			case DISABLED:
 				break;
 			}
@@ -359,6 +386,42 @@ public class MapPanel extends JPanel implements ActionListener
 		{
 			exception.printStackTrace();
 		}
+	}
+	
+	private void performStepSelectionAction(ActionEvent e)
+	{
+		if (e.getSource() instanceof LocationButton)
+		{
+			LocationButton locationButton = (LocationButton) e.getSource();
+			this.addRouteStep(locationButton);
+		}
+	}
+	
+	private void addRouteStep(LocationButton locationButton)
+	{
+		Position position = locationButton.getPosition();
+		this.selectedChoice.elementInstance.addRouteStep(position);
+		
+		if (this.checkForLocation(locationButton))
+		{
+			this.endAction();
+		}
+		else
+		{
+			this.selectedPosition = position;
+			this.enableAllButtons();
+			this.disableButtonsOutsideRange();
+		}
+	}
+	
+	private boolean checkForLocation(LocationButton locationButton)
+	{
+		for (ElementInstance elementInstance : locationButton.elementInstances)
+		{
+			if (elementInstance.getElement().getMapElementType(this.map) == MapElementType.LOCATION)
+				return true;
+		}
+		return false;
 	}
 	
 	private void performLocationAction(ActionEvent e) throws Exception
@@ -529,7 +592,7 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private enum MapMode
 	{
-		DISABLED, LOCATION, LOCATION_RANGE;
+		DISABLED, LOCATION, LOCATION_RANGE, ROUTE_SELECTION;
 	}
 	
 	private class MapButton extends JButton
