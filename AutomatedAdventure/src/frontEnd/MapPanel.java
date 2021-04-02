@@ -415,9 +415,9 @@ public class MapPanel extends JPanel implements ActionListener
 		LocationButtonData locationButtonData = new LocationButtonData();	
 		locationButtonData.elementInstances = new ArrayList<ElementInstance>();
 		ElementInstance locationInstance = null;
-		ElementInstance pcInstance = null;
+		ElementInstance characterInstance = null;
 		String locationFileName = null;
-		String pcFileName = null;
+		String characterFileName = null;
 		locationButtonData.tooltipText = "";
 		
 		if (dataMap.containsKey(MapElementType.LOCATION))
@@ -432,22 +432,22 @@ public class MapPanel extends JPanel implements ActionListener
 			locationButtonData.elementInstances.add(locationInstance);
 		}
 		
-		if (dataMap.containsKey(MapElementType.PC))
+		if (dataMap.containsKey(MapElementType.CHARACTER))
 		{
-			pcInstance = dataMap.get(MapElementType.PC);
-			Element pcElement = pcInstance.getElement();
-			RestrictedJson<ImageRestriction> pcImageData = pcElement.getMapImageData(this.map);
-			pcFileName = pcImageData.getString(ImageRestriction.FILENAME);
-			RestrictedJson<TooltipRestriction> tooltipData = pcElement.getTooltip(map);
-			String pcTooltip = this.createTooltipText(tooltipData, pcInstance);
-			locationButtonData.tooltipText += this.assessTooltipText(pcInstance, pcTooltip);
-			locationButtonData.elementInstances.add(pcInstance);
+			characterInstance = dataMap.get(MapElementType.CHARACTER);
+			Element characterElement = characterInstance.getElement();
+			RestrictedJson<ImageRestriction> pcImageData = characterElement.getMapImageData(this.map);
+			characterFileName = pcImageData.getString(ImageRestriction.FILENAME);
+			RestrictedJson<TooltipRestriction> tooltipData = characterElement.getTooltip(map);
+			String characterTooltip = this.createTooltipText(tooltipData, characterInstance);
+			locationButtonData.tooltipText += this.assessTooltipText(characterInstance, characterTooltip);
+			locationButtonData.elementInstances.add(characterInstance);
 		}
 		
-		if (locationInstance != null && pcInstance != null)
+		if (locationInstance != null && characterInstance != null)
 		{
-			locationButtonData.imageIcon = Main.loadCombinedImageIcon(locationFileName, pcFileName);
-			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(locationFileName, pcFileName);
+			locationButtonData.imageIcon = Main.loadCombinedImageIcon(locationFileName, characterFileName);
+			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(locationFileName, characterFileName);
 		}
 		else if (locationInstance != null)
 		{
@@ -458,8 +458,8 @@ public class MapPanel extends JPanel implements ActionListener
 		{
 			RestrictedJson<ImageRestriction> imageRestriction = this.map.getMapData().getRestrictedJson((MapRestriction.IMAGE), ImageRestriction.class);
 			String baseFileName = imageRestriction.getString(ImageRestriction.FILENAME);
-			locationButtonData.imageIcon = Main.loadCombinedImageIcon(baseFileName, pcFileName);
-			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(baseFileName, pcFileName);
+			locationButtonData.imageIcon = Main.loadCombinedImageIcon(baseFileName, characterFileName);
+			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(baseFileName, characterFileName);
 		}
 		return locationButtonData;
 	}

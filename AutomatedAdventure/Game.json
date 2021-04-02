@@ -44,6 +44,11 @@
                   "minValue" : 1,
                   "multiplier" : 10,
                   "maxValue" : 1
+               },
+               "move" : {
+                  "minValue" : 1,
+                  "multiplier" : 3,
+                  "maxValue" : 1
                }
             }
          }
@@ -99,7 +104,7 @@
                   "value" : "next",
                   "first" : "Move ",
                   "elementChoice" : {
-                     "elementName" : "troop",
+                     "elementName" : "self",
                      "second" : "",
                      "type" : "menuRange",
                      "elementQuality" : "name",
@@ -116,7 +121,7 @@
                   "value" : "next",
                   "first" : "Move ",
                   "elementChoice" : {
-                     "elementName" : "troop",
+                     "elementName" : "self",
                      "second" : "",
                      "type" : "menuRange",
                      "elementQuality" : "name",
@@ -127,7 +132,7 @@
             "positionAdjustments" : [
                {
                   "mapName" : "testMap",
-                  "elementName" : "troop"
+                  "elementName" : "self"
                }
             ]
          }
@@ -171,7 +176,20 @@
                         }
                      ]
                   },
-                  "mapElementType" : "pc"
+                  "mapElementType" : "character"
+               },
+               "self" : {
+                  "image" : {
+                     "filename" : "wizard.png"
+                  },
+                  "tooltip" : {
+                     "tooltipComponents" : [
+                        {
+                           "tooltipText" : "Yourself"
+                        }
+                     ]
+                  },
+                  "mapElementType" : "character"
                }
             },
             "width" : 10,
