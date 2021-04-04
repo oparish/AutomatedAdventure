@@ -102,17 +102,6 @@
             "choices" : [
                {
                   "value" : "next",
-                  "first" : "Move ",
-                  "elementChoice" : {
-                     "elementName" : "self",
-                     "second" : "",
-                     "type" : "menuRange",
-                     "elementQuality" : "name",
-                     "rangeAttribute" : "move"
-                  }
-               },
-               {
-                  "value" : "next",
                   "first" : "Order",
                   "elementChoice" : {
                      "elementName" : "troop",
@@ -125,7 +114,7 @@
             ]
          },
          "next" : {
-            "value" : "<selectedPosition:x>, <selectedPosition:y>",
+            "value" : "",
             "panelName" : "mapPanel",
             "choices" : [
                {
@@ -138,23 +127,13 @@
                      "elementQuality" : "name",
                      "rangeAttribute" : "move"
                   }
-               },
-               {
-                  "value" : "next",
-                  "first" : "Order",
-                  "elementChoice" : {
-                     "elementName" : "troop",
-                     "second" : "",
-                     "type" : "routeSelection",
-                     "elementQuality" : "name",
-                     "rangeAttribute" : "move"
-                  }
                }
             ],
             "positionAdjustments" : [
                {
                   "mapName" : "testMap",
-                  "elementName" : "self"
+                  "elementName" : "troop",
+                  "adjustmentType" : "route"
                }
             ]
          }

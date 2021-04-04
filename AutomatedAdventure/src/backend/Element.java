@@ -387,6 +387,7 @@ public class Element
 	public class ElementInstance
 	{
 		ArrayList<Position> route = null;
+		int routePos = 0;
 		HashMap<String, Integer> detailValues;
 		HashMap<String, Integer> numberValues;
 		HashMap<String, Integer> setValues;
@@ -406,6 +407,34 @@ public class Element
 			return Element.this;
 		}
 		
+		public void resetRoutePos()
+		{
+			this.routePos = 0;
+		}
+		
+		public void incrementRoutePos()
+		{
+			this.routePos++;
+			if (this.routePos >= this.route.size())
+			{
+				this.clearRoute();
+			}
+		}
+		
+		public void decrementRoutePos()
+		{
+			this.routePos--;
+			if (this.routePos < 0)
+			{
+				this.clearRoute();
+			}
+		}
+		
+		public Position getNextStep()
+		{
+			return this.route.get(this.routePos);
+		}
+		
 		public void addRouteStep(Position position)
 		{
 			if (this.route == null)
@@ -414,7 +443,7 @@ public class Element
 			}
 			this.route.add(position);
 		}
-		
+
 		public void clearRoute()
 		{
 			this.route = null;

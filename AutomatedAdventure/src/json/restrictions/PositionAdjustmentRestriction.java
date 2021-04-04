@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum PositionAdjustmentRestriction implements RestrictionPointer
 {
-	MAP_NAME(Restriction.MAP_NAME), ELEMENT_NAME(Restriction.ELEMENT_NAME);
+	MAP_NAME(Restriction.MAP_NAME), ELEMENT_NAME(Restriction.ELEMENT_NAME), ADJUSTMENT_TYPE(Restriction.ADJUSTMENT_TYPE);
 	
 	private Restriction restriction;
 	private boolean optional;

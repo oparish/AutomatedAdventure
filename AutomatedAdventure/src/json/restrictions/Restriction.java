@@ -74,6 +74,7 @@ public enum Restriction
 	MIN_VALUE("minValue", NUMBER, JsonDim.MONO),
 	X("x", NUMBER, JsonDim.MONO),
 	Y("y", NUMBER, JsonDim.MONO),
+	ADJUSTMENT_TYPE("adjustmentType", STRING, JsonDim.MONO),
 	IMAGE("image", RestrictionType.IMAGE, JsonDim.MONO),
 	MAPS("maps", RestrictionType.MAP, JsonDim.MAP),
 	MAP_ELEMENTS("mapElements", RestrictionType.MAP_ELEMENT, JsonDim.MAP),

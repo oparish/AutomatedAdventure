@@ -28,6 +28,7 @@ import json.restrictions.MakeConnectionRestriction;
 import json.restrictions.MakeElementRestriction;
 import json.restrictions.PageRestriction;
 import json.restrictions.PositionAdjustmentRestriction;
+import json.restrictions.PositionAdjustmentType;
 import json.restrictions.SumComponentRestriction;
 import json.restrictions.SumRestriction;
 import main.Main;
@@ -88,12 +89,40 @@ public class PageInstance extends AbstractPageInstance
 		for (int i = 0; i < positionAdjustmentArray.getLength(); i++)
 		{
 			RestrictedJson<PositionAdjustmentRestriction> adjustment = positionAdjustmentArray.getMemberAt(i);
+			String patString = adjustment.getString(PositionAdjustmentRestriction.ADJUSTMENT_TYPE);
+			PositionAdjustmentType pat = PositionAdjustmentType.valueOf(patString.toUpperCase());
 			String mapName = adjustment.getString(PositionAdjustmentRestriction.MAP_NAME);
 			String elementType = adjustment.getString(PositionAdjustmentRestriction.ELEMENT_NAME);
 			Element element = this.scenario.getElement(elementType);
-			ElementInstance elementInstance = this.getSelectedElementInstance(element);
 			Map map = this.scenario.getMapByName(mapName);
-			elementInstance.setMapPosition(map, this.position);
+			switch(pat)
+			{
+				case DIRECT:
+					this.directMovement(map, element);
+					break;
+				case ROUTE:
+					this.routeMovement(map, element);
+					break;
+			}
+		}
+	}
+	
+	private void directMovement(Map map, Element element)
+	{
+		ElementInstance elementInstance = this.getSelectedElementInstance(element);
+		elementInstance.setMapPosition(map, this.position);
+	}
+	
+	private void routeMovement(Map map, Element element)
+	{
+		for (ElementInstance elementInstance : element.getInstances())
+		{
+			if (elementInstance.getRoute() != null)
+			{
+				Position position = elementInstance.getNextStep();
+				elementInstance.setMapPosition(map, position);
+				elementInstance.incrementRoutePos();
+			}
 		}
 	}
 	

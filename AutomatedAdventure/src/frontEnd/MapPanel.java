@@ -388,7 +388,7 @@ public class MapPanel extends JPanel implements ActionListener
 		}
 	}
 	
-	private void performStepSelectionAction(ActionEvent e)
+	private void performStepSelectionAction(ActionEvent e) throws Exception
 	{
 		if (e.getSource() instanceof LocationButton)
 		{
@@ -397,7 +397,7 @@ public class MapPanel extends JPanel implements ActionListener
 		}
 	}
 	
-	private void addRouteStep(LocationButton locationButton)
+	private void addRouteStep(LocationButton locationButton) throws Exception
 	{
 		Position position = locationButton.getPosition();
 		this.selectedChoice.elementInstance.addRouteStep(position);
@@ -405,6 +405,7 @@ public class MapPanel extends JPanel implements ActionListener
 		if (this.checkForLocation(locationButton))
 		{
 			this.endAction();
+			Pages.getScenario().loadPage(this.selectedChoice);
 		}
 		else
 		{
