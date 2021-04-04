@@ -21,15 +21,15 @@ public class RedirectInstance extends AbstractPageInstance
 		super(scenario, pageContext, position);
 		this.redirectJson = redirectJson;
 	}
-		
-	public void load(ElementInstance elementInstance, ElementChoice elementChoice) throws Exception
-	{		
-		RestrictedJson<AdjustmentDataRestriction> adjustmentData = 
-				this.redirectJson.getRestrictedJson(RedirectRestriction.ADJUSTMENT_DATA, AdjustmentDataRestriction.class);
-		this.processAdjustmentData(adjustmentData);
-		
+	
+	private boolean checkConditions() throws Exception
+	{
 		JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray = 
-				this.redirectJson.getRestrictedJsonArray(RedirectRestriction.CONTEXT_CONDITIONS, ContextConditionRestriction.class);		
+				this.redirectJson.getRestrictedJsonArray(RedirectRestriction.CONTEXT_CONDITIONS, ContextConditionRestriction.class);
+		
+		if (contextConditionDataArray == null)
+			return true;
+		
 		boolean check = true;
 		
 		for (int i = 0; i < contextConditionDataArray.getLength(); i++)
@@ -48,8 +48,16 @@ public class RedirectInstance extends AbstractPageInstance
 				break;
 			}		
 		}
+		return check;
+	}
 		
-		if (check)
+	public void load(ElementInstance elementInstance, ElementChoice elementChoice) throws Exception
+	{		
+		RestrictedJson<AdjustmentDataRestriction> adjustmentData = 
+				this.redirectJson.getRestrictedJson(RedirectRestriction.ADJUSTMENT_DATA, AdjustmentDataRestriction.class);
+		this.processAdjustmentData(adjustmentData);
+				
+		if (this.checkConditions())
 		{
 			String ifPageWord = redirectJson.getString(RedirectRestriction.FIRST);
 			this.scenario.loadPage(ifPageWord, pageContext, elementInstance, elementChoice, null);
