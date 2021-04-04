@@ -415,7 +415,8 @@ public class Element
 		public void incrementRoutePos(Map map)
 		{
 			Integer routePos = this.routePosMap.get(map);
-			this.routePosMap.put(map, routePos + 1);
+			routePos += 1;
+			this.routePosMap.put(map, routePos);
 			if (routePos >= routeMap.get(map).size())
 			{
 				this.clearRoute(map);
@@ -433,7 +434,8 @@ public class Element
 		public void decrementRoutePos(Map map)
 		{
 			Integer routePos = this.routePosMap.get(map);
-			this.routePosMap.put(map, routePos - 1);
+			routePos -= 1;
+			this.routePosMap.put(map, routePos);
 			if (routePos < 0)
 			{
 				this.clearRoute(map);
