@@ -281,12 +281,12 @@ public class Scenario
 		}
 		else if (redirectJson != null)
 		{
-			RedirectInstance redirectInstance = new RedirectInstance(this, pageContext, redirectJson);
+			RedirectInstance redirectInstance = new RedirectInstance(this, pageContext, redirectJson, position);
 			redirectInstance.load(elementInstance, elementChoice);
 		}
 		else if (randomRedirectJson != null)
 		{
-			RandomRedirectInstance randomRedirectInstance = new RandomRedirectInstance(this, pageContext, randomRedirectJson);
+			RandomRedirectInstance randomRedirectInstance = new RandomRedirectInstance(this, pageContext, randomRedirectJson, position);
 			randomRedirectInstance.load(elementInstance, elementChoice);			
 		}
 	}

@@ -129,13 +129,15 @@
                   }
                }
             ],
-            "positionAdjustments" : [
-               {
-                  "mapName" : "testMap",
-                  "elementName" : "troop",
-                  "adjustmentType" : "route"
-               }
-            ]
+            "adjustmentData" : {
+               "positionAdjustments" : [
+                  {
+                     "mapName" : "testMap",
+                     "elementName" : "troop",
+                     "adjustmentType" : "route"
+                  }
+               ]
+            }
          }
       },
       "connections" : {},

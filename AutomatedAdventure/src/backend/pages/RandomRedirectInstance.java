@@ -6,11 +6,15 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import backend.Scenario;
+import frontEnd.Position;
 import json.JsonEntityArray;
 import json.JsonEntityMap;
 import json.JsonEntityNumber;
 import json.RestrictedJson;
+import json.restrictions.AdjustmentDataRestriction;
 import json.restrictions.ElementAdjustmentRestriction;
+import json.restrictions.PageRestriction;
+import json.restrictions.PositionAdjustmentRestriction;
 import json.restrictions.RandomRedirectRestriction;
 import main.Main;
 
@@ -18,18 +22,18 @@ public class RandomRedirectInstance extends AbstractPageInstance
 {
 	RestrictedJson<RandomRedirectRestriction> randomRedirectJson;
 	
-	public RandomRedirectInstance(Scenario scenario, PageContext pageContext, RestrictedJson<RandomRedirectRestriction> randomRedirectJson)
+	public RandomRedirectInstance(Scenario scenario, PageContext pageContext, RestrictedJson<RandomRedirectRestriction> randomRedirectJson, 
+			Position position)
 	{
-		super(scenario, pageContext);
+		super(scenario, pageContext, position);
 		this.randomRedirectJson = randomRedirectJson;
 	}
 	
 	public void load(ElementInstance elementInstance, ElementChoice elementChoice) throws Exception
 	{
-		JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentDataArray = 
-				this.randomRedirectJson.getRestrictedJsonArray(RandomRedirectRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
-		if (elementAdjustmentDataArray!= null)
-			this.makeElementAdjustments(elementAdjustmentDataArray);
+		RestrictedJson<AdjustmentDataRestriction> adjustmentData = 
+				this.randomRedirectJson.getRestrictedJson(RandomRedirectRestriction.ADJUSTMENT_DATA, AdjustmentDataRestriction.class);
+		this.processAdjustmentData(adjustmentData);
 		
 		JsonEntityMap<JsonEntityNumber> jsonMap = randomRedirectJson.getNumberMap(RandomRedirectRestriction.NUMBER_MAP);
 		HashMap<String, JsonEntityNumber> numberMap = jsonMap.getEntityMap();

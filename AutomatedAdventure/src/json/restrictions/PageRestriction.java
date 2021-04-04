@@ -4,8 +4,7 @@ public enum PageRestriction implements RestrictionPointer
 {
 	VALUE(Restriction.VALUE), CHOICES(Restriction.CHOICES, true), RETURN_TO(Restriction.RETURN_TO, true), 
 	MAKE_ELEMENTS(Restriction.MAKE_ELEMENTS, true), MAKE_CONNECTIONS(Restriction.MAKE_CONNECTIONS, true), 
-	ELEMENT_ADJUSTMENTS(Restriction.ELEMENT_ADJUSTMENTS, true), PANEL_NAME(Restriction.PANEL_NAME), 
-	POSITION_ADJUSTMENTS(Restriction.POSITION_ADJUSTMENTS, true);
+	PANEL_NAME(Restriction.PANEL_NAME), ADJUSTMENT_DATA(Restriction.ADJUSTMENT_DATA, true);
 	
 	private Restriction restriction;
 	private boolean optional;

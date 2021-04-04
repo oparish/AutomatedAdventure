@@ -17,6 +17,7 @@ import backend.component.ConnectionSet;
 import frontEnd.Position;
 import json.JsonEntityArray;
 import json.RestrictedJson;
+import json.restrictions.AdjustmentDataRestriction;
 import json.restrictions.ChoiceRestriction;
 import json.restrictions.ContextConditionRestriction;
 import json.restrictions.ElementAdjustmentRestriction;
@@ -42,7 +43,6 @@ public class PageInstance extends AbstractPageInstance
 	HashMap<String, ElementChoice> choiceMap = new HashMap<String, ElementChoice>();
 	ArrayList<String> choiceList = new ArrayList<String>();
 	ElementChoiceType elementChoiceType;
-	Position position;
 	
 	public ElementChoiceType getElementChoiceType() {
 		return elementChoiceType;
@@ -62,69 +62,35 @@ public class PageInstance extends AbstractPageInstance
 
 	public PageInstance(Scenario scenario, PageContext pageContext, RestrictedJson<PageRestriction> pageJson, Position position)
 	{
-		super(scenario, pageContext);
+		super(scenario, pageContext, position);
 		this.pageJson = pageJson;
-		this.position = position;
 	}
 
 	public String parseText() throws Exception
 	{
 		this.makeElements();
 		this.makeConnections();
-		this.makePositionAdjustments();
-		ArrayList<Integer> adjustments = this.makeElementAdjustments();
+		RestrictedJson<AdjustmentDataRestriction> adjustmentData = 
+				this.pageJson.getRestrictedJson(PageRestriction.ADJUSTMENT_DATA, AdjustmentDataRestriction.class);
+		ArrayList<Integer> adjustments = null;
+		
+		if (adjustmentData != null)
+		{
+			JsonEntityArray<RestrictedJson<PositionAdjustmentRestriction>> positionAdjustmentArray = 
+					adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.POSITION_ADJUSTMENTS, PositionAdjustmentRestriction.class);
+			JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray = 
+					adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
+			this.makePositionAdjustments(positionAdjustmentArray);
+			adjustments = this.makeElementAdjustments(elementAdjustmentArray);
+		}
+
 		this.setupChoices();
 		
 		String adjustedText = this.checkPatterns(this.pageJson.getString(PageRestriction.VALUE), adjustments);
 		return adjustedText;
 	}
 	
-	private void makePositionAdjustments()
-	{
-		JsonEntityArray<RestrictedJson<PositionAdjustmentRestriction>> positionAdjustmentArray = 
-				this.pageJson.getRestrictedJsonArray(PageRestriction.POSITION_ADJUSTMENTS, PositionAdjustmentRestriction.class);
-		if (positionAdjustmentArray == null)
-			return;
-		
-		for (int i = 0; i < positionAdjustmentArray.getLength(); i++)
-		{
-			RestrictedJson<PositionAdjustmentRestriction> adjustment = positionAdjustmentArray.getMemberAt(i);
-			String patString = adjustment.getString(PositionAdjustmentRestriction.ADJUSTMENT_TYPE);
-			PositionAdjustmentType pat = PositionAdjustmentType.valueOf(patString.toUpperCase());
-			String mapName = adjustment.getString(PositionAdjustmentRestriction.MAP_NAME);
-			String elementType = adjustment.getString(PositionAdjustmentRestriction.ELEMENT_NAME);
-			Element element = this.scenario.getElement(elementType);
-			Map map = this.scenario.getMapByName(mapName);
-			switch(pat)
-			{
-				case DIRECT:
-					this.directMovement(map, element);
-					break;
-				case ROUTE:
-					this.routeMovement(map, element);
-					break;
-			}
-		}
-	}
-	
-	private void directMovement(Map map, Element element)
-	{
-		ElementInstance elementInstance = this.getSelectedElementInstance(element);
-		elementInstance.setMapPosition(map, this.position);
-	}
-	
-	private void routeMovement(Map map, Element element)
-	{
-		for (ElementInstance elementInstance : element.getInstances())
-		{
-			if (elementInstance.getRoute(map) != null)
-			{
-				Position position = elementInstance.getNextStep(map);
-				elementInstance.setMapPosition(map, position);
-				elementInstance.incrementRoutePos(map);
-			}
-		}
-	}
+
 	
 	private boolean checkContextCondition(JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray)
 			throws Exception
@@ -285,11 +251,11 @@ public class PageInstance extends AbstractPageInstance
 			int number;
 			if (posCoOrd.equals("x"))
 			{
-				number = position.x;
+				number = this.position.x;
 			}
 			else
 			{
-				number = position.y;
+				number = this.position.y;
 			}
 			adjustedText = elementMatcher.replaceFirst(String.valueOf(number));
 			elementMatcher = selectedPositionPattern.matcher(adjustedText);
@@ -414,13 +380,6 @@ public class PageInstance extends AbstractPageInstance
 			adjustmentMatcher = numberAdjustmentPattern.matcher(adjustedText);
 		}		
 		return adjustedText;
-	}
-	
-	private ArrayList<Integer> makeElementAdjustments() throws Exception
-	{
-		JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray = 
-				this.pageJson.getRestrictedJsonArray(PageRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
-		return this.makeElementAdjustments(elementAdjustmentArray);
 	}
 	
 	public static Integer performSum(Integer value, String sumSign, Integer adjustmentValue) throws Exception

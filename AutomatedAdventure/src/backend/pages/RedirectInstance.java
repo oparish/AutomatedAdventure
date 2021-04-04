@@ -3,32 +3,33 @@ package backend.pages;
 import backend.Element.ElementInstance;
 import backend.Element;
 import backend.Scenario;
+import frontEnd.Position;
 import json.JsonEntityArray;
 import json.RestrictedJson;
+import json.restrictions.AdjustmentDataRestriction;
 import json.restrictions.ContextConditionRestriction;
 import json.restrictions.ElementAdjustmentRestriction;
+import json.restrictions.RandomRedirectRestriction;
 import json.restrictions.RedirectRestriction;
 
 public class RedirectInstance extends AbstractPageInstance
 {
 	RestrictedJson<RedirectRestriction> redirectJson;
 	
-	public RedirectInstance(Scenario scenario, PageContext pageContext, RestrictedJson<RedirectRestriction> redirectJson)
+	public RedirectInstance(Scenario scenario, PageContext pageContext, RestrictedJson<RedirectRestriction> redirectJson, Position position)
 	{
-		super(scenario, pageContext);
+		super(scenario, pageContext, position);
 		this.redirectJson = redirectJson;
 	}
 		
 	public void load(ElementInstance elementInstance, ElementChoice elementChoice) throws Exception
 	{		
-		JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentDataArray = 
-				this.redirectJson.getRestrictedJsonArray(RedirectRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
-		if (elementAdjustmentDataArray!= null)
-			this.makeElementAdjustments(elementAdjustmentDataArray);	
+		RestrictedJson<AdjustmentDataRestriction> adjustmentData = 
+				this.redirectJson.getRestrictedJson(RedirectRestriction.ADJUSTMENT_DATA, AdjustmentDataRestriction.class);
+		this.processAdjustmentData(adjustmentData);
 		
 		JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray = 
-				this.redirectJson.getRestrictedJsonArray(RedirectRestriction.CONTEXT_CONDITIONS, ContextConditionRestriction.class);
-		
+				this.redirectJson.getRestrictedJsonArray(RedirectRestriction.CONTEXT_CONDITIONS, ContextConditionRestriction.class);		
 		boolean check = true;
 		
 		for (int i = 0; i < contextConditionDataArray.getLength(); i++)

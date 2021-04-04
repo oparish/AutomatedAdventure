@@ -1,8 +1,8 @@
 package json.restrictions;
 
-public enum RandomRedirectRestriction implements RestrictionPointer
+public enum AdjustmentDataRestriction implements RestrictionPointer 
 {
-	NUMBER_MAP(Restriction.NUMBER_MAP), ADJUSTMENT_DATA(Restriction.ADJUSTMENT_DATA, true);
+	ELEMENT_ADJUSTMENTS(Restriction.ELEMENT_ADJUSTMENTS, true), POSITION_ADJUSTMENTS(Restriction.POSITION_ADJUSTMENTS, true);
 	
 	private Restriction restriction;
 	private boolean optional;
@@ -13,13 +13,13 @@ public enum RandomRedirectRestriction implements RestrictionPointer
 		return this.optional;
 	}
 	
-	private RandomRedirectRestriction(Restriction restriction, boolean optional)
+	private AdjustmentDataRestriction(Restriction restriction, boolean optional)
 	{
 		this.optional = optional;
 		this.restriction = restriction;
 	}
 	
-	private RandomRedirectRestriction(Restriction restriction)
+	private AdjustmentDataRestriction(Restriction restriction)
 	{
 		this.optional = false;
 		this.restriction = restriction;

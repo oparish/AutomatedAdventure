@@ -5,13 +5,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import backend.Element;
+import backend.Map;
 import backend.Scenario;
 import backend.Element.ElementInstance;
 import backend.component.ConnectionSet;
+import frontEnd.Position;
 import json.JsonEntityArray;
 import json.RestrictedJson;
+import json.restrictions.AdjustmentDataRestriction;
 import json.restrictions.ElementAdjustmentRestriction;
 import json.restrictions.ElementAdjustmentType;
+import json.restrictions.PositionAdjustmentRestriction;
+import json.restrictions.PositionAdjustmentType;
 import json.restrictions.SumComponentRestriction;
 import json.restrictions.SumRestriction;
 
@@ -29,6 +34,7 @@ public abstract class AbstractPageInstance
 	
 	protected Scenario scenario;
 	protected PageContext pageContext;
+	Position position;
 	
 	public Scenario getScenario() {
 		return scenario;
@@ -38,10 +44,25 @@ public abstract class AbstractPageInstance
 		return pageContext;
 	}
 
-	public AbstractPageInstance(Scenario scenario, PageContext pageContext)
+	public AbstractPageInstance(Scenario scenario, PageContext pageContext, Position position)
 	{
 		this.scenario = scenario;
 		this.pageContext = pageContext;
+		this.position = position;
+	}
+	
+	protected void processAdjustmentData(RestrictedJson<AdjustmentDataRestriction> adjustmentData) throws Exception
+	{
+		if (adjustmentData == null)
+			return;
+		
+		JsonEntityArray<RestrictedJson<PositionAdjustmentRestriction>> positionAdjustmentArray = 
+				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.POSITION_ADJUSTMENTS, PositionAdjustmentRestriction.class);
+		JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray = 
+				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
+		
+		this.makeElementAdjustments(elementAdjustmentArray);
+		this.makePositionAdjustments(positionAdjustmentArray);	
 	}
 	
 	private Integer assessReference(String numberReference) throws Exception
@@ -117,6 +138,51 @@ public abstract class AbstractPageInstance
 		}
 		
 		return value;
+	}
+	
+	protected void makePositionAdjustments(JsonEntityArray<RestrictedJson<PositionAdjustmentRestriction>> positionAdjustmentArray)
+	{
+		if (positionAdjustmentArray == null)
+			return;
+		
+		for (int i = 0; i < positionAdjustmentArray.getLength(); i++)
+		{
+			RestrictedJson<PositionAdjustmentRestriction> adjustment = positionAdjustmentArray.getMemberAt(i);
+			String patString = adjustment.getString(PositionAdjustmentRestriction.ADJUSTMENT_TYPE);
+			PositionAdjustmentType pat = PositionAdjustmentType.valueOf(patString.toUpperCase());
+			String mapName = adjustment.getString(PositionAdjustmentRestriction.MAP_NAME);
+			String elementType = adjustment.getString(PositionAdjustmentRestriction.ELEMENT_NAME);
+			Element element = this.scenario.getElement(elementType);
+			Map map = this.scenario.getMapByName(mapName);
+			switch(pat)
+			{
+				case DIRECT:
+					this.directMovement(map, element);
+					break;
+				case ROUTE:
+					this.routeMovement(map, element);
+					break;
+			}
+		}
+	}
+	
+	protected void directMovement(Map map, Element element)
+	{
+		ElementInstance elementInstance = this.getSelectedElementInstance(element);
+		elementInstance.setMapPosition(map, this.position);
+	}
+	
+	protected void routeMovement(Map map, Element element)
+	{
+		for (ElementInstance elementInstance : element.getInstances())
+		{
+			if (elementInstance.getRoute(map) != null)
+			{
+				Position position = elementInstance.getNextStep(map);
+				elementInstance.setMapPosition(map, position);
+				elementInstance.incrementRoutePos(map);
+			}
+		}
 	}
 	
 	protected ArrayList<Integer> makeElementAdjustments(JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray) throws Exception
