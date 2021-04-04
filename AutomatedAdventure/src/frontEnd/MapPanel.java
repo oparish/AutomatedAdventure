@@ -308,7 +308,7 @@ public class MapPanel extends JPanel implements ActionListener
 		this.selectedChoice = choiceItem.getElementChoice();
 		this.disableButtonsOutsideRange();
 		this.cancelButton.setEnabled(true);
-		elementChoice.elementInstance.clearRoute();
+		elementChoice.elementInstance.clearRoute(this.map);
 	}
 	
 	private void performChoiceItemAction(ChoiceItem choiceItem) throws Exception
@@ -400,7 +400,7 @@ public class MapPanel extends JPanel implements ActionListener
 	private void addRouteStep(LocationButton locationButton) throws Exception
 	{
 		Position position = locationButton.getPosition();
-		this.selectedChoice.elementInstance.addRouteStep(position);
+		this.selectedChoice.elementInstance.addRouteStep(this.map, position);
 		
 		if (this.checkForLocation(locationButton))
 		{

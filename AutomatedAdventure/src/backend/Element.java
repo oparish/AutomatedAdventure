@@ -386,8 +386,8 @@ public class Element
 	
 	public class ElementInstance
 	{
-		ArrayList<Position> route = null;
-		int routePos = 0;
+		HashMap<Map, ArrayList<Position>> routeMap = new HashMap<Map, ArrayList<Position>>();
+		HashMap<Map, Integer> routePosMap = new HashMap<Map, Integer>();
 		HashMap<String, Integer> detailValues;
 		HashMap<String, Integer> numberValues;
 		HashMap<String, Integer> setValues;
@@ -407,46 +407,59 @@ public class Element
 			return Element.this;
 		}
 		
-		public void resetRoutePos()
+		public void resetRoutePos(Map map)
 		{
-			this.routePos = 0;
+			this.routePosMap.put(map, 0);
 		}
 		
-		public void incrementRoutePos()
+		public void incrementRoutePos(Map map)
 		{
-			this.routePos++;
-			if (this.routePos >= this.route.size())
+			Integer routePos = this.routePosMap.get(map);
+			this.routePosMap.put(map, routePos + 1);
+			if (routePos >= routeMap.get(map).size())
 			{
-				this.clearRoute();
+				this.clearRoute(map);
 			}
 		}
 		
-		public void decrementRoutePos()
+		private ArrayList<Position> makeNewRoute(Map map)
 		{
-			this.routePos--;
-			if (this.routePos < 0)
+			ArrayList<Position> route = new ArrayList<Position>();
+			this.routeMap.put(map, route);
+			this.routePosMap.put(map, 0);
+			return route;
+		}
+		
+		public void decrementRoutePos(Map map)
+		{
+			Integer routePos = this.routePosMap.get(map);
+			this.routePosMap.put(map, routePos - 1);
+			if (routePos < 0)
 			{
-				this.clearRoute();
+				this.clearRoute(map);
 			}
 		}
 		
-		public Position getNextStep()
+		public Position getNextStep(Map map)
 		{
-			return this.route.get(this.routePos);
+			ArrayList<Position> route = this.routeMap.get(map);
+			Integer routePos = this.routePosMap.get(map);
+			return route.get(routePos);
 		}
 		
-		public void addRouteStep(Position position)
+		public void addRouteStep(Map map, Position position)
 		{
-			if (this.route == null)
+			ArrayList<Position> route = this.routeMap.get(map);
+			if (route == null)
 			{
-				this.route = new ArrayList<Position>();
+				route = this.makeNewRoute(map);
 			}
-			this.route.add(position);
+			route.add(position);
 		}
 
-		public void clearRoute()
+		public void clearRoute(Map map)
 		{
-			this.route = null;
+			this.routeMap.put(map, null);
 		}
 		
 		public MapPosition getMapPosition(Map map)
@@ -454,9 +467,9 @@ public class Element
 			return this.positionMap.get(map);
 		}
 		
-		public ArrayList<Position> getRoute()
+		public ArrayList<Position> getRoute(Map map)
 		{
-			return this.route;
+			return this.routeMap.get(map);
 		}
 		
 		public void setMapPosition(Map map, Position position)

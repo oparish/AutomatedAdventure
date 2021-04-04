@@ -117,11 +117,11 @@ public class PageInstance extends AbstractPageInstance
 	{
 		for (ElementInstance elementInstance : element.getInstances())
 		{
-			if (elementInstance.getRoute() != null)
+			if (elementInstance.getRoute(map) != null)
 			{
-				Position position = elementInstance.getNextStep();
+				Position position = elementInstance.getNextStep(map);
 				elementInstance.setMapPosition(map, position);
-				elementInstance.incrementRoutePos();
+				elementInstance.incrementRoutePos(map);
 			}
 		}
 	}
