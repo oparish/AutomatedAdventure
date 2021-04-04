@@ -118,7 +118,7 @@
             "panelName" : "mapPanel",
             "choices" : [
                {
-                  "value" : "next",
+                  "value" : "routeWalking",
                   "first" : "Move ",
                   "elementChoice" : {
                      "elementName" : "self",
@@ -128,20 +128,29 @@
                      "rangeAttribute" : "move"
                   }
                }
-            ],
+            ]
+         }
+      },
+      "connections" : {},
+      "redirects" : {
+         "routeWalking" : {
             "adjustmentData" : {
                "positionAdjustments" : [
                   {
                      "mapName" : "testMap",
                      "elementName" : "troop",
                      "adjustmentType" : "route"
+                  },
+                  {
+                     "mapName" : "testMap",
+                     "elementName" : "self",
+                     "adjustmentType" : "direct"
                   }
                ]
-            }
+            },
+            "first" : "next"
          }
       },
-      "connections" : {},
-      "redirects" : {},
       "randomRedirects" : {},
       "panels" : {
          "mapPanel" : {
