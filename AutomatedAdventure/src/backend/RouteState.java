@@ -1,5 +1,5 @@
 package backend;
 
 public enum RouteState {
-	WAITING, REVERSING, WALKING;
+	WAITING, REVERSING, WALKING, COMPLETED;
 }

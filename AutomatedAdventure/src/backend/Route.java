@@ -11,9 +11,9 @@ public class Route {
 	private RouteType routeType;
 	private RouteState routeState;
 	
-	public Route(ArrayList<MapPosition> positions, RouteType routeType)
+	public Route(RouteType routeType)
 	{
-		this.positions = positions;
+		this.positions = new ArrayList<MapPosition>();
 		this.routeType = routeType;
 		this.currentPos = 0;
 		this.routeState = RouteState.WALKING;
@@ -24,30 +24,38 @@ public class Route {
 		return this.positions.get(this.currentPos);
 	}
 	
-	public boolean incrementPosition()
+	private boolean checkNextStep(int nextPos)
 	{
-		this.currentPos++;
-		if (this.currentPos == this.positions.size() - 1)
+		MapPosition position = this.positions.get(nextPos);
+		return !position.occupied;
+	}
+	
+	public void incrementPosition()
+	{
+		this.changePosition(1);
+	}
+	
+	private void changePosition(int change)
+	{
+		if (!this.checkNextStep(this.currentPos + change))
 		{
-			return true;
+			this.routeState = RouteState.WAITING;
+			return;
+		}
+		this.currentPos += change;
+		if (this.currentPos == this.positions.size() - 1 || this.currentPos == 0)
+		{
+			this.routeState = RouteState.COMPLETED;
 		}
 		else
 		{
-			return false;
+			this.routeState = RouteState.WALKING;
 		}
 	}
 	
-	public boolean decrementPosition()
+	public void decrementPosition()
 	{
-		this.currentPos--;
-		if (this.currentPos == 0)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		this.changePosition(-1);
 	}
 	
 	public void resetPosition()
@@ -58,5 +66,10 @@ public class Route {
 	public void addRoutePosition(MapPosition position)
 	{
 		this.positions.add(position);
+	}
+	
+	public RouteState getRouteState()
+	{
+		return this.routeState;
 	}
 }

@@ -140,7 +140,7 @@ public abstract class AbstractPageInstance
 		return value;
 	}
 	
-	protected void makePositionAdjustments(JsonEntityArray<RestrictedJson<PositionAdjustmentRestriction>> positionAdjustmentArray)
+	protected void makePositionAdjustments(JsonEntityArray<RestrictedJson<PositionAdjustmentRestriction>> positionAdjustmentArray) throws Exception
 	{
 		if (positionAdjustmentArray == null)
 			return;
@@ -166,13 +166,14 @@ public abstract class AbstractPageInstance
 		}
 	}
 	
-	protected void directMovement(Map map, Element element)
+	protected void directMovement(Map map, Element element) throws Exception
 	{
 		ElementInstance elementInstance = this.getSelectedElementInstance(element);
-		elementInstance.setMapPosition(map, this.position);
+		if (this.position != null && !this.position.occupied)
+			elementInstance.setMapPosition(map, this.position);
 	}
 	
-	protected void routeMovement(Map map, Element element)
+	protected void routeMovement(Map map, Element element) throws Exception
 	{
 		for (ElementInstance elementInstance : element.getInstances())
 		{

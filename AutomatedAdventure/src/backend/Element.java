@@ -142,7 +142,7 @@ public class Element
 			Map map = Pages.getScenario().getMapByName(key);
 			int x = mapPositionData.getNumber(MapPositionRestriction.X);
 			int y = mapPositionData.getNumber(MapPositionRestriction.Y);
-			MapPosition mapPosition = map.createMapPosition(x, y);
+			MapPosition mapPosition = map.getMapPosition(x, y);
 			positionMap.put(map, mapPosition);
 		}
 		return positionMap;
@@ -414,10 +414,11 @@ public class Element
 		public MapPosition incrementRoutePos(Map map)
 		{
 			Route route = this.routeMap.get(map);
-			boolean completed = route.incrementPosition();
+			route.incrementPosition();
+			RouteState routeState = route.getRouteState();
 			MapPosition position = this.getPosition(map);
 			
-			if (completed)
+			if (routeState == RouteState.COMPLETED)
 			{
 				this.clearRoute(map);
 			}
@@ -425,10 +426,10 @@ public class Element
 			return position;
 		}
 		
-		private Route makeNewRoute(RouteType routeType, Map map)
+		private Route makeNewRoute(RouteType routeType, Map map, MapPosition position)
 		{
-			ArrayList<MapPosition> positions = new ArrayList<MapPosition>();
-			Route route = new Route(positions, routeType);
+			Route route = new Route(routeType);
+			route.addRoutePosition(position);
 			this.routeMap.put(map, route);
 			return route;
 		}
@@ -436,10 +437,11 @@ public class Element
 		public MapPosition decrementRoutePos(Map map)
 		{
 			Route route = this.routeMap.get(map);
-			boolean completed = route.decrementPosition();
+			route.decrementPosition();
+			RouteState routeState = route.getRouteState();
 			MapPosition position = this.getPosition(map);
 			
-			if (completed)
+			if (routeState == RouteState.COMPLETED)
 			{
 				this.clearRoute(map);
 			}
@@ -458,7 +460,7 @@ public class Element
 			Route route = this.routeMap.get(map);
 			if (route == null)
 			{
-				route = this.makeNewRoute(routeType, map);
+				route = this.makeNewRoute(routeType, map, position);
 			}
 			route.addRoutePosition(position);
 		}
@@ -478,10 +480,19 @@ public class Element
 			return this.routeMap.get(map);
 		}
 		
-		public void setMapPosition(Map map, MapPosition position)
+		public void setMapPosition(Map map, MapPosition position) throws Exception
 		{
-			MapPosition mapPosition = map.createMapPosition(position.x, position.y);
-			this.positionMap.put(map, mapPosition);
+			MapPosition mapPosition = map.getMapPosition(position.x, position.y);
+			MapPosition prevPosition = this.getMapPosition(map);
+			if (prevPosition != mapPosition)
+			{
+				if (mapPosition.occupied)
+					throw new Exception("Trying to move to an occupied position.");
+				
+				prevPosition.occupied = false;
+				this.positionMap.put(map, mapPosition);
+				mapPosition.occupied = true;
+			}
 		}
 		
 		public void adjustNumber(String elementNumber, String sumSign, int value) throws Exception

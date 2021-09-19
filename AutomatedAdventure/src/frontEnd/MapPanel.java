@@ -162,7 +162,7 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		ImageIcon imageIcon = Main.loadImageIcon(imagePath);
 		ImageIcon disabledImageIcon = Main.loadDisabledImageIcon(imagePath);
-		LocationButton locationButton = new LocationButton(imageIcon, disabledImageIcon, this.map.createMapPosition(x, y), new ArrayList<ElementInstance>());
+		LocationButton locationButton = new LocationButton(imageIcon, disabledImageIcon, this.map.getMapPosition(x, y), new ArrayList<ElementInstance>());
 		this.innerPanel.add(locationButton);
 		this.locationButtons.add(locationButton);
 		locationButton.addActionListener(this);
@@ -192,12 +192,12 @@ public class MapPanel extends JPanel implements ActionListener
 		
 		if (locationButtonData.tooltipText.length() != 0)
 		{
-			locationButton = new LocationButton(locationButtonData.imageIcon, locationButtonData.disabledImageIcon, this.map.createMapPosition(x, y), 
+			locationButton = new LocationButton(locationButtonData.imageIcon, locationButtonData.disabledImageIcon, this.map.getMapPosition(x, y), 
 					locationButtonData.elementInstances, locationButtonData.tooltipText);
 		}
 		else
 		{
-			locationButton = new LocationButton(locationButtonData.imageIcon, locationButtonData.disabledImageIcon, this.map.createMapPosition(x, y), 
+			locationButton = new LocationButton(locationButtonData.imageIcon, locationButtonData.disabledImageIcon, this.map.getMapPosition(x, y), 
 					locationButtonData.elementInstances);
 		}
 		

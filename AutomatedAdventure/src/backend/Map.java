@@ -55,9 +55,14 @@ public class Map
 		return this.openMapPositions;
 	}
 	
-	public MapPosition createMapPosition(int x, int y)
+	public MapPosition getMapPosition(int x, int y)
 	{
-		return new MapPosition(x, y);
+		for(MapPosition mapPosition : this.openMapPositions)
+		{
+			if (mapPosition.x == x && mapPosition.y == y)
+				return mapPosition;
+		}
+		return null;
 	}
 	
 	public int getWidth()
@@ -93,6 +98,7 @@ public class Map
 	{
 		public int x;
 		public int y;
+		public boolean occupied = false;
 		
 		public MapPosition(int x, int y)
 		{
