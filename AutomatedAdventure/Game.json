@@ -127,6 +127,16 @@
                      "elementQuality" : "name",
                      "rangeAttribute" : "move"
                   }
+               },
+               {
+                  "value" : "routeWalking",
+                  "first" : "Wait",
+                  "elementChoice" : {
+                     "elementName" : "self",
+                     "second" : "",
+                     "type" : "menu",
+                     "elementQuality" : "name"
+                  }
                }
             ]
          }
