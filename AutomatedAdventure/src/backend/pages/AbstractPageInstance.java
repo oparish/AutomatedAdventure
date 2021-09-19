@@ -177,10 +177,9 @@ public abstract class AbstractPageInstance
 		for (ElementInstance elementInstance : element.getInstances())
 		{
 			if (elementInstance.getRoute(map) != null)
-			{
-				Position position = elementInstance.getNextStep(map);
+			{	
+				Position position = elementInstance.incrementRoutePos(map);
 				elementInstance.setMapPosition(map, position);
-				elementInstance.incrementRoutePos(map);
 			}
 		}
 	}

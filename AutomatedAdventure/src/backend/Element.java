@@ -386,8 +386,7 @@ public class Element
 	
 	public class ElementInstance
 	{
-		HashMap<Map, ArrayList<Position>> routeMap = new HashMap<Map, ArrayList<Position>>();
-		HashMap<Map, Integer> routePosMap = new HashMap<Map, Integer>();
+		HashMap<Map, Route> routeMap = new HashMap<Map, Route>();
 		HashMap<String, Integer> detailValues;
 		HashMap<String, Integer> numberValues;
 		HashMap<String, Integer> setValues;
@@ -409,54 +408,60 @@ public class Element
 		
 		public void resetRoutePos(Map map)
 		{
-			this.routePosMap.put(map, 0);
+			Route route = this.routeMap.get(map);
+			route.resetPosition();
 		}
 		
-		public void incrementRoutePos(Map map)
+		public Position incrementRoutePos(Map map)
 		{
-			Integer routePos = this.routePosMap.get(map);
-			routePos += 1;
-			this.routePosMap.put(map, routePos);
-			if (routePos >= routeMap.get(map).size())
+			Route route = this.routeMap.get(map);
+			boolean completed = route.incrementPosition();
+			Position position = this.getPosition(map);
+			
+			if (completed)
 			{
 				this.clearRoute(map);
 			}
+			
+			return position;
 		}
 		
-		private ArrayList<Position> makeNewRoute(Map map)
+		private Route makeNewRoute(RouteType routeType, Map map)
 		{
-			ArrayList<Position> route = new ArrayList<Position>();
+			ArrayList<Position> positions = new ArrayList<Position>();
+			Route route = new Route(positions, routeType);
 			this.routeMap.put(map, route);
-			this.routePosMap.put(map, 0);
 			return route;
 		}
 		
-		public void decrementRoutePos(Map map)
+		public Position decrementRoutePos(Map map)
 		{
-			Integer routePos = this.routePosMap.get(map);
-			routePos -= 1;
-			this.routePosMap.put(map, routePos);
-			if (routePos < 0)
+			Route route = this.routeMap.get(map);
+			boolean completed = route.decrementPosition();
+			Position position = this.getPosition(map);
+			
+			if (completed)
 			{
 				this.clearRoute(map);
 			}
+			
+			return position;
 		}
 		
-		public Position getNextStep(Map map)
+		public Position getPosition(Map map)
 		{
-			ArrayList<Position> route = this.routeMap.get(map);
-			Integer routePos = this.routePosMap.get(map);
-			return route.get(routePos);
+			Route route = this.routeMap.get(map);
+			return route.getPosition();
 		}
 		
-		public void addRouteStep(Map map, Position position)
+		public void addRouteStep(RouteType routeType, Map map, Position position)
 		{
-			ArrayList<Position> route = this.routeMap.get(map);
+			Route route = this.routeMap.get(map);
 			if (route == null)
 			{
-				route = this.makeNewRoute(map);
+				route = this.makeNewRoute(routeType, map);
 			}
-			route.add(position);
+			route.addRoutePosition(position);
 		}
 
 		public void clearRoute(Map map)
@@ -469,7 +474,7 @@ public class Element
 			return this.positionMap.get(map);
 		}
 		
-		public ArrayList<Position> getRoute(Map map)
+		public Route getRoute(Map map)
 		{
 			return this.routeMap.get(map);
 		}

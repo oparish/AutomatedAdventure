@@ -36,6 +36,7 @@ import backend.Element.ElementInstance;
 import backend.Map;
 import backend.Map.MapPosition;
 import backend.MapElementType;
+import backend.RouteType;
 import backend.Scenario;
 import backend.component.ConnectionSet;
 import backend.pages.ElementChoice;
@@ -400,7 +401,7 @@ public class MapPanel extends JPanel implements ActionListener
 	private void addRouteStep(LocationButton locationButton) throws Exception
 	{
 		Position position = locationButton.getPosition();
-		this.selectedChoice.elementInstance.addRouteStep(this.map, position);
+		this.selectedChoice.elementInstance.addRouteStep(RouteType.WAIT, this.map, position);
 		
 		if (this.checkForLocation(locationButton))
 		{
