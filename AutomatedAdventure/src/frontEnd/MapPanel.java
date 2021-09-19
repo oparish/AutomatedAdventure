@@ -62,7 +62,7 @@ public class MapPanel extends JPanel implements ActionListener
 	HashMap<ElementInstance, HashMap<String, ElementChoice>> elementMap;
 	Map map;
 	MapMode mode = MapMode.LOCATION;
-	Position selectedPosition;
+	MapPosition selectedPosition;
 	ElementChoice selectedChoice;
 	JPanel innerPanel = new JPanel();
 	JButton cancelButton;
@@ -162,7 +162,7 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		ImageIcon imageIcon = Main.loadImageIcon(imagePath);
 		ImageIcon disabledImageIcon = Main.loadDisabledImageIcon(imagePath);
-		LocationButton locationButton = new LocationButton(imageIcon, disabledImageIcon, new Position(x, y), new ArrayList<ElementInstance>());
+		LocationButton locationButton = new LocationButton(imageIcon, disabledImageIcon, this.map.createMapPosition(x, y), new ArrayList<ElementInstance>());
 		this.innerPanel.add(locationButton);
 		this.locationButtons.add(locationButton);
 		locationButton.addActionListener(this);
@@ -178,7 +178,7 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void repaintLocationButton(LocationButton locationButton, HashMap<MapElementType, ElementInstance> dataMap) throws Exception
 	{
-		Position position = locationButton.getPosition();
+		MapPosition position = locationButton.getPosition();
 		LocationButtonData locationButtonData = this.createLocationButtonData(position.x, position.y, dataMap);
 		locationButton.setElementInstances(locationButtonData.elementInstances);
 		locationButton.setIcon(locationButtonData.imageIcon);
@@ -192,12 +192,12 @@ public class MapPanel extends JPanel implements ActionListener
 		
 		if (locationButtonData.tooltipText.length() != 0)
 		{
-			locationButton = new LocationButton(locationButtonData.imageIcon, locationButtonData.disabledImageIcon, new Position(x, y), 
+			locationButton = new LocationButton(locationButtonData.imageIcon, locationButtonData.disabledImageIcon, this.map.createMapPosition(x, y), 
 					locationButtonData.elementInstances, locationButtonData.tooltipText);
 		}
 		else
 		{
-			locationButton = new LocationButton(locationButtonData.imageIcon, locationButtonData.disabledImageIcon, new Position(x, y), 
+			locationButton = new LocationButton(locationButtonData.imageIcon, locationButtonData.disabledImageIcon, this.map.createMapPosition(x, y), 
 					locationButtonData.elementInstances);
 		}
 		
@@ -334,7 +334,7 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		for (LocationButton locationButton : this.locationButtons)
 		{
-			Position position = locationButton.getPosition();
+			MapPosition position = locationButton.getPosition();
 			if (!this.checkInRange(position))
 			{
 				locationButton.setEnabled(false);
@@ -400,7 +400,7 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void addRouteStep(LocationButton locationButton) throws Exception
 	{
-		Position position = locationButton.getPosition();
+		MapPosition position = locationButton.getPosition();
 		this.selectedChoice.elementInstance.addRouteStep(RouteType.WAIT, this.map, position);
 		
 		if (this.checkForLocation(locationButton))
@@ -452,7 +452,7 @@ public class MapPanel extends JPanel implements ActionListener
 		Pages.getScenario().loadPage(this.selectedChoice, mapButton.getPosition());
 	}
 	
-	private boolean checkInRange(Position position)
+	private boolean checkInRange(MapPosition position)
 	{
 		Integer xDiff = (this.selectedPosition.x - position.x);
 		if (xDiff < 0)
@@ -539,7 +539,7 @@ public class MapPanel extends JPanel implements ActionListener
 		this.populateInstanceMap(instanceMap);
 		for (LocationButton locationButton : this.locationButtons)
 		{
-			Position position = locationButton.getPosition();
+			MapPosition position = locationButton.getPosition();
 			HashMap<Integer, HashMap<MapElementType, ElementInstance>> innerMap = instanceMap.get(position.x);
 			if (innerMap == null)
 			{
@@ -599,9 +599,9 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private class MapButton extends JButton
 	{
-		private Position position;
+		private MapPosition position;
 		
-		public MapButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, Position position)
+		public MapButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, MapPosition position)
 		{
 			super(imageIcon);
 			this.setDisabledIcon(disabledImageIcon);
@@ -609,7 +609,7 @@ public class MapPanel extends JPanel implements ActionListener
 			this.position = position;
 		}
 		
-		public Position getPosition()
+		public MapPosition getPosition()
 		{
 			return this.position;
 		}
@@ -628,7 +628,7 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		public ArrayList<ElementInstance> elementInstances;
 		
-		public LocationButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, Position position, ArrayList<ElementInstance> elementInstances, String tooltipText)
+		public LocationButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, MapPosition position, ArrayList<ElementInstance> elementInstances, String tooltipText)
 		{
 			super(imageIcon, disabledImageIcon, position);
 			this.elementInstances = elementInstances;
@@ -636,7 +636,7 @@ public class MapPanel extends JPanel implements ActionListener
 				this.updateTooltip(tooltipText);
 		}
 		
-		public LocationButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, Position position, ArrayList<ElementInstance> elementInstances)
+		public LocationButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, MapPosition position, ArrayList<ElementInstance> elementInstances)
 		{
 			this(imageIcon, disabledImageIcon, position, elementInstances, null);
 		}

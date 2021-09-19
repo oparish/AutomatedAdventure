@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 
 import backend.Element.ElementInstance;
+import backend.Map.MapPosition;
 import backend.component.ConnectionSet;
 import backend.pages.ElementChoice;
 import backend.pages.ElementChoiceType;
@@ -16,7 +17,6 @@ import backend.pages.PageContext;
 import backend.pages.PageInstance;
 import backend.pages.RandomRedirectInstance;
 import backend.pages.RedirectInstance;
-import frontEnd.Position;
 import json.JsonEntityArray;
 import json.JsonEntityMap;
 import json.JsonEntityNumber;
@@ -248,14 +248,14 @@ public class Scenario
 				elementChoice, null);
 	}
 	
-	public void loadPage(ElementChoice elementChoice, Position position) throws Exception
+	public void loadPage(ElementChoice elementChoice, MapPosition position) throws Exception
 	{
 		Pages.getScenario().loadPage(elementChoice.keyword, elementChoice.context, elementChoice.elementInstance, 
 				elementChoice, position);
 	}
 	
 	public void loadPage(String keyword, PageContext oldContext, ElementInstance elementInstance, 
-			ElementChoice elementChoice, Position position) throws Exception
+			ElementChoice elementChoice, MapPosition position) throws Exception
 	{
 		RestrictedJson<PageRestriction> pageJson = this.getPageTemplate(keyword);
 		RestrictedJson<RedirectRestriction> redirectJson = this.getRedirect(keyword);

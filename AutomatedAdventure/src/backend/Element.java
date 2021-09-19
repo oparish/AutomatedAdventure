@@ -8,7 +8,6 @@ import javax.json.JsonObject;
 
 import backend.Map.MapPosition;
 import backend.pages.PageInstance;
-import frontEnd.Position;
 import json.JsonEntityArray;
 import json.JsonEntityMap;
 import json.JsonEntityNumber;
@@ -412,11 +411,11 @@ public class Element
 			route.resetPosition();
 		}
 		
-		public Position incrementRoutePos(Map map)
+		public MapPosition incrementRoutePos(Map map)
 		{
 			Route route = this.routeMap.get(map);
 			boolean completed = route.incrementPosition();
-			Position position = this.getPosition(map);
+			MapPosition position = this.getPosition(map);
 			
 			if (completed)
 			{
@@ -428,17 +427,17 @@ public class Element
 		
 		private Route makeNewRoute(RouteType routeType, Map map)
 		{
-			ArrayList<Position> positions = new ArrayList<Position>();
+			ArrayList<MapPosition> positions = new ArrayList<MapPosition>();
 			Route route = new Route(positions, routeType);
 			this.routeMap.put(map, route);
 			return route;
 		}
 		
-		public Position decrementRoutePos(Map map)
+		public MapPosition decrementRoutePos(Map map)
 		{
 			Route route = this.routeMap.get(map);
 			boolean completed = route.decrementPosition();
-			Position position = this.getPosition(map);
+			MapPosition position = this.getPosition(map);
 			
 			if (completed)
 			{
@@ -448,13 +447,13 @@ public class Element
 			return position;
 		}
 		
-		public Position getPosition(Map map)
+		public MapPosition getPosition(Map map)
 		{
 			Route route = this.routeMap.get(map);
 			return route.getPosition();
 		}
 		
-		public void addRouteStep(RouteType routeType, Map map, Position position)
+		public void addRouteStep(RouteType routeType, Map map, MapPosition position)
 		{
 			Route route = this.routeMap.get(map);
 			if (route == null)
@@ -479,7 +478,7 @@ public class Element
 			return this.routeMap.get(map);
 		}
 		
-		public void setMapPosition(Map map, Position position)
+		public void setMapPosition(Map map, MapPosition position)
 		{
 			MapPosition mapPosition = map.createMapPosition(position.x, position.y);
 			this.positionMap.put(map, mapPosition);

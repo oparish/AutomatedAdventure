@@ -6,10 +6,10 @@ import java.util.regex.Pattern;
 
 import backend.Element;
 import backend.Map;
+import backend.Map.MapPosition;
 import backend.Scenario;
 import backend.Element.ElementInstance;
 import backend.component.ConnectionSet;
-import frontEnd.Position;
 import json.JsonEntityArray;
 import json.RestrictedJson;
 import json.restrictions.AdjustmentDataRestriction;
@@ -34,7 +34,7 @@ public abstract class AbstractPageInstance
 	
 	protected Scenario scenario;
 	protected PageContext pageContext;
-	Position position;
+	MapPosition position;
 	
 	public Scenario getScenario() {
 		return scenario;
@@ -44,7 +44,7 @@ public abstract class AbstractPageInstance
 		return pageContext;
 	}
 
-	public AbstractPageInstance(Scenario scenario, PageContext pageContext, Position position)
+	public AbstractPageInstance(Scenario scenario, PageContext pageContext, MapPosition position)
 	{
 		this.scenario = scenario;
 		this.pageContext = pageContext;
@@ -178,7 +178,7 @@ public abstract class AbstractPageInstance
 		{
 			if (elementInstance.getRoute(map) != null)
 			{	
-				Position position = elementInstance.incrementRoutePos(map);
+				MapPosition position = elementInstance.incrementRoutePos(map);
 				elementInstance.setMapPosition(map, position);
 			}
 		}

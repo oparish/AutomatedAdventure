@@ -1,12 +1,12 @@
 package backend.pages;
 
 import backend.Element.ElementInstance;
+import backend.Map.MapPosition;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import backend.Scenario;
-import frontEnd.Position;
 import json.JsonEntityArray;
 import json.JsonEntityMap;
 import json.JsonEntityNumber;
@@ -23,7 +23,7 @@ public class RandomRedirectInstance extends AbstractPageInstance
 	RestrictedJson<RandomRedirectRestriction> randomRedirectJson;
 	
 	public RandomRedirectInstance(Scenario scenario, PageContext pageContext, RestrictedJson<RandomRedirectRestriction> randomRedirectJson, 
-			Position position)
+			MapPosition position)
 	{
 		super(scenario, pageContext, position);
 		this.randomRedirectJson = randomRedirectJson;

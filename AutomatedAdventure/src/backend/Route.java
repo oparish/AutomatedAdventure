@@ -2,16 +2,16 @@ package backend;
 
 import java.util.ArrayList;
 
-import frontEnd.Position;
+import backend.Map.MapPosition;
 
 public class Route {
 	
-	private ArrayList<Position> positions;
+	private ArrayList<MapPosition> positions;
 	private int currentPos;
 	private RouteType routeType;
 	private RouteState routeState;
 	
-	public Route(ArrayList<Position> positions, RouteType routeType)
+	public Route(ArrayList<MapPosition> positions, RouteType routeType)
 	{
 		this.positions = positions;
 		this.routeType = routeType;
@@ -19,7 +19,7 @@ public class Route {
 		this.routeState = RouteState.WALKING;
 	}
 	
-	public Position getPosition()
+	public MapPosition getPosition()
 	{
 		return this.positions.get(this.currentPos);
 	}
@@ -55,7 +55,7 @@ public class Route {
 		this.currentPos = 0;
 	}
 	
-	public void addRoutePosition(Position position)
+	public void addRoutePosition(MapPosition position)
 	{
 		this.positions.add(position);
 	}

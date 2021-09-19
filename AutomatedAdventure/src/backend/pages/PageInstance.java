@@ -14,7 +14,6 @@ import backend.Map.MapPosition;
 import backend.NumberRange;
 import backend.Scenario;
 import backend.component.ConnectionSet;
-import frontEnd.Position;
 import json.JsonEntityArray;
 import json.RestrictedJson;
 import json.restrictions.AdjustmentDataRestriction;
@@ -60,7 +59,7 @@ public class PageInstance extends AbstractPageInstance
 		return pageJson;
 	}
 
-	public PageInstance(Scenario scenario, PageContext pageContext, RestrictedJson<PageRestriction> pageJson, Position position)
+	public PageInstance(Scenario scenario, PageContext pageContext, RestrictedJson<PageRestriction> pageJson, MapPosition position)
 	{
 		super(scenario, pageContext, position);
 		this.pageJson = pageJson;

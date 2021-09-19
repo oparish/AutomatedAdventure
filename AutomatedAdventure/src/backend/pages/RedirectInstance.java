@@ -1,9 +1,9 @@
 package backend.pages;
 
 import backend.Element.ElementInstance;
+import backend.Map.MapPosition;
 import backend.Element;
 import backend.Scenario;
-import frontEnd.Position;
 import json.JsonEntityArray;
 import json.RestrictedJson;
 import json.restrictions.AdjustmentDataRestriction;
@@ -16,7 +16,7 @@ public class RedirectInstance extends AbstractPageInstance
 {
 	RestrictedJson<RedirectRestriction> redirectJson;
 	
-	public RedirectInstance(Scenario scenario, PageContext pageContext, RestrictedJson<RedirectRestriction> redirectJson, Position position)
+	public RedirectInstance(Scenario scenario, PageContext pageContext, RestrictedJson<RedirectRestriction> redirectJson, MapPosition position)
 	{
 		super(scenario, pageContext, position);
 		this.redirectJson = redirectJson;
