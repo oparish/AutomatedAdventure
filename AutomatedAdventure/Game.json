@@ -102,11 +102,22 @@
             "choices" : [
                {
                   "value" : "next",
-                  "first" : "Order",
+                  "first" : "Order Route Wait ",
                   "elementChoice" : {
                      "elementName" : "troop",
                      "second" : "",
-                     "type" : "routeSelection",
+                     "type" : "routeSelectionWait",
+                     "elementQuality" : "name",
+                     "rangeAttribute" : "move"
+                  }
+               },
+               {
+                  "value" : "next",
+                  "first" : "Order Route Return ",
+                  "elementChoice" : {
+                     "elementName" : "troop",
+                     "second" : "",
+                     "type" : "routeSelectionReturn",
                      "elementQuality" : "name",
                      "rangeAttribute" : "move"
                   }

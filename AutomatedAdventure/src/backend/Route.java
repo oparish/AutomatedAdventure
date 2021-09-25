@@ -37,12 +37,23 @@ public class Route {
 	
 	private void changePosition(int change)
 	{
-		if (!this.checkNextStep(this.currentPos + change))
+		int actualChange;
+		if (this.routeState == RouteState.REVERSING)
+			actualChange = -change;
+		else
+			actualChange = change;
+		
+		if (!this.checkNextStep(this.currentPos + actualChange))
 		{
-			this.routeState = RouteState.WAITING;
+			if (this.routeType == RouteType.WAIT)
+				this.routeState = RouteState.WAITING;
+			else if (this.routeState == RouteState.REVERSING)
+				this.routeState = RouteState.WALKING;
+			else
+				this.routeState = RouteState.REVERSING;
 			return;
 		}
-		this.currentPos += change;
+		this.currentPos += actualChange;
 		if (this.currentPos == this.positions.size() - 1 || this.currentPos == 0)
 		{
 			this.routeState = RouteState.COMPLETED;

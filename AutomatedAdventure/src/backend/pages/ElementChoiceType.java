@@ -2,7 +2,7 @@ package backend.pages;
 
 public enum ElementChoiceType
 {
-	MENU("menu"), MENU_RANGE("menuRange"), ROUTE_SELECTION("routeSelection");
+	MENU("menu"), MENU_RANGE("menuRange"), ROUTE_SELECTION_WAIT("routeSelectionWait"), ROUTE_SELECTION_RETURN("routeSelectionReturn");
 	
 	String name;
 	

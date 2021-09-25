@@ -302,9 +302,9 @@ public class MapPanel extends JPanel implements ActionListener
 		this.cancelButton.setEnabled(true);
 	}
 	
-	private void performRouteSelectionAction(ChoiceItem choiceItem, ElementChoice elementChoice)
+	private void performRouteSelectionAction(ChoiceItem choiceItem, ElementChoice elementChoice, MapMode mapMode)
 	{
-		this.mode = MapMode.ROUTE_SELECTION;
+		this.mode = mapMode;
 		this.selectedPosition = choiceItem.getPosition();
 		this.selectedChoice = choiceItem.getElementChoice();
 		this.disableButtonsOutsideRange();
@@ -318,8 +318,11 @@ public class MapPanel extends JPanel implements ActionListener
 		
 		switch(elementChoice.elementChoiceType)
 		{
-			case ROUTE_SELECTION:
-				this.performRouteSelectionAction(choiceItem, elementChoice);
+			case ROUTE_SELECTION_WAIT:
+				this.performRouteSelectionAction(choiceItem, elementChoice, MapMode.ROUTE_SELECTION_WAIT);
+				break;
+			case ROUTE_SELECTION_RETURN:
+				this.performRouteSelectionAction(choiceItem, elementChoice, MapMode.ROUTE_SELECTION_RETURN);
 				break;
 			case MENU_RANGE:
 				this.performMenuRangeAction(choiceItem, elementChoice);
@@ -376,8 +379,11 @@ public class MapPanel extends JPanel implements ActionListener
 			case LOCATION_RANGE:
 				this.performLocationRangeAction(e);
 				break;
-			case ROUTE_SELECTION:
-				this.performStepSelectionAction(e);
+			case ROUTE_SELECTION_WAIT:
+				this.performStepSelectionAction(e, RouteType.WAIT);
+				break;
+			case ROUTE_SELECTION_RETURN:
+				this.performStepSelectionAction(e, RouteType.REVERSE);
 				break;
 			case DISABLED:
 				break;
@@ -389,19 +395,19 @@ public class MapPanel extends JPanel implements ActionListener
 		}
 	}
 	
-	private void performStepSelectionAction(ActionEvent e) throws Exception
+	private void performStepSelectionAction(ActionEvent e, RouteType routeType) throws Exception
 	{
 		if (e.getSource() instanceof LocationButton)
 		{
 			LocationButton locationButton = (LocationButton) e.getSource();
-			this.addRouteStep(locationButton);
+			this.addRouteStep(locationButton, routeType);
 		}
 	}
 	
-	private void addRouteStep(LocationButton locationButton) throws Exception
+	private void addRouteStep(LocationButton locationButton, RouteType routeType) throws Exception
 	{
 		MapPosition position = locationButton.getPosition();
-		this.selectedChoice.elementInstance.addRouteStep(RouteType.WAIT, this.map, position);
+		this.selectedChoice.elementInstance.addRouteStep(routeType, this.map, position);
 		
 		if (this.checkForLocation(locationButton))
 		{
@@ -594,7 +600,7 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private enum MapMode
 	{
-		DISABLED, LOCATION, LOCATION_RANGE, ROUTE_SELECTION;
+		DISABLED, LOCATION, LOCATION_RANGE, ROUTE_SELECTION_WAIT, ROUTE_SELECTION_RETURN;
 	}
 	
 	private class MapButton extends JButton
