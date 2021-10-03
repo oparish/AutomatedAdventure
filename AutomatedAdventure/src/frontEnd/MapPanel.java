@@ -356,15 +356,10 @@ public class MapPanel extends JPanel implements ActionListener
 	}
 	
 	private void endAction()
-	{
-		if (this.selectedRoute != null)
-		{
-			this.selectedChoice.elementInstance.setRoute(this.map, this.selectedRoute);
-			this.selectedRoute = null;
-		}
-		
+	{		
 		this.mode = MapMode.LOCATION;
 		this.selectedPosition = null;
+		this.selectedChoice = null;
 		this.cancelButton.setEnabled(false);
 		this.enableAllButtons();
 	}
@@ -372,10 +367,17 @@ public class MapPanel extends JPanel implements ActionListener
 	private void cancelAction()
 	{
 		this.selectedRoute = null;		
-		this.mode = MapMode.LOCATION;
-		this.selectedPosition = null;
-		this.cancelButton.setEnabled(false);
-		this.enableAllButtons();
+		this.endAction();
+	}
+	
+	private void completeAction()
+	{
+		if (this.selectedRoute != null)
+		{
+			this.selectedChoice.elementInstance.setRoute(this.map, this.selectedRoute);
+			this.selectedRoute = null;
+		}
+		this.endAction();
 	}
 	
 	@Override
@@ -428,8 +430,9 @@ public class MapPanel extends JPanel implements ActionListener
 		
 		if (this.checkForLocation(locationButton))
 		{
-			this.endAction();
-			Pages.getScenario().loadPage(this.selectedChoice);
+			ElementChoice choice = this.selectedChoice;
+			this.completeAction();
+			Pages.getScenario().loadPage(choice);
 		}
 		else
 		{
@@ -487,8 +490,9 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void selectInRange(MapButton mapButton) throws Exception
 	{
-		this.endAction();
-		Pages.getScenario().loadPage(this.selectedChoice, mapButton.getPosition());
+		ElementChoice choice = this.selectedChoice;
+		this.completeAction();
+		Pages.getScenario().loadPage(choice, mapButton.getPosition());
 	}
 	
 	private boolean checkInRange(MapPosition position)
