@@ -36,6 +36,7 @@ import backend.Element.ElementInstance;
 import backend.Map;
 import backend.Map.MapPosition;
 import backend.MapElementType;
+import backend.Route;
 import backend.RouteType;
 import backend.Scenario;
 import backend.component.ConnectionSet;
@@ -64,6 +65,7 @@ public class MapPanel extends JPanel implements ActionListener
 	MapMode mode = MapMode.LOCATION;
 	MapPosition selectedPosition;
 	ElementChoice selectedChoice;
+	Route selectedRoute;
 	JPanel innerPanel = new JPanel();
 	JButton cancelButton;
 	
@@ -355,6 +357,21 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void endAction()
 	{
+		if (this.selectedRoute != null)
+		{
+			this.selectedChoice.elementInstance.setRoute(this.map, this.selectedRoute);
+			this.selectedRoute = null;
+		}
+		
+		this.mode = MapMode.LOCATION;
+		this.selectedPosition = null;
+		this.cancelButton.setEnabled(false);
+		this.enableAllButtons();
+	}
+	
+	private void cancelAction()
+	{
+		this.selectedRoute = null;		
 		this.mode = MapMode.LOCATION;
 		this.selectedPosition = null;
 		this.cancelButton.setEnabled(false);
@@ -366,7 +383,7 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		if (e.getSource() == this.cancelButton)
 		{
-			this.endAction();
+			this.cancelAction();
 			return;
 		}
 		try
@@ -407,7 +424,7 @@ public class MapPanel extends JPanel implements ActionListener
 	private void addRouteStep(LocationButton locationButton, RouteType routeType) throws Exception
 	{
 		MapPosition position = locationButton.getPosition();
-		this.selectedChoice.elementInstance.addRouteStep(routeType, this.map, position);
+		this.addRouteStep(routeType, position);
 		
 		if (this.checkForLocation(locationButton))
 		{
@@ -420,6 +437,22 @@ public class MapPanel extends JPanel implements ActionListener
 			this.enableAllButtons();
 			this.disableButtonsOutsideRange();
 		}
+	}
+	
+	public void addRouteStep(RouteType routeType, MapPosition position)
+	{
+		if (this.selectedRoute == null)
+		{
+			this.selectedRoute = this.makeNewRoute(routeType, position);
+		}
+		this.selectedRoute.addRoutePosition(position);
+	}
+	
+	private Route makeNewRoute(RouteType routeType, MapPosition position)
+	{
+		Route route = new Route(routeType);
+		route.addRoutePosition(position);
+		return route;
 	}
 	
 	private boolean checkForLocation(LocationButton locationButton)

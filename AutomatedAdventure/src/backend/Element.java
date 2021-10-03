@@ -426,12 +426,9 @@ public class Element
 			return position;
 		}
 		
-		private Route makeNewRoute(RouteType routeType, Map map, MapPosition position)
+		public void setRoute(Map map, Route route)
 		{
-			Route route = new Route(routeType);
-			route.addRoutePosition(position);
 			this.routeMap.put(map, route);
-			return route;
 		}
 		
 		public MapPosition decrementRoutePos(Map map)
@@ -453,16 +450,6 @@ public class Element
 		{
 			Route route = this.routeMap.get(map);
 			return route.getPosition();
-		}
-		
-		public void addRouteStep(RouteType routeType, Map map, MapPosition position)
-		{
-			Route route = this.routeMap.get(map);
-			if (route == null)
-			{
-				route = this.makeNewRoute(routeType, map, position);
-			}
-			route.addRoutePosition(position);
 		}
 
 		public void clearRoute(Map map)
