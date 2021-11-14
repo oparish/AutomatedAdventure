@@ -18,6 +18,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Vector;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +35,7 @@ import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.metal.MetalToolTipUI;
 
+import animation.MapAnimation;
 import backend.Element;
 import backend.Element.ElementInstance;
 import backend.Map;
@@ -574,6 +579,12 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void repaintMap() throws Exception
 	{		
+		ExecutorService executorService = Executors.newSingleThreadExecutor();
+		MapAnimation mapAnimation = new MapAnimation();
+		executorService.execute(mapAnimation);
+		
+		while(executorService.awaitTermination(1000, TimeUnit.MILLISECONDS));
+		
 		HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap = 
 				new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>>();
 		RestrictedJson<MapRestriction> mapData = this.map.getMapData();
