@@ -89,7 +89,7 @@ public class Main
 	    return imageIcon;
 	}
 	
-	private static BufferedImage loadImageFromFile(String filename) throws Exception
+	public static BufferedImage loadImageFromFile(String filename) throws Exception
 	{
 		try
 		{

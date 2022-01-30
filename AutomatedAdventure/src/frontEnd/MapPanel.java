@@ -1,5 +1,6 @@
 package frontEnd;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -9,6 +10,7 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -18,27 +20,26 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Vector;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.plaf.metal.MetalToolTipUI;
 
-import animation.MapAnimation;
 import backend.Element;
 import backend.Element.ElementInstance;
 import backend.Map;
+import backend.Map.ChangeInPosition;
 import backend.Map.MapPosition;
 import backend.MapElementType;
 import backend.Route;
@@ -60,6 +61,10 @@ import main.Pages;
 
 public class MapPanel extends JPanel implements ActionListener
 {
+	private static final int TILE_LENGTH = 40;
+	private static final int STEPS_PER_MOVE = 10;
+	private static final int TIME_PER_MOVE = 400;
+	
 	private static final String CANCEL = "Cancel";
 	private static final Pattern tooltipElementPattern = Pattern.compile("<element:(.*)>");
 	private static final Pattern tooltipConnectionPattern = Pattern.compile("<connection:([^<>]*):([^<>]*)>");
@@ -71,16 +76,33 @@ public class MapPanel extends JPanel implements ActionListener
 	MapPosition selectedPosition;
 	ElementChoice selectedChoice;
 	Route selectedRoute;
+	JLayeredPane layeredPanel = new JLayeredPane();
 	JPanel innerPanel = new JPanel();
+	GlassPanel upperPanel = new GlassPanel();
 	JButton cancelButton;
+	Timer animationTimer = new Timer(TIME_PER_MOVE/STEPS_PER_MOVE, this);
+	int animationCounter = 0;
+	
+	HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> movingMap;
 	
 	public MapPanel(Map map) throws Exception
 	{
 		super();
 		this.map = map;
+
 		this.innerPanel.setLayout(new GridLayout(this.map.getWidth(), this.map.getHeight()));
-		this.add(this.innerPanel);
+		int mapWidth = this.map.getWidth() * TILE_LENGTH;
+		int mapHeight = this.map.getHeight() * TILE_LENGTH;
+		this.setLayout(new GridLayout(1, 2));
+		this.layeredPanel.setBounds(0, 0, mapWidth, mapHeight);
+		this.upperPanel.setOpaque(false);
+		this.innerPanel.setBounds(0, 0, mapWidth, mapHeight);
+		this.upperPanel.setBounds(0, 0, mapWidth, mapHeight);
+		this.layeredPanel.add(this.innerPanel, new Integer(0), 0);
+		this.layeredPanel.add(this.upperPanel, new Integer(1), 0);
+
 		this.addCancelButton();
+		this.add(this.layeredPanel);
 		this.paintMap();
 	}
 	
@@ -388,34 +410,50 @@ public class MapPanel extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		if (e.getSource() == this.cancelButton)
+		if (e.getSource() instanceof Timer)
+		{
+			try
+			{
+				if (this.animationCounter == STEPS_PER_MOVE)
+					this.finishRepaintingMap();
+				else
+					this.continueRepaintingMap();
+			}
+			catch (Exception e1)
+			{
+				e1.printStackTrace();
+			}
+		}	
+		else if (e.getSource() == this.cancelButton)
 		{
 			this.cancelAction();
-			return;
 		}
-		try
+		else
 		{
-			switch (this.mode)
+			try
 			{
-			case LOCATION:
-				this.performLocationAction(e);
-				break;
-			case LOCATION_RANGE:
-				this.performLocationRangeAction(e);
-				break;
-			case ROUTE_SELECTION_WAIT:
-				this.performStepSelectionAction(e, RouteType.WAIT);
-				break;
-			case ROUTE_SELECTION_RETURN:
-				this.performStepSelectionAction(e, RouteType.REVERSE);
-				break;
-			case DISABLED:
-				break;
+				switch (this.mode)
+				{
+				case LOCATION:
+					this.performLocationAction(e);
+					break;
+				case LOCATION_RANGE:
+					this.performLocationRangeAction(e);
+					break;
+				case ROUTE_SELECTION_WAIT:
+					this.performStepSelectionAction(e, RouteType.WAIT);
+					break;
+				case ROUTE_SELECTION_RETURN:
+					this.performStepSelectionAction(e, RouteType.REVERSE);
+					break;
+				case DISABLED:
+					break;
+				}
 			}
-		}
-		catch (Exception exception)
-		{
-			exception.printStackTrace();
+			catch (Exception exception)
+			{
+				exception.printStackTrace();
+			}
 		}
 	}
 	
@@ -579,22 +617,92 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void repaintMap() throws Exception
 	{		
-		ExecutorService executorService = Executors.newSingleThreadExecutor();
-		MapAnimation mapAnimation = new MapAnimation();
-		executorService.execute(mapAnimation);
+		this.movingMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>>();
+		this.populateInstanceMap(this.movingMap);
+		if (this.map.getChangeInPositionMap().size() != 0)
+		{
+			this.startRepaintingMap();
+			this.mode = MapMode.DISABLED;
+			this.animationCounter = 1;
+			this.animationTimer.start();
+		}
+		else
+		{
+			this.finishRepaintingMap();
+		}
+	}
+	
+	private void startRepaintingMap() throws Exception
+	{
+		HashMap<ElementInstance, ChangeInPosition> changeInPositionMap = this.map.getChangeInPositionMap();
+		for (LocationButton locationButton : this.locationButtons)
+		{
+			MapPosition mapPosition = locationButton.getPosition();
+			for (ChangeInPosition changeInPosition : changeInPositionMap.values())
+			{
+				if (changeInPosition.oldPosition.x == mapPosition.x && changeInPosition.oldPosition.y == mapPosition.y)
+				{
+					RestrictedJson<MapRestriction> mapData = this.map.getMapData();
+					RestrictedJson<ImageRestriction> blankImageData = mapData.getRestrictedJson(MapRestriction.IMAGE, ImageRestriction.class);
+					String blankImageName = blankImageData.getString(ImageRestriction.FILENAME);
+					this.repaintEmptyLocationButton(locationButton, blankImageName);
+					break;
+				}
+			}
+		}
+	}
+	
+	private void continueRepaintingMap() throws Exception
+	{		
+		HashMap<ElementInstance, ChangeInPosition> changeInPositionMap = this.map.getChangeInPositionMap();
+		if (changeInPositionMap != null)
+		{
+			for (Entry<ElementInstance, ChangeInPosition> changeInPositionEntry : changeInPositionMap.entrySet())
+			{
+				ElementInstance elementInstance = changeInPositionEntry.getKey();
+				ChangeInPosition changeInPosition = changeInPositionEntry.getValue();
+				RestrictedJson<ImageRestriction> mapImageData = elementInstance.getElement().getMapImageData(this.map);
+				String instanceFileName = mapImageData.getString(ImageRestriction.FILENAME);
+				BufferedImage instanceImage = Main.loadImageFromFile(instanceFileName);
+				MapPosition oldPosition = changeInPosition.oldPosition;
+				MapPosition newPosition = changeInPosition.newPosition;
+				LocationButton oldButton = null;
+				LocationButton newButton = null;
+				for (LocationButton locationButton : this.locationButtons)
+				{		
+					if (oldPosition == locationButton.getPosition())
+					{
+						oldButton = locationButton;
+					}
+					else if (newPosition == locationButton.getPosition())
+					{
+						newButton = locationButton;
+					}
+				}
+				int oldX = oldButton.getX();
+				int oldY = oldButton.getY();
+				int newX = newButton.getX();
+				int newY = newButton.getY();
+				this.upperPanel.addGlassImage(instanceImage, oldX + (newX - oldX)/STEPS_PER_MOVE*this.animationCounter, oldY + (newY - oldY)/STEPS_PER_MOVE*this.animationCounter);
+			}
+		}
 		
-		while(executorService.awaitTermination(1000, TimeUnit.MILLISECONDS));
+		this.upperPanel.repaint();
 		
-		HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap = 
-				new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>>();
+		this.animationCounter++;
+	}
+	
+	private void finishRepaintingMap() throws Exception
+	{
+		this.animationTimer.stop();
+		this.upperPanel.repaint();
 		RestrictedJson<MapRestriction> mapData = this.map.getMapData();
 		RestrictedJson<ImageRestriction> blankImageData = mapData.getRestrictedJson(MapRestriction.IMAGE, ImageRestriction.class);
 		String blankImageName = blankImageData.getString(ImageRestriction.FILENAME);
-		this.populateInstanceMap(instanceMap);
 		for (LocationButton locationButton : this.locationButtons)
-		{
+		{		
 			MapPosition position = locationButton.getPosition();
-			HashMap<Integer, HashMap<MapElementType, ElementInstance>> innerMap = instanceMap.get(position.x);
+			HashMap<Integer, HashMap<MapElementType, ElementInstance>> innerMap = this.movingMap.get(position.x);
 			if (innerMap == null)
 			{
 				this.repaintEmptyLocationButton(locationButton, blankImageName);
@@ -612,6 +720,9 @@ public class MapPanel extends JPanel implements ActionListener
 				}		
 			}		
 		}
+		this.map.completeMove();
+		this.mode = MapMode.LOCATION;
+		this.setEnabled(true);
 	}
 	
 	public void update(PageInstance pageInstance) throws Exception

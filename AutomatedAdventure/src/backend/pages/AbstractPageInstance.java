@@ -170,7 +170,7 @@ public abstract class AbstractPageInstance
 	{
 		ElementInstance elementInstance = this.getSelectedElementInstance(element);
 		if (this.position != null && !this.position.occupied)
-			elementInstance.setMapPosition(map, this.position);
+			this.moveElementInstance(map, elementInstance, position);
 	}
 	
 	protected void routeMovement(Map map, Element element) throws Exception
@@ -180,9 +180,16 @@ public abstract class AbstractPageInstance
 			if (elementInstance.getRoute(map) != null)
 			{	
 				MapPosition position = elementInstance.incrementRoutePos(map);
-				elementInstance.setMapPosition(map, position);
+				this.moveElementInstance(map, elementInstance, position);
 			}
 		}
+	}
+	
+	private void moveElementInstance(Map map, ElementInstance elementInstance, MapPosition newPosition) throws Exception
+	{
+		MapPosition oldPosition = elementInstance.getMapPosition(map);
+		elementInstance.setMapPosition(map, newPosition);
+		map.addChangeInPosition(elementInstance, oldPosition, newPosition);
 	}
 	
 	protected ArrayList<Integer> makeElementAdjustments(JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray) throws Exception

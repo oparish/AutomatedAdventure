@@ -3,6 +3,7 @@ package backend;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import backend.Element.ElementInstance;
 import json.JsonEntityArray;
 import json.JsonEntityMap;
 import json.RestrictedJson;
@@ -23,7 +24,12 @@ public class Map
 	}
 
 	ArrayList<MapPosition> openMapPositions = new ArrayList<MapPosition>();
+	HashMap<ElementInstance, ChangeInPosition> changeInPositionMap = new HashMap<ElementInstance, ChangeInPosition>();
 	
+	public HashMap<ElementInstance, ChangeInPosition> getChangeInPositionMap() {
+		return changeInPositionMap;
+	}
+
 	public Map(Scenario scenario, RestrictedJson<MapRestriction> mapData)
 	{
 		this.scenario = scenario;
@@ -37,6 +43,17 @@ public class Map
 				this.openMapPositions.add(new MapPosition(i, j));
 			}
 		}
+	}
+	
+	public void addChangeInPosition(ElementInstance elementInstance, MapPosition oldPosition, MapPosition newPosition)
+	{
+		ChangeInPosition changeInPosition = new ChangeInPosition(oldPosition, newPosition);
+		this.changeInPositionMap.put(elementInstance, changeInPosition);
+	}
+	
+	public void completeMove()
+	{
+		this.changeInPositionMap = new HashMap<ElementInstance, ChangeInPosition>();
 	}
 	
 	public MapPosition getRandomPosition() throws Exception
@@ -104,6 +121,18 @@ public class Map
 		{
 			this.x = x;
 			this.y = y;
+		}
+	}
+	
+	public class ChangeInPosition
+	{
+		public MapPosition oldPosition;
+		public MapPosition newPosition;
+		
+		public ChangeInPosition(MapPosition oldPosition, MapPosition newPosition)
+		{
+			this.oldPosition = oldPosition;
+			this.newPosition = newPosition;
 		}
 	}
 }
