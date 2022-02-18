@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum InstanceDetailsRestriction implements RestrictionPointer
 {
-	NAME(Restriction.NAME), NUMBER_MAP(Restriction.NUMBER_MAP, true), STRING_MAP(Restriction.STRING_MAP, true), SET_MAP(Restriction.SET_MAP, true), 
+	NUMBER_MAP(Restriction.NUMBER_MAP, true), STRING_MAP(Restriction.STRING_MAP, true), SET_MAP(Restriction.SET_MAP, true), 
 		MAP_MAP(Restriction.MAP_MAP, true);
 	
 	private Restriction restriction;
