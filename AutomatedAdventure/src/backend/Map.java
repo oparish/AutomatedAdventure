@@ -115,12 +115,13 @@ public class Map
 	{
 		public int x;
 		public int y;
-		public boolean occupied = false;
+		ArrayList<ElementInstance> elementInstances;
 		
 		public MapPosition(int x, int y)
 		{
 			this.x = x;
 			this.y = y;
+			this.elementInstances = new ArrayList<ElementInstance>();
 		}
 	}
 	

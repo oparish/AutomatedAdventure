@@ -2,6 +2,7 @@ package backend;
 
 import java.util.ArrayList;
 
+import backend.Element.ElementInstance;
 import backend.Map.MapPosition;
 
 public class Route {
@@ -24,18 +25,24 @@ public class Route {
 		return this.positions.get(this.currentPos);
 	}
 	
-	private boolean checkNextStep(int nextPos)
+	private boolean checkNextStep(Faction faction, int nextPos)
 	{
 		MapPosition position = this.positions.get(nextPos);
-		return !position.occupied;
+		for (ElementInstance elementInstance : position.elementInstances)
+		{
+			if (faction != elementInstance.getFaction())
+				return false;
+		}
+		
+		return true;
 	}
 	
-	public void incrementPosition()
+	public void incrementPosition(Faction faction)
 	{
-		this.changePosition(1);
+		this.changePosition(faction, 1);
 	}
 	
-	private void changePosition(int change)
+	private void changePosition(Faction faction, int change)
 	{
 		int actualChange;
 		if (this.routeState == RouteState.REVERSING)
@@ -43,7 +50,7 @@ public class Route {
 		else
 			actualChange = change;
 		
-		if (!this.checkNextStep(this.currentPos + actualChange))
+		if (!this.checkNextStep(faction, this.currentPos + actualChange))
 		{
 			if (this.routeType == RouteType.WAIT)
 				this.routeState = RouteState.WAITING;
@@ -64,9 +71,9 @@ public class Route {
 		}
 	}
 	
-	public void decrementPosition()
+	public void decrementPosition(Faction faction)
 	{
-		this.changePosition(-1);
+		this.changePosition(faction, -1);
 	}
 	
 	public void resetPosition()

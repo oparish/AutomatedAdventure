@@ -38,6 +38,7 @@ import javax.swing.plaf.metal.MetalToolTipUI;
 
 import backend.Element;
 import backend.Element.ElementInstance;
+import backend.Faction;
 import backend.Map;
 import backend.Map.ChangeInPosition;
 import backend.Map.MapPosition;
@@ -83,7 +84,7 @@ public class MapPanel extends JPanel implements ActionListener
 	Timer animationTimer = new Timer(TIME_PER_MOVE/STEPS_PER_MOVE, this);
 	int animationCounter = 0;
 	
-	HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> movingMap;
+	HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>> movingMap;
 	
 	public MapPanel(Map map) throws Exception
 	{
@@ -114,7 +115,7 @@ public class MapPanel extends JPanel implements ActionListener
 		this.cancelButton.setEnabled(false);
 	}
 	
-	private void populateInstanceMap(HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap) throws Exception
+	private void populateInstanceMap(HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>> instanceMap) throws Exception
 	{
 		ArrayList<Element> elements = this.map.getElements();
 		for (Element element : elements)
@@ -122,18 +123,18 @@ public class MapPanel extends JPanel implements ActionListener
 			for (ElementInstance elementInstance : element.getInstances())
 			{
 				MapPosition mapPosition = elementInstance.getMapPosition(this.map);
-				HashMap<Integer, HashMap<MapElementType, ElementInstance>> innerMap;
+				HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>> innerMap;
 				if (instanceMap.containsKey(mapPosition.x))
 				{
 					innerMap = instanceMap.get(mapPosition.x);
 				}
 				else
 				{
-					innerMap = new HashMap<Integer, HashMap<MapElementType, ElementInstance>>();
+					innerMap = new HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>();
 					instanceMap.put(mapPosition.x, innerMap);
 				}		
 		
-				HashMap<MapElementType, ElementInstance> dataMap;	
+				HashMap<MapElementType, ArrayList<ElementInstance>> dataMap;	
 				
 				if (innerMap.containsKey(mapPosition.y))
 				{
@@ -141,27 +142,36 @@ public class MapPanel extends JPanel implements ActionListener
 				}
 				else
 				{
-					dataMap = new HashMap<MapElementType, ElementInstance>();
+					dataMap = new HashMap<MapElementType, ArrayList<ElementInstance>>();
 					innerMap.put(mapPosition.y, dataMap);
 				}
 				
 				MapElementType mapElementType = elementInstance.getElement().getMapElementType(this.map);
+				ArrayList<ElementInstance> elementInstances;
 				if (dataMap.containsKey(mapElementType))
-					throw new Exception("More than one map element of the same layer in the same place: " + mapPosition.x + ", " 
-							+ mapPosition.y);
-				dataMap.put(mapElementType, elementInstance);
+				{
+					elementInstances = dataMap.get(mapElementType);
+					elementInstances.add(elementInstance);
+				}
+				else
+				{
+					elementInstances = new ArrayList<ElementInstance>();
+					elementInstances.add(elementInstance);
+					dataMap.put(mapElementType, elementInstances);
+				}
+				
 			}
 		}
 	}
 	
 	private void paintMap() throws Exception
 	{	
-		HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>>();
+		HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>> instanceMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>>();
 		this.populateInstanceMap(instanceMap);
 		this.paintLocationAndMapButtons(instanceMap);
 	}
 	
-	private void paintLocationAndMapButtons(HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>> instanceMap) throws Exception
+	private void paintLocationAndMapButtons(HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>> instanceMap) throws Exception
 	{
 		this.locationButtons = new ArrayList<LocationButton>();	
 		RestrictedJson<MapRestriction> mapData = this.map.getMapData();
@@ -174,10 +184,10 @@ public class MapPanel extends JPanel implements ActionListener
 			{
 				if (instanceMap.containsKey(i))
 				{	
-					HashMap<Integer, HashMap<MapElementType, ElementInstance>> innerMap = instanceMap.get(i);
+					HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>> innerMap = instanceMap.get(i);
 					if (innerMap.containsKey(j))
 					{
-						HashMap<MapElementType, ElementInstance> dataMap = innerMap.get(j);
+						HashMap<MapElementType, ArrayList<ElementInstance>> dataMap = innerMap.get(j);
 						this.createLocationButton(i, j, dataMap);
 						continue;
 					}
@@ -205,7 +215,7 @@ public class MapPanel extends JPanel implements ActionListener
 		locationButton.setIcon(blankImageIcon);
 	}
 	
-	private void repaintLocationButton(LocationButton locationButton, HashMap<MapElementType, ElementInstance> dataMap) throws Exception
+	private void repaintLocationButton(LocationButton locationButton, HashMap<MapElementType, ArrayList<ElementInstance>> dataMap) throws Exception
 	{
 		MapPosition position = locationButton.getPosition();
 		LocationButtonData locationButtonData = this.createLocationButtonData(position.x, position.y, dataMap);
@@ -214,7 +224,7 @@ public class MapPanel extends JPanel implements ActionListener
 		locationButton.setToolTipText(locationButtonData.tooltipText);
 	}
 	
-	private void createLocationButton(int x, int y, HashMap<MapElementType, ElementInstance> dataMap) throws Exception
+	private void createLocationButton(int x, int y, HashMap<MapElementType, ArrayList<ElementInstance>> dataMap) throws Exception
 	{	
 		LocationButtonData locationButtonData = this.createLocationButtonData(x, y, dataMap);	
 		LocationButton locationButton;
@@ -286,6 +296,13 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		JPopupMenu popupMenu = new JPopupMenu();
 		HashMap<String, ElementChoice> combinedChoices = new HashMap<String, ElementChoice>();
+		for (ElementInstance elementInstance : button.elementInstances)
+		{
+			if (elementInstance.getFaction() == Faction.COMPUTER)
+			{
+				return;
+			}
+		}
 		for (ElementInstance elementInstance : button.elementInstances)
 		{
 			HashMap<String, ElementChoice> choices = this.elementMap.get(elementInstance);
@@ -561,46 +578,52 @@ public class MapPanel extends JPanel implements ActionListener
 		}
 	}
 	
-	private LocationButtonData createLocationButtonData(int x, int y, HashMap<MapElementType, ElementInstance> dataMap) throws Exception
+	private LocationButtonData createLocationButtonData(int x, int y, HashMap<MapElementType, ArrayList<ElementInstance>> dataMap) throws Exception
 	{
 		LocationButtonData locationButtonData = new LocationButtonData();	
 		locationButtonData.elementInstances = new ArrayList<ElementInstance>();
-		ElementInstance locationInstance = null;
-		ElementInstance characterInstance = null;
+		ArrayList<ElementInstance> locationInstances = null;
+		ArrayList<ElementInstance> characterInstances = null;
 		String locationFileName = null;
 		String characterFileName = null;
 		locationButtonData.tooltipText = "";
 		
 		if (dataMap.containsKey(MapElementType.LOCATION))
 		{
-			locationInstance = dataMap.get(MapElementType.LOCATION);
-			Element locationElement = locationInstance.getElement();
+			locationInstances = dataMap.get(MapElementType.LOCATION);
+			Element locationElement = locationInstances.get(0).getElement();
 			RestrictedJson<ImageRestriction> locationImageData = locationElement.getMapImageData(this.map);
 			locationFileName = locationImageData.getString(ImageRestriction.FILENAME);
 			RestrictedJson<TooltipRestriction> tooltipData = locationElement.getTooltip(map);
-			String locationTooltip = this.createTooltipText(tooltipData, locationInstance);
-			locationButtonData.tooltipText += this.assessTooltipText(locationInstance, locationTooltip);
-			locationButtonData.elementInstances.add(locationInstance);
+			for (ElementInstance locationInstance : locationInstances)
+			{
+				String locationTooltip = this.createTooltipText(tooltipData, locationInstance);
+				locationButtonData.tooltipText += this.assessTooltipText(locationInstance, locationTooltip);
+				locationButtonData.elementInstances.add(locationInstance);
+			}		
 		}
 		
 		if (dataMap.containsKey(MapElementType.CHARACTER))
 		{
-			characterInstance = dataMap.get(MapElementType.CHARACTER);
-			Element characterElement = characterInstance.getElement();
+			characterInstances = dataMap.get(MapElementType.CHARACTER);
+			Element characterElement = characterInstances.get(0).getElement();
 			RestrictedJson<ImageRestriction> pcImageData = characterElement.getMapImageData(this.map);
 			characterFileName = pcImageData.getString(ImageRestriction.FILENAME);
 			RestrictedJson<TooltipRestriction> tooltipData = characterElement.getTooltip(map);
-			String characterTooltip = this.createTooltipText(tooltipData, characterInstance);
-			locationButtonData.tooltipText += this.assessTooltipText(characterInstance, characterTooltip);
-			locationButtonData.elementInstances.add(characterInstance);
+			for (ElementInstance characterInstance : characterInstances)
+			{
+				String characterTooltip = this.createTooltipText(tooltipData, characterInstance);
+				locationButtonData.tooltipText += this.assessTooltipText(characterInstance, characterTooltip);
+				locationButtonData.elementInstances.add(characterInstance);
+			}
 		}
 		
-		if (locationInstance != null && characterInstance != null)
+		if (locationInstances != null && characterInstances != null)
 		{
 			locationButtonData.imageIcon = Main.loadCombinedImageIcon(locationFileName, characterFileName);
 			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(locationFileName, characterFileName);
 		}
-		else if (locationInstance != null)
+		else if (locationInstances != null)
 		{
 			locationButtonData.imageIcon = Main.loadImageIcon(locationFileName);
 			locationButtonData.disabledImageIcon = Main.loadDisabledImageIcon(locationFileName);
@@ -617,7 +640,7 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void repaintMap() throws Exception
 	{		
-		this.movingMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ElementInstance>>>();
+		this.movingMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>>();
 		this.populateInstanceMap(this.movingMap);
 		if (this.map.getChangeInPositionMap().size() != 0)
 		{
@@ -702,14 +725,14 @@ public class MapPanel extends JPanel implements ActionListener
 		for (LocationButton locationButton : this.locationButtons)
 		{		
 			MapPosition position = locationButton.getPosition();
-			HashMap<Integer, HashMap<MapElementType, ElementInstance>> innerMap = this.movingMap.get(position.x);
+			HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>> innerMap = this.movingMap.get(position.x);
 			if (innerMap == null)
 			{
 				this.repaintEmptyLocationButton(locationButton, blankImageName);
 			}
 			else
 			{
-				HashMap<MapElementType, ElementInstance> dataMap = innerMap.get(position.y);
+				HashMap<MapElementType, ArrayList<ElementInstance>> dataMap = innerMap.get(position.y);
 				if (dataMap != null)
 				{
 					this.repaintLocationButton(locationButton, dataMap);

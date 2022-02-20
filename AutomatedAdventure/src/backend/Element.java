@@ -20,7 +20,9 @@ import json.restrictions.ElementSetMemberRestriction;
 import json.restrictions.ElementSetRestriction;
 import json.restrictions.ImageRestriction;
 import json.restrictions.InstanceDetailsRestriction;
+import json.restrictions.MapElementRestriction;
 import json.restrictions.MapPositionRestriction;
+import json.restrictions.MapRestriction;
 import json.restrictions.ScenarioRestriction;
 import json.restrictions.TooltipRestriction;
 import main.Main;
@@ -28,6 +30,8 @@ import main.Pages;
 
 public class Element
 {
+	private static final String FACTION = "faction";
+	
 	RestrictedJson<ElementRestriction> elementJson;
 	ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
 	HashMap<Map, RestrictedJson<ImageRestriction>> mapMap = new HashMap<Map, RestrictedJson<ImageRestriction>>();
@@ -398,6 +402,10 @@ public class Element
 			this.numberValues = numberValues;
 			this.setValues = setValues;
 			this.positionMap = positionMap;
+			for (MapPosition mapPosition : positionMap.values())
+			{
+				mapPosition.elementInstances.add(this);
+			}
 		}
 		
 		public Element getElement()
@@ -411,10 +419,18 @@ public class Element
 			route.resetPosition();
 		}
 		
+		public Faction getFaction()
+		{
+			String factionString = this.getStringValue(FACTION);
+			Faction faction = Faction.match(factionString);
+			return faction;
+		}
+		
 		public MapPosition incrementRoutePos(Map map)
 		{
 			Route route = this.routeMap.get(map);
-			route.incrementPosition();
+			Faction faction = this.getFaction();
+			route.incrementPosition(faction);
 			RouteState routeState = route.getRouteState();
 			MapPosition position = this.getPosition(map);
 			
@@ -434,7 +450,8 @@ public class Element
 		public MapPosition decrementRoutePos(Map map)
 		{
 			Route route = this.routeMap.get(map);
-			route.decrementPosition();
+			Faction faction = this.getFaction();
+			route.decrementPosition(faction);
 			RouteState routeState = route.getRouteState();
 			MapPosition position = this.getPosition(map);
 			
@@ -473,12 +490,9 @@ public class Element
 			MapPosition prevPosition = this.getMapPosition(map);
 			if (prevPosition != mapPosition)
 			{
-				if (mapPosition.occupied)
-					throw new Exception("Trying to move to an occupied position.");
-				
-				prevPosition.occupied = false;
 				this.positionMap.put(map, mapPosition);
-				mapPosition.occupied = true;
+				prevPosition.elementInstances.remove(this);
+				mapPosition.elementInstances.add(this);
 			}
 		}
 		

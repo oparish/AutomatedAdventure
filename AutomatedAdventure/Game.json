@@ -9,14 +9,20 @@
                "name" : {
                   "options" : [ "One", "Two", "Three" ],
                   "unique" : true
+               },
+               "faction" : {
+                  "options" : [ "player", "computer" ]
                }
             }
          },
          "troop" : {
             "elementData" : {
                "name" : {
-                  "options" : [ "Example" ],
+                  "options" : [ "Example 1", "Example 2" ],
                   "unique" : true
+               },
+               "faction" : {
+                  "options" : [ "player", "computer" ]
                }
             },
             "elementNumbers" : {
@@ -37,6 +43,9 @@
                "name" : {
                   "options" : [ "Example" ],
                   "unique" : true
+               },
+               "faction" : {
+                  "options" : [ "player", "computer" ]
                }
             },
             "elementNumbers" : {
@@ -69,7 +78,8 @@
                   "instanceDetails" : {
                      "name" : "one",
                      "stringMap" : {
-                        "name" : "Three"
+                        "name" : "Three",
+                        "faction" : "player"
                      },
                      "mapMap" : {
                         "testMap" : {
@@ -85,18 +95,50 @@
                      "name" : "one",
                      "mapMap" : {
                         "testMap" : {
+                           "x" : 2,
+                           "y" : 3
+                        }
+                     },
+                     "numberMap" : {
+                        "quantity" : 30
+                     },
+                     "stringMap" : {
+                        "faction" : "player"
+                     }
+                  }
+               },
+               {
+                  "elementName" : "troop",
+                  "instanceDetails" : {
+                     "name" : "one",
+                     "mapMap" : {
+                        "testMap" : {
                            "x" : 3,
                            "y" : 3
                         }
                      },
                      "numberMap" : {
                         "quantity" : 30
+                     },
+                     "stringMap" : {
+                        "faction" : "computer"
                      }
                   }
                },
                {
                   "elementName" : "self",
-                  "numberValue" : 1
+                  "instanceDetails" : {
+                     "name" : "one",
+                     "mapMap" : {
+                        "testMap" : {
+                           "x" : 2,
+                           "y" : 3
+                        }
+                     },
+                     "stringMap" : {
+                        "faction" : "player"
+                     }
+                  }
                }
             ],
             "choices" : [

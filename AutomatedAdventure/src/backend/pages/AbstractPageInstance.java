@@ -169,7 +169,7 @@ public abstract class AbstractPageInstance
 	protected void directMovement(Map map, Element element) throws Exception
 	{
 		ElementInstance elementInstance = this.getSelectedElementInstance(element);
-		if (this.position != null && !this.position.occupied)
+		if (this.position != null)
 			this.moveElementInstance(map, elementInstance, position);
 	}
 	
@@ -180,7 +180,8 @@ public abstract class AbstractPageInstance
 			if (elementInstance.getRoute(map) != null)
 			{	
 				MapPosition position = elementInstance.incrementRoutePos(map);
-				this.moveElementInstance(map, elementInstance, position);
+				if (position != elementInstance.getMapPosition(map))
+					this.moveElementInstance(map, elementInstance, position);
 			}
 		}
 	}
