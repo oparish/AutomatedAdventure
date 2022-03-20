@@ -78,13 +78,29 @@
                   "instanceDetails" : {
                      "name" : "one",
                      "stringMap" : {
-                        "name" : "Three",
+                        "name" : "One",
                         "faction" : "player"
                      },
                      "mapMap" : {
                         "testMap" : {
                            "x" : 3,
                            "y" : 3
+                        }
+                     }
+                  }
+               },
+               {
+                  "elementName" : "village",
+                  "instanceDetails" : {
+                     "name" : "two",
+                     "stringMap" : {
+                        "name" : "Two",
+                        "faction" : "player"
+                     },
+                     "mapMap" : {
+                        "testMap" : {
+                           "x" : 6,
+                           "y" : 6
                         }
                      }
                   }
@@ -96,14 +112,14 @@
                      "mapMap" : {
                         "testMap" : {
                            "x" : 2,
-                           "y" : 3
+                           "y" : 2
                         }
                      },
                      "numberMap" : {
                         "quantity" : 30
                      },
                      "stringMap" : {
-                        "faction" : "player"
+                        "faction" : "computer"
                      }
                   }
                },
@@ -121,7 +137,7 @@
                         "quantity" : 30
                      },
                      "stringMap" : {
-                        "faction" : "computer"
+                        "faction" : "player"
                      }
                   }
                },

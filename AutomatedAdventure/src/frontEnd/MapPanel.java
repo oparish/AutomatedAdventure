@@ -370,6 +370,10 @@ public class MapPanel extends JPanel implements ActionListener
 		this.disableButtonsOutsideRange();
 		this.cancelButton.setEnabled(true);
 		elementChoice.elementInstance.clearRoute(this.map);
+		if (this.mode == MapMode.ROUTE_SELECTION_WAIT)
+			this.addRouteStep(RouteType.WAIT, this.selectedPosition);
+		else
+			this.addRouteStep(RouteType.REVERSE, this.selectedPosition);
 	}
 	
 	private void performChoiceItemAction(ChoiceItem choiceItem) throws Exception

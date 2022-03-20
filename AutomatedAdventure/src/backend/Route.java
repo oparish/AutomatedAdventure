@@ -16,7 +16,7 @@ public class Route {
 	{
 		this.positions = new ArrayList<MapPosition>();
 		this.routeType = routeType;
-		this.currentPos = 0;
+		this.currentPos = 1;
 		this.routeState = RouteState.WALKING;
 	}
 	
