@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
@@ -94,7 +96,7 @@ public class MapPanel extends JPanel implements ActionListener
 		this.innerPanel.setLayout(new GridLayout(this.map.getWidth(), this.map.getHeight()));
 		int mapWidth = this.map.getWidth() * TILE_LENGTH;
 		int mapHeight = this.map.getHeight() * TILE_LENGTH;
-		this.setLayout(new GridLayout(1, 2));
+		this.setLayout(new GridBagLayout());
 		this.layeredPanel.setBounds(0, 0, mapWidth, mapHeight);
 		this.upperPanel.setOpaque(false);
 		this.innerPanel.setBounds(0, 0, mapWidth, mapHeight);
@@ -103,14 +105,26 @@ public class MapPanel extends JPanel implements ActionListener
 		this.layeredPanel.add(this.upperPanel, new Integer(1), 0);
 
 		this.addCancelButton();
-		this.add(this.layeredPanel);
+		
+		GridBagConstraints layeredConstraints = new GridBagConstraints();
+		layeredConstraints.gridx = 0;
+		layeredConstraints.gridy = 0;
+		layeredConstraints.weightx = 1;
+		layeredConstraints.weighty = 1;
+		layeredConstraints.fill = GridBagConstraints.BOTH;
+		this.add(this.layeredPanel, layeredConstraints);
 		this.paintMap();
 	}
 	
 	private void addCancelButton()
 	{
 		this.cancelButton = new JButton(CANCEL);
-		this.add(this.cancelButton);
+		GridBagConstraints cancelConstraints = new GridBagConstraints();
+		cancelConstraints.gridx = 1;
+		cancelConstraints.gridy = 0;
+		cancelConstraints.weightx = 1;
+		cancelConstraints.weighty = 1;
+		this.add(this.cancelButton, cancelConstraints);
 		this.cancelButton.addActionListener(this);
 		this.cancelButton.setEnabled(false);
 	}
