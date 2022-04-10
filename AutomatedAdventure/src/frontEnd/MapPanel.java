@@ -129,13 +129,19 @@ public class MapPanel extends JPanel implements ActionListener
 		this.cancelButton.setEnabled(false);
 	}
 	
-	private void populateInstanceMap(HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>> instanceMap) throws Exception
+	private void populateInstanceMap(HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>> instanceMap, boolean excludeChanging) throws Exception
 	{
+		HashMap<ElementInstance, ChangeInPosition> changePositionMap = this.map.getChangeInPositionMap();
 		ArrayList<Element> elements = this.map.getElements();
 		for (Element element : elements)
 		{
 			for (ElementInstance elementInstance : element.getInstances())
 			{
+				if (excludeChanging && changePositionMap.containsKey(elementInstance))
+				{
+					continue;
+				}
+				
 				MapPosition mapPosition = elementInstance.getMapPosition(this.map);
 				HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>> innerMap;
 				if (instanceMap.containsKey(mapPosition.x))
@@ -181,7 +187,7 @@ public class MapPanel extends JPanel implements ActionListener
 	private void paintMap() throws Exception
 	{	
 		HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>> instanceMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>>();
-		this.populateInstanceMap(instanceMap);
+		this.populateInstanceMap(instanceMap, false);
 		this.paintLocationAndMapButtons(instanceMap);
 	}
 	
@@ -659,7 +665,7 @@ public class MapPanel extends JPanel implements ActionListener
 	private void repaintMap() throws Exception
 	{		
 		this.movingMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>>();
-		this.populateInstanceMap(this.movingMap);
+		this.populateInstanceMap(this.movingMap, false);
 		if (this.map.getChangeInPositionMap().size() != 0)
 		{
 			this.startRepaintingMap();
@@ -675,6 +681,8 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private void startRepaintingMap() throws Exception
 	{
+		HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>> instanceMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>>();
+		this.populateInstanceMap(instanceMap, true);
 		HashMap<ElementInstance, ChangeInPosition> changeInPositionMap = this.map.getChangeInPositionMap();
 		for (LocationButton locationButton : this.locationButtons)
 		{
@@ -686,7 +694,23 @@ public class MapPanel extends JPanel implements ActionListener
 					RestrictedJson<MapRestriction> mapData = this.map.getMapData();
 					RestrictedJson<ImageRestriction> blankImageData = mapData.getRestrictedJson(MapRestriction.IMAGE, ImageRestriction.class);
 					String blankImageName = blankImageData.getString(ImageRestriction.FILENAME);
-					this.repaintEmptyLocationButton(locationButton, blankImageName);
+					HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>> innerMap = instanceMap.get(mapPosition.x);
+					if (innerMap == null)
+					{
+						this.repaintEmptyLocationButton(locationButton, blankImageName);
+					}
+					else
+					{
+						HashMap<MapElementType, ArrayList<ElementInstance>> dataMap = innerMap.get(mapPosition.y);
+						if (dataMap != null)
+						{
+							this.repaintLocationButton(locationButton, dataMap);
+						}
+						else
+						{
+							this.repaintEmptyLocationButton(locationButton, blankImageName);
+						}		
+					}	
 					break;
 				}
 			}
