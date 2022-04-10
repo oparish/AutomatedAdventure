@@ -691,29 +691,34 @@ public class MapPanel extends JPanel implements ActionListener
 			{
 				if (changeInPosition.oldPosition.x == mapPosition.x && changeInPosition.oldPosition.y == mapPosition.y)
 				{
-					RestrictedJson<MapRestriction> mapData = this.map.getMapData();
-					RestrictedJson<ImageRestriction> blankImageData = mapData.getRestrictedJson(MapRestriction.IMAGE, ImageRestriction.class);
-					String blankImageName = blankImageData.getString(ImageRestriction.FILENAME);
-					HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>> innerMap = instanceMap.get(mapPosition.x);
-					if (innerMap == null)
-					{
-						this.repaintEmptyLocationButton(locationButton, blankImageName);
-					}
-					else
-					{
-						HashMap<MapElementType, ArrayList<ElementInstance>> dataMap = innerMap.get(mapPosition.y);
-						if (dataMap != null)
-						{
-							this.repaintLocationButton(locationButton, dataMap);
-						}
-						else
-						{
-							this.repaintEmptyLocationButton(locationButton, blankImageName);
-						}		
-					}	
+					this.repaintLocationButtonAtPosition(instanceMap, locationButton, mapPosition);
 					break;
 				}
 			}
+		}
+	}
+	
+	private void repaintLocationButtonAtPosition(HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>> instanceMap, LocationButton locationButton, MapPosition mapPosition) throws Exception
+	{
+		RestrictedJson<MapRestriction> mapData = this.map.getMapData();
+		RestrictedJson<ImageRestriction> blankImageData = mapData.getRestrictedJson(MapRestriction.IMAGE, ImageRestriction.class);
+		String blankImageName = blankImageData.getString(ImageRestriction.FILENAME);
+		HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>> innerMap = instanceMap.get(mapPosition.x);
+		if (innerMap == null)
+		{
+			this.repaintEmptyLocationButton(locationButton, blankImageName);
+		}
+		else
+		{
+			HashMap<MapElementType, ArrayList<ElementInstance>> dataMap = innerMap.get(mapPosition.y);
+			if (dataMap != null)
+			{
+				this.repaintLocationButton(locationButton, dataMap);
+			}
+			else
+			{
+				this.repaintEmptyLocationButton(locationButton, blankImageName);
+			}		
 		}
 	}
 	
@@ -761,29 +766,10 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		this.animationTimer.stop();
 		this.upperPanel.repaint();
-		RestrictedJson<MapRestriction> mapData = this.map.getMapData();
-		RestrictedJson<ImageRestriction> blankImageData = mapData.getRestrictedJson(MapRestriction.IMAGE, ImageRestriction.class);
-		String blankImageName = blankImageData.getString(ImageRestriction.FILENAME);
 		for (LocationButton locationButton : this.locationButtons)
 		{		
 			MapPosition position = locationButton.getPosition();
-			HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>> innerMap = this.movingMap.get(position.x);
-			if (innerMap == null)
-			{
-				this.repaintEmptyLocationButton(locationButton, blankImageName);
-			}
-			else
-			{
-				HashMap<MapElementType, ArrayList<ElementInstance>> dataMap = innerMap.get(position.y);
-				if (dataMap != null)
-				{
-					this.repaintLocationButton(locationButton, dataMap);
-				}
-				else
-				{
-					this.repaintEmptyLocationButton(locationButton, blankImageName);
-				}		
-			}		
+			this.repaintLocationButtonAtPosition(this.movingMap, locationButton, position);
 		}
 		this.map.completeMove();
 		this.mode = MapMode.LOCATION;
