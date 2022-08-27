@@ -2,7 +2,8 @@ package json.restrictions;
 
 public enum AdjustmentDataRestriction implements RestrictionPointer 
 {
-	ELEMENT_ADJUSTMENTS(Restriction.ELEMENT_ADJUSTMENTS, true), POSITION_ADJUSTMENTS(Restriction.POSITION_ADJUSTMENTS, true);
+	ELEMENT_ADJUSTMENTS(Restriction.ELEMENT_ADJUSTMENTS, true), POSITION_ADJUSTMENTS(Restriction.POSITION_ADJUSTMENTS, true), 
+		COUNTER_ADJUSTMENTS(Restriction.COUNTER_ADJUSTMENTS, true), COUNTER_INITIALISATIONS(Restriction.COUNTER_INITIALISATIONS, true);
 	
 	private Restriction restriction;
 	private boolean optional;

@@ -19,6 +19,8 @@ public enum RestrictionType implements JsonType
 	ADJUSTMENT_DATA(AdjustmentDataRestriction.class),
 	ELEMENT_ADJUSTMENT(ElementAdjustmentRestriction.class),
 	POSITION_ADJUSTMENT(PositionAdjustmentRestriction.class),
+	COUNTER_ADJUSTMENT(CounterAdjustmentRestriction.class),
+	COUNTER_INITIALISATION(CounterInitialisationRestriction.class),
 	ELEMENT_NUMBER(ElementNumberRestriction.class),
 	ELEMENT_CONDITION(ElementConditionRestriction.class),
 	CONTEXT_CONDITION(ContextConditionRestriction.class),

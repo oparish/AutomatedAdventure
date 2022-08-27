@@ -38,7 +38,9 @@ public class RedirectInstance extends AbstractPageInstance
 			String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
 			Element element = this.scenario.getElement(elementName);
 			ElementInstance selectedInstance;
-			if (element.getUnique())
+			if (element == null)
+				selectedInstance = null;
+			else if (element.getUnique())
 				selectedInstance = element.getUniqueInstance();
 			else
 				selectedInstance = pageContext.getElementInstance(element);

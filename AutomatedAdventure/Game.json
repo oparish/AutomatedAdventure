@@ -179,8 +179,28 @@
                      "elementQuality" : "name",
                      "rangeAttribute" : "move"
                   }
+               },
+               {
+                  "value" : "loop",
+                  "first" : "Loop",
+                  "elementChoice" : {
+                     "elementName" : "troop",
+                     "second" : "",
+                     "type" : "menu",
+                     "elementQuality" : "name"
+                  }
                }
-            ]
+            ],
+            "adjustmentData" : {
+               "counterInitialisations" : [
+                  {
+                     "counterName" : "testCounter",
+                     "mapName" : "testMap",
+                     "counterSecondaryType" : "all",
+                     "counterPrimaryType" : "position"
+                  }
+               ]
+            }
          },
          "next" : {
             "value" : "",
@@ -228,6 +248,24 @@
                ]
             },
             "first" : "next"
+         },
+         "loop" : {
+            "adjustmentData" : {
+               "counterAdjustments" : [
+                  {
+                     "counterName" : "testCounter",
+                     "counterAdjustmentType" : "increment"
+                  }
+               ]
+            },
+            "first" : "loop",
+            "second" : "next",
+            "contextConditions" : [
+               {
+                  "counterName" : "testCounter",
+                  "counterCondition" : "completed"
+               }
+            ]
          }
       },
       "randomRedirects" : {},

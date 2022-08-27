@@ -13,6 +13,8 @@ import backend.component.ConnectionSet;
 import json.JsonEntityArray;
 import json.RestrictedJson;
 import json.restrictions.AdjustmentDataRestriction;
+import json.restrictions.CounterAdjustmentRestriction;
+import json.restrictions.CounterInitialisationRestriction;
 import json.restrictions.ElementAdjustmentRestriction;
 import json.restrictions.ElementAdjustmentType;
 import json.restrictions.PositionAdjustmentRestriction;
@@ -60,9 +62,15 @@ public abstract class AbstractPageInstance
 				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.POSITION_ADJUSTMENTS, PositionAdjustmentRestriction.class);
 		JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray = 
 				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
+		JsonEntityArray<RestrictedJson<CounterAdjustmentRestriction>> counterAdjustmentArray = 
+				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.COUNTER_ADJUSTMENTS, CounterAdjustmentRestriction.class);
+		JsonEntityArray<RestrictedJson<CounterInitialisationRestriction>> counterInitialisationArray = 
+				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.COUNTER_INITIALISATIONS, CounterInitialisationRestriction.class);
 		
 		this.makeElementAdjustments(elementAdjustmentArray);
-		this.makePositionAdjustments(positionAdjustmentArray);	
+		this.makePositionAdjustments(positionAdjustmentArray);
+		this.initialiseCounters(counterInitialisationArray);
+		this.makeCounterAdjustments(counterAdjustmentArray);	
 	}
 	
 	private Integer assessReference(String numberReference) throws Exception
@@ -109,7 +117,9 @@ public abstract class AbstractPageInstance
 	
 	protected ElementInstance getSelectedElementInstance(Element element)
 	{
-		if (element.getUnique())
+		if (element == null)
+			return null;
+		else if (element.getUnique())
 			return element.getUniqueInstance();
 		else
 			return this.pageContext.getElementInstance(element);
@@ -138,6 +148,52 @@ public abstract class AbstractPageInstance
 		}
 		
 		return value;
+	}
+	
+	protected void initialiseCounters(JsonEntityArray<RestrictedJson<CounterInitialisationRestriction>> counterInitialisationArray) throws Exception
+	{
+		if (counterInitialisationArray == null)
+			return;
+		for (int i = 0; i < counterInitialisationArray.getLength(); i++)
+		{
+			RestrictedJson<CounterInitialisationRestriction> initialisation = counterInitialisationArray.getMemberAt(i);
+			String mapName = initialisation.getString(CounterInitialisationRestriction.MAP_NAME);
+			Map map = this.scenario.getMapByName(mapName);
+			String counterName = initialisation.getString(CounterInitialisationRestriction.COUNTER_NAME);
+			String counterPrimaryTypeName = initialisation.getString(CounterInitialisationRestriction.COUNTER_PRIMARY_TYPE);
+			CounterPrimaryType counterPrimaryType = CounterPrimaryType.valueOf(counterPrimaryTypeName.toUpperCase());
+			String counterSecondaryTypeName = initialisation.getString(CounterInitialisationRestriction.COUNTER_SECONDARY_TYPE);
+			CounterSecondaryType counterSecondaryType = CounterSecondaryType.valueOf(counterSecondaryTypeName.toUpperCase());
+			
+			switch(counterPrimaryType)
+			{
+			case POSITION:
+			default:
+				this.scenario.addPositionCounter(map, counterName, counterSecondaryType);
+			}		
+		}
+	}
+	
+	protected void makeCounterAdjustments(JsonEntityArray<RestrictedJson<CounterAdjustmentRestriction>> counterAdjustmentArray) throws Exception
+	{
+		if (counterAdjustmentArray == null)
+			return;
+		
+		for (int i = 0; i < counterAdjustmentArray.getLength(); i++)
+		{
+			RestrictedJson<CounterAdjustmentRestriction> adjustment = counterAdjustmentArray.getMemberAt(i);
+			String counterName = adjustment.getString(CounterAdjustmentRestriction.COUNTER_NAME);
+			String counterAdjustmentTypeName = adjustment.getString(CounterAdjustmentRestriction.COUNTER_ADJUSTMENT_TYPE);
+			CounterAdjustmentType counterAdjustmentType = CounterAdjustmentType.valueOf(counterAdjustmentTypeName.toUpperCase());
+			
+			switch(counterAdjustmentType)
+			{
+			case INCREMENT:
+				this.scenario.incrementPositionCounter(counterName);
+				break;
+			default:
+			}
+		}
 	}
 	
 	protected void makePositionAdjustments(JsonEntityArray<RestrictedJson<PositionAdjustmentRestriction>> positionAdjustmentArray) throws Exception

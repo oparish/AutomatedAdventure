@@ -11,10 +11,12 @@ import java.util.regex.Matcher;
 import backend.Element.ElementInstance;
 import backend.Map.MapPosition;
 import backend.component.ConnectionSet;
+import backend.pages.CounterSecondaryType;
 import backend.pages.ElementChoice;
 import backend.pages.ElementChoiceType;
 import backend.pages.PageContext;
 import backend.pages.PageInstance;
+import backend.pages.PositionCounter;
 import backend.pages.RandomRedirectInstance;
 import backend.pages.RedirectInstance;
 import json.JsonEntityArray;
@@ -55,6 +57,7 @@ public class Scenario
 	HashMap<Integer, Chance> chanceByPriority = new HashMap<Integer, Chance>();
 	HashMap<String, ConnectionSet> connections = new HashMap<String, ConnectionSet>();
 	HashMap<String, Map> mapMap = new HashMap<String, Map>();
+	private HashMap<String, PositionCounter> positionCounterMap = new HashMap<String, PositionCounter>();
 	int chanceRange;
 	
 	public ConnectionSet getConnectionSet(String connectionSetName)
@@ -384,5 +387,29 @@ public class Scenario
 			String name = stateJson.getString(StateRestriction.NAME);
 			this.states.put(name, new State(stateJson, 0));
 		}
+	}
+	
+	public void addPositionCounter(Map map, String name, CounterSecondaryType positionCounterType)
+	{
+		PositionCounter positionCounter = new PositionCounter(map, positionCounterType);
+		this.positionCounterMap.put(name, positionCounter);
+	}
+	
+	public void incrementPositionCounter(String name)
+	{
+		PositionCounter positionCounter = this.positionCounterMap.get(name);
+		positionCounter.increment();
+	}
+	
+	public MapPosition getMapPositionFromPositionCounter(String name)
+	{
+		PositionCounter positionCounter = this.positionCounterMap.get(name);
+		return positionCounter.getMapPosition();
+	}
+	
+	public boolean isPositionCounterFinished(String name)
+	{
+		PositionCounter positionCounter = this.positionCounterMap.get(name);
+		return positionCounter.isFinished();
 	}
 }

@@ -11,8 +11,9 @@ import main.Pages;
 
 public enum ContextConditionRestriction implements RestrictionPointer
 {
-	TYPE(Restriction.TYPE, true), NUMBER_VALUE(Restriction.NUMBER_VALUE, true), ELEMENT_NAME(Restriction.ELEMENT_NAME), 
-	ELEMENT_QUALITY(Restriction.ELEMENT_QUALITY, true), CONNECTION_NAME(Restriction.CONNECTION_NAME, true);
+	TYPE(Restriction.TYPE, true), NUMBER_VALUE(Restriction.NUMBER_VALUE, true), ELEMENT_NAME(Restriction.ELEMENT_NAME, true), 
+	ELEMENT_QUALITY(Restriction.ELEMENT_QUALITY, true), CONNECTION_NAME(Restriction.CONNECTION_NAME, true), 
+	COUNTER_NAME(Restriction.COUNTER_NAME, true), COUNTER_CONDITION(Restriction.COUNTER_CONDITION, true);
 	
 	private Restriction restriction;
 	private boolean optional;
@@ -67,6 +68,8 @@ public enum ContextConditionRestriction implements RestrictionPointer
 		String elementNumberName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_QUALITY);
 		Integer value = contextConditionData.getNumber(ContextConditionRestriction.NUMBER_VALUE);
 		String connectionName = contextConditionData.getString(ContextConditionRestriction.CONNECTION_NAME);
+		String counterName = contextConditionData.getString(ContextConditionRestriction.COUNTER_NAME);
+		String counterConditionString = contextConditionData.getString(ContextConditionRestriction.COUNTER_CONDITION);
 		
 		if (connectionName != null)
 		{
@@ -74,7 +77,18 @@ public enum ContextConditionRestriction implements RestrictionPointer
 			selectedInstance = connectionSet.get(selectedInstance);
 		}
 		
-		if (elementNumberName == null)
+		if (counterName != null)
+		{
+			CounterCondition counterCondition = CounterCondition.valueOf(counterConditionString.toUpperCase());
+
+			switch (counterCondition)
+			{
+			case COMPLETED:
+			default:
+				return scenario.isPositionCounterFinished(counterName);
+			}
+		}
+		else if (elementNumberName == null)
 		{
 			if (selectedInstance != null)
 			{

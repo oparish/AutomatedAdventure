@@ -73,16 +73,7 @@ public class PageInstance extends AbstractPageInstance
 				this.pageJson.getRestrictedJson(PageRestriction.ADJUSTMENT_DATA, AdjustmentDataRestriction.class);
 		ArrayList<Integer> adjustments = null;
 		
-		if (adjustmentData != null)
-		{
-			JsonEntityArray<RestrictedJson<PositionAdjustmentRestriction>> positionAdjustmentArray = 
-					adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.POSITION_ADJUSTMENTS, PositionAdjustmentRestriction.class);
-			JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray = 
-					adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.ELEMENT_ADJUSTMENTS, ElementAdjustmentRestriction.class);
-			this.makePositionAdjustments(positionAdjustmentArray);
-			adjustments = this.makeElementAdjustments(elementAdjustmentArray);
-		}
-
+		this.processAdjustmentData(adjustmentData);
 		this.setupChoices();
 		
 		String adjustedText = this.checkPatterns(this.pageJson.getString(PageRestriction.VALUE), adjustments);
