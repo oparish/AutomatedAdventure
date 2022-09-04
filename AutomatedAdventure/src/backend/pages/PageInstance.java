@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import backend.Element;
 import backend.Element.ElementInstance;
+import backend.ElementGroup;
 import backend.Map;
 import backend.Map.MapPosition;
 import backend.NumberRange;
@@ -23,6 +24,7 @@ import json.restrictions.ElementAdjustmentRestriction;
 import json.restrictions.ElementAdjustmentType;
 import json.restrictions.ElementChoiceRestriction;
 import json.restrictions.ElementConditionRestriction;
+import json.restrictions.GroupChoiceRestriction;
 import json.restrictions.InstanceDetailsRestriction;
 import json.restrictions.MakeConnectionRestriction;
 import json.restrictions.MakeElementRestriction;
@@ -93,7 +95,7 @@ public class PageInstance extends AbstractPageInstance
 			String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
 			Element element = this.scenario.getElement(elementName);
 			ElementInstance elementInstance = this.getSelectedElementInstance(element);
-			if (!ContextConditionRestriction.checkCondition(this.scenario, contextConditionData, elementInstance))
+			if (!ContextConditionRestriction.checkCondition(this.scenario, contextConditionData, elementInstance, this.getSelectedElementGroup()))
 			{
 				check = false;
 				break;
@@ -145,6 +147,56 @@ public class PageInstance extends AbstractPageInstance
 		this.addChoice(BACK, elementChoice);
 	}
 	
+	private void setupElementChoice(RestrictedJson<ElementChoiceRestriction> elementChoiceData, String keyword, String first, 
+			boolean withContext, ElementGroup elementGroup) throws Exception
+	{
+		String elementName = elementChoiceData.getString(ElementChoiceRestriction.ELEMENT_NAME);
+		String elementQualityName = elementChoiceData.getString(ElementChoiceRestriction.ELEMENT_QUALITY);
+		String second = elementChoiceData.getString(ElementChoiceRestriction.SECOND);
+		String type = elementChoiceData.getString(ElementChoiceRestriction.TYPE);
+		String rangeAttribute = elementChoiceData.getString(ElementChoiceRestriction.RANGE_ATTRIBUTE);
+		
+		Element element = this.scenario.getElement(elementName);
+		
+		JsonEntityArray<RestrictedJson<ElementConditionRestriction>> elementConditionArray = 
+				elementChoiceData.getRestrictedJsonArray(ElementChoiceRestriction.ELEMENT_CONDITIONS, ElementConditionRestriction.class);
+		
+		if (elementConditionArray != null)
+		{
+			HashSet<ElementInstance> failCheckSet = new HashSet<ElementInstance>();
+			for (int i = 0; i < elementConditionArray.getLength(); i++)
+			{
+				RestrictedJson<ElementConditionRestriction> elementConditionData = elementConditionArray.getMemberAt(i);
+				String elementQualityText = elementConditionData.getString(ElementConditionRestriction.ELEMENT_QUALITY);
+				String comparatorText = elementConditionData.getString(ElementConditionRestriction.TYPE);
+				int value = elementConditionData.getNumber(ElementConditionRestriction.NUMBER_VALUE);		
+			
+				for (ElementInstance elementInstance : element.getInstances())
+				{
+					if (!Pages.checkComparison(elementInstance, comparatorText, elementQualityText, value))
+					{
+						failCheckSet.add(elementInstance);
+					}
+				}
+			}
+			
+			for (ElementInstance elementInstance : element.getInstances())
+			{
+				if (!failCheckSet.contains(elementInstance))
+					this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second, type, rangeAttribute, 
+							elementGroup);
+			}
+		}
+		else
+		{
+			for (ElementInstance elementInstance : element.getInstances())
+			{
+				this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second, type, rangeAttribute, 
+						elementGroup);
+			}
+		}
+	}
+	
 	private void setupChoice(RestrictedJson<ChoiceRestriction> choiceData) throws Exception
 	{	
 		boolean withContext = choiceData.getBoolean(ChoiceRestriction.WITH_CONTEXT);
@@ -153,61 +205,23 @@ public class PageInstance extends AbstractPageInstance
 		if (contextConditionDataArray != null && !this.checkContextCondition(contextConditionDataArray))
 			return;
 		
+		RestrictedJson<GroupChoiceRestriction> groupChoiceRestriction = choiceData.getRestrictedJson(ChoiceRestriction.GROUP_CHOICE, 
+				GroupChoiceRestriction.class);
+		ElementGroup elementGroup = this.setupElementGroup(groupChoiceRestriction);
 		String keyword = choiceData.getString(ChoiceRestriction.VALUE);
 		String first = choiceData.getString(ChoiceRestriction.FIRST);
-		RestrictedJson<ElementChoiceRestriction> elementChoiceData = choiceData.getRestrictedJson(ChoiceRestriction.ELEMENT_CHOICE, ElementChoiceRestriction.class);
+		RestrictedJson<ElementChoiceRestriction> elementChoiceData = choiceData.getRestrictedJson(ChoiceRestriction.ELEMENT_CHOICE, 
+				ElementChoiceRestriction.class);
 		
 		if (elementChoiceData != null)
 		{
-			String elementName = elementChoiceData.getString(ElementChoiceRestriction.ELEMENT_NAME);
-			String elementQualityName = elementChoiceData.getString(ElementChoiceRestriction.ELEMENT_QUALITY);
-			String second = elementChoiceData.getString(ElementChoiceRestriction.SECOND);
-			String type = elementChoiceData.getString(ElementChoiceRestriction.TYPE);
-			String rangeAttribute = elementChoiceData.getString(ElementChoiceRestriction.RANGE_ATTRIBUTE);
-			
-			Element element = this.scenario.getElement(elementName);
-			
-			JsonEntityArray<RestrictedJson<ElementConditionRestriction>> elementConditionArray = 
-					elementChoiceData.getRestrictedJsonArray(ElementChoiceRestriction.ELEMENT_CONDITIONS, ElementConditionRestriction.class);
-			
-			if (elementConditionArray != null)
-			{
-				HashSet<ElementInstance> failCheckSet = new HashSet<ElementInstance>();
-				for (int i = 0; i < elementConditionArray.getLength(); i++)
-				{
-					RestrictedJson<ElementConditionRestriction> elementConditionData = elementConditionArray.getMemberAt(i);
-					String elementQualityText = elementConditionData.getString(ElementConditionRestriction.ELEMENT_QUALITY);
-					String comparatorText = elementConditionData.getString(ElementConditionRestriction.TYPE);
-					int value = elementConditionData.getNumber(ElementConditionRestriction.NUMBER_VALUE);		
-				
-					for (ElementInstance elementInstance : element.getInstances())
-					{
-						if (!Pages.checkComparison(elementInstance, comparatorText, elementQualityText, value))
-						{
-							failCheckSet.add(elementInstance);
-						}
-					}
-				}
-				
-				for (ElementInstance elementInstance : element.getInstances())
-				{
-					if (!failCheckSet.contains(elementInstance))
-						this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second, type, rangeAttribute);
-				}
-			}
-			else
-			{
-				for (ElementInstance elementInstance : element.getInstances())
-				{
-					this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second, type, rangeAttribute);
-				}
-			}	
-					
+			this.setupElementChoice(elementChoiceData, keyword, first, withContext, elementGroup);			
 		}
 		else
 		{
 			ElementChoice elementChoice = new ElementChoice();
 			elementChoice.keyword = keyword;
+			elementChoice.elementGroup = elementGroup;
 			if (withContext)
 				elementChoice.context = this.pageContext;
 			this.addChoice(first, elementChoice);
@@ -398,7 +412,7 @@ public class PageInstance extends AbstractPageInstance
 	}
 	
 	private void makeElementChoice(ElementInstance elementInstance, String keyword, boolean withContext, String elementNamingQuality, 
-			String startString, String endString, String typeString, String rangeAttributeString) throws Exception
+			String startString, String endString, String typeString, String rangeAttributeString, ElementGroup elementGroup) throws Exception
 	{
 		ElementChoiceType elementChoiceType = ElementChoiceType.getByName(typeString);
 		
@@ -466,6 +480,14 @@ public class PageInstance extends AbstractPageInstance
 				element.makeInstance(instanceDetailsData);
 			}				
 		}
+	}
+	
+	private ElementGroup setupElementGroup(RestrictedJson<GroupChoiceRestriction> groupChoiceRestrictionData)
+	{
+		if (groupChoiceRestrictionData == null)
+			return null;
+		String positionCounterName = groupChoiceRestrictionData.getString(GroupChoiceRestriction.POSITION_COUNTER_NAME);
+		return this.setupElementGroup(positionCounterName);
 	}
 	
 	private void addChoice(String choiceName, ElementChoice elementChoice)

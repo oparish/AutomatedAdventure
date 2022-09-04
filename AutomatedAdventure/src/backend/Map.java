@@ -123,6 +123,11 @@ public class Map
 			this.y = y;
 			this.elementInstances = new ArrayList<ElementInstance>();
 		}
+		
+		public ArrayList<ElementInstance> getElementInstances()
+		{
+			return this.elementInstances;
+		}
 	}
 	
 	public class ChangeInPosition

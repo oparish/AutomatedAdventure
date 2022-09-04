@@ -9,6 +9,7 @@ import backend.Map;
 import backend.Map.MapPosition;
 import backend.Scenario;
 import backend.Element.ElementInstance;
+import backend.ElementGroup;
 import backend.component.ConnectionSet;
 import json.JsonEntityArray;
 import json.RestrictedJson;
@@ -17,6 +18,7 @@ import json.restrictions.CounterAdjustmentRestriction;
 import json.restrictions.CounterInitialisationRestriction;
 import json.restrictions.ElementAdjustmentRestriction;
 import json.restrictions.ElementAdjustmentType;
+import json.restrictions.GroupChoiceRestriction;
 import json.restrictions.PositionAdjustmentRestriction;
 import json.restrictions.PositionAdjustmentType;
 import json.restrictions.SumComponentRestriction;
@@ -123,6 +125,19 @@ public abstract class AbstractPageInstance
 			return element.getUniqueInstance();
 		else
 			return this.pageContext.getElementInstance(element);
+	}
+	
+	protected ElementGroup getSelectedElementGroup()
+	{
+		return this.pageContext.getSelectedElementGroup();
+	}
+	
+	protected ElementGroup setupElementGroup(String positionCounterName)
+	{
+		MapPosition mapPosition = this.scenario.getMapPositionFromPositionCounter(positionCounterName);
+		ArrayList<ElementInstance> elementInstances = mapPosition.getElementInstances();
+		ElementGroup elementGroup = new ElementGroup(elementInstances);
+		return elementGroup;
 	}
 	
 	private Integer assessSum(String sumName) throws Exception

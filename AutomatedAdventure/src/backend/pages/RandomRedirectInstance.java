@@ -54,7 +54,7 @@ public class RandomRedirectInstance extends AbstractPageInstance
 		{
 			if (value < entry.getKey())
 			{
-				this.scenario.loadPage(entry.getValue(), pageContext, elementInstance, elementChoice, null);
+				this.scenario.loadPage(entry.getValue(), pageContext, elementInstance, elementChoice.elementGroup, elementChoice, null);
 				return;
 			}
 		}

@@ -63,22 +63,22 @@ public class Pages
 		return Pages.checkComparison(comparator, elementNumber, value);
 	}
 	
-	public static boolean checkComparison(Comparator comparator, int elementNumber, int value) throws Exception
+	public static boolean checkComparison(Comparator comparator, int firstValue, int secondValue) throws Exception
 	{
 		switch(comparator)
 		{
 			case GREATER_THAN:
-				return (elementNumber > value);
+				return (firstValue > secondValue);
 			case GREATER_THAN_OR_EQUAL:
-				return (elementNumber >= value);
+				return (firstValue >= secondValue);
 			case LESS_THAN:
-				return (elementNumber < value);
+				return (firstValue < secondValue);
 			case LESS_THAN_OR_EQUAL:
-				return (elementNumber <= value);
+				return (firstValue <= secondValue);
 			case EQUAL:
-				return (elementNumber == value);
+				return (firstValue == secondValue);
 			case NOT_EQUAL:
-				return (elementNumber != value);
+				return (firstValue != secondValue);
 		}
 		throw new Exception("Unrecognised comparator type.");
 	}

@@ -247,17 +247,17 @@ public class Scenario
 	
 	public void loadPage(ElementChoice elementChoice) throws Exception
 	{
-		Pages.getScenario().loadPage(elementChoice.keyword, elementChoice.context, elementChoice.elementInstance, 
+		Pages.getScenario().loadPage(elementChoice.keyword, elementChoice.context, elementChoice.elementInstance, elementChoice.elementGroup, 
 				elementChoice, null);
 	}
 	
 	public void loadPage(ElementChoice elementChoice, MapPosition position) throws Exception
 	{
-		Pages.getScenario().loadPage(elementChoice.keyword, elementChoice.context, elementChoice.elementInstance, 
+		Pages.getScenario().loadPage(elementChoice.keyword, elementChoice.context, elementChoice.elementInstance, elementChoice.elementGroup, 
 				elementChoice, position);
 	}
 	
-	public void loadPage(String keyword, PageContext oldContext, ElementInstance elementInstance, 
+	public void loadPage(String keyword, PageContext oldContext, ElementInstance elementInstance, ElementGroup elementGroup,
 			ElementChoice elementChoice, MapPosition position) throws Exception
 	{
 		RestrictedJson<PageRestriction> pageJson = this.getPageTemplate(keyword);
@@ -273,6 +273,9 @@ public class Scenario
 		
 		if (elementInstance != null)
 			pageContext.addElementInstance(elementInstance);
+		
+		if (elementInstance != null)
+			pageContext.setSelectedElementGroup(elementGroup);
 		
 		if (elementChoice != null)
 			pageContext.setElementChoice(elementChoice);

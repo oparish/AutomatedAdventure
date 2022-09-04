@@ -48,7 +48,7 @@ public class PositionCounter
 		switch(this.positionCounterType)
 		{
 		case ALL:
-			return y < this.map.getHeight();
+			return y >= this.map.getHeight();
 		default:
 			return true;
 		}

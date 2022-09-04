@@ -18,7 +18,7 @@
          "troop" : {
             "elementData" : {
                "name" : {
-                  "options" : [ "Example 1", "Example 2" ],
+                  "options" : [ "Example 1", "Example 2", "Example 3" ],
                   "unique" : true
                },
                "faction" : {
@@ -129,8 +129,26 @@
                      "name" : "one",
                      "mapMap" : {
                         "testMap" : {
-                           "x" : 3,
-                           "y" : 3
+                           "x" : 1,
+                           "y" : 1
+                        }
+                     },
+                     "numberMap" : {
+                        "quantity" : 30
+                     },
+                     "stringMap" : {
+                        "faction" : "player"
+                     }
+                  }
+               },
+               {
+                  "elementName" : "troop",
+                  "instanceDetails" : {
+                     "name" : "one",
+                     "mapMap" : {
+                        "testMap" : {
+                           "x" : 2,
+                           "y" : 2
                         }
                      },
                      "numberMap" : {
@@ -228,6 +246,36 @@
                   }
                }
             ]
+         },
+         "combatWin" : {
+            "value" : "WIN",
+            "choices" : [
+               {
+                  "value" : "loop",
+                  "first" : "Loop"
+               }
+            ],
+            "panelName" : "textPanel"
+         },
+         "combatDraw" : {
+            "value" : "DRAW",
+            "choices" : [
+               {
+                  "value" : "loop",
+                  "first" : "Loop"
+               }
+            ],
+            "panelName" : "textPanel"
+         },
+         "combatLose" : {
+            "value" : "LOSE",
+            "choices" : [
+               {
+                  "value" : "loop",
+                  "first" : "Loop"
+               }
+            ],
+            "panelName" : "textPanel"
          }
       },
       "connections" : {},
@@ -258,12 +306,48 @@
                   }
                ]
             },
-            "first" : "loop",
-            "second" : "next",
+            "first" : "next",
+            "second" : "combatCheck",
             "contextConditions" : [
                {
                   "counterName" : "testCounter",
                   "counterCondition" : "completed"
+               }
+            ]
+         },
+         "combatCheck" : {
+            "first" : "combatDrawCheck",
+            "second" : "loop",
+            "contextConditions" : [
+               {
+                  "groupConditionType" : "factionConflictCheck"
+               }
+            ],
+            "contextChanges" : [
+               {
+                  "counterToGroup" : "testCounter"
+               }
+            ]
+         },
+         "combatDrawCheck" : {
+            "first" : "combatDraw",
+            "second" : "combatWinCheck",
+            "contextConditions" : [
+               {
+                  "groupConditionType" : "factionContest",
+                  "elementQuality" : "quantity",
+                  "type" : "="
+               }
+            ]
+         },
+         "combatWinCheck" : {
+            "first" : "combatWin",
+            "second" : "combatLose",
+            "contextConditions" : [
+               {
+                  "groupConditionType" : "factionContest",
+                  "elementQuality" : "quantity",
+                  "type" : ">"
                }
             ]
          }
@@ -272,10 +356,16 @@
       "panels" : {
          "mapPanel" : {
             "x" : 0,
-            "y" : 0,
+            "y" : 1,
             "width" : 1,
             "height" : 1,
             "mapName" : "testMap"
+         },
+         "textPanel" : {
+            "x" : 0,
+            "y" : 0,
+            "width" : 1,
+            "height" : 1
          }
       },
       "maps" : {

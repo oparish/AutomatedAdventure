@@ -276,7 +276,7 @@ public class MapPanel extends JPanel implements ActionListener
 			JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray = 
 					tooltipComponentData.getRestrictedJsonArray(TooltipComponentRestriction.CONTEXT_CONDITIONS, ContextConditionRestriction.class);
 
-			if (contextConditionDataArray == null || ContextConditionRestriction.checkCondition(this.map.getScenario(), contextConditionDataArray, elementInstance))
+			if (contextConditionDataArray == null || ContextConditionRestriction.checkCondition(this.map.getScenario(), contextConditionDataArray, elementInstance, null))
 			{
 				tooltipText = tooltipComponentData.getString(TooltipComponentRestriction.TOOLTIP_TEXT);
 				break;

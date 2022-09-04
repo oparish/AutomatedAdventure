@@ -13,6 +13,7 @@ import json.restrictions.room.TimedRoomRestriction;
 
 public enum RestrictionType implements JsonType
 {
+	CONTEXT_CHANGE(ContextChangeRestriction.class),
 	ELEMENTDATA(ElementDataRestriction.class),
 	MAKE_ELEMENT(MakeElementRestriction.class),
 	MAKE_CONNECTION(MakeConnectionRestriction.class),
@@ -28,6 +29,7 @@ public enum RestrictionType implements JsonType
 	ELEMENT_SET(ElementSetRestriction.class),
 	ELEMENT_SET_MEMBER(ElementSetMemberRestriction.class),
 	ELEMENT_CHOICE(ElementChoiceRestriction.class),
+	GROUP_CHOICE(GroupChoiceRestriction.class),
 	INTERVAL(IntervalRestriction.class),
 	IMAGE(ImageRestriction.class),
 	TOOLTIP(TooltipRestriction.class),
