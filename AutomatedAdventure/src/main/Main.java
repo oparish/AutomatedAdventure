@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
@@ -166,4 +167,18 @@ public class Main
 	{
 		return Main.loadImageIcon(Main.disabledIcons, filename, true);
 	}
+	
+	public static GridBagConstraints setupConstraints(int x, int y, int width, int height)
+	{
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = x;
+		gridBagConstraints.gridy = y;
+		gridBagConstraints.weightx = width;
+		gridBagConstraints.weighty = height;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.gridwidth = width;
+		gridBagConstraints.gridheight = height;
+		return gridBagConstraints;
+	}
+	
 }

@@ -14,6 +14,7 @@ import javax.swing.JTextArea;
 
 import backend.Map;
 import backend.pages.PageInstance;
+import main.Main;
 
 public class PageWithMapPanel extends PagePanel
 {
@@ -23,20 +24,20 @@ public class PageWithMapPanel extends PagePanel
 	{
 		super();
 	
-		this.setLayout(new GridLayout(2, 1));
+		this.setLayout(new GridBagLayout());
 		this.mapPanel = new MapPanel(map);
 		
 		JPanel textPanel = new JPanel();
 		textPanel.setLayout(new GridLayout(1, 1));
 		textPanel.add(new JScrollPane(this.textArea));
 		
-		this.add(textPanel);
+		this.add(textPanel, Main.setupConstraints(0, 0, 1, 1));
 		
 		JPanel mapOuterPanel = new JPanel();
 		mapOuterPanel.setLayout(new GridLayout(1, 1));
 		mapOuterPanel.add(new JScrollPane(this.mapPanel));
 		
-		this.add(mapOuterPanel);
+		this.add(mapOuterPanel, Main.setupConstraints(0, 1, 1, 3));
 		this.mapPanel.setEnabled(false);
 	}
 	

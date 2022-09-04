@@ -29,6 +29,7 @@ import json.JsonEntityMap;
 import json.RestrictedJson;
 import json.restrictions.PageRestriction;
 import json.restrictions.PanelRestriction;
+import main.Main;
 import main.Pages;
 
 public class PageWindow extends MyWindow
@@ -74,7 +75,7 @@ public class PageWindow extends MyWindow
 			int y = panelJson.getNumber(PanelRestriction.Y);
 			int width = panelJson.getNumber(PanelRestriction.WIDTH);
 			int height = panelJson.getNumber(PanelRestriction.HEIGHT);
-			this.add(pagePanel, this.setupConstraints(x, y, width, height));
+			this.add(pagePanel, Main.setupConstraints(x, y, width, height));
 			this.panelMap.put(entry.getKey(), pagePanel);
 		}
 	}
@@ -95,18 +96,5 @@ public class PageWindow extends MyWindow
 				pagePanel.clear();
 			}
 		}
-	}
-	
-	private GridBagConstraints setupConstraints(int x, int y, int width, int height)
-	{
-		GridBagConstraints gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = x;
-		gridBagConstraints.gridy = y;
-		gridBagConstraints.weightx = 1;
-		gridBagConstraints.weighty = 1;
-		gridBagConstraints.fill = GridBagConstraints.BOTH;
-		gridBagConstraints.gridwidth = width;
-		gridBagConstraints.gridheight = height;
-		return gridBagConstraints;
 	}
 }
