@@ -141,7 +141,7 @@ public enum ContextConditionRestriction implements RestrictionPointer
 			{
 			case COMPLETED:
 			default:
-				return scenario.isPositionCounterFinished(counterName);
+				return scenario.isCounterFinished(counterName);
 			}
 		}
 		else if (groupConditionString != null)

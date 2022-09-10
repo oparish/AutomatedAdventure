@@ -56,7 +56,7 @@ public class RedirectInstance extends AbstractPageInstance
 		return check;
 	}
 	
-	private void processContextChanges()
+	private void processContextChanges() throws Exception
 	{
 		JsonEntityArray<RestrictedJson<ContextChangeRestriction>> changeArray = 
 				this.redirectJson.getRestrictedJsonArray(RedirectRestriction.CONTEXT_CHANGES, ContextChangeRestriction.class);
@@ -70,7 +70,7 @@ public class RedirectInstance extends AbstractPageInstance
 		}
 	}
 	
-	private void processContextChange(RestrictedJson<ContextChangeRestriction> changeRestriction)
+	private void processContextChange(RestrictedJson<ContextChangeRestriction> changeRestriction) throws Exception
 	{
 		String counterToGroup = changeRestriction.getString(ContextChangeRestriction.COUNTER_TO_GROUP);
 		if (counterToGroup != null)

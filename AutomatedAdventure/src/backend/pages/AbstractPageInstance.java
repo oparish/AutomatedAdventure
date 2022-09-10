@@ -132,7 +132,7 @@ public abstract class AbstractPageInstance
 		return this.pageContext.getSelectedElementGroup();
 	}
 	
-	protected ElementGroup setupElementGroup(String positionCounterName)
+	protected ElementGroup setupElementGroup(String positionCounterName) throws Exception
 	{
 		MapPosition mapPosition = this.scenario.getMapPositionFromPositionCounter(positionCounterName);
 		ArrayList<ElementInstance> elementInstances = mapPosition.getElementInstances();
@@ -204,7 +204,7 @@ public abstract class AbstractPageInstance
 			switch(counterAdjustmentType)
 			{
 			case INCREMENT:
-				this.scenario.incrementPositionCounter(counterName);
+				this.scenario.incrementCounter(counterName);
 				break;
 			default:
 			}

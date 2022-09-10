@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import backend.Element.ElementInstance;
 import backend.Map.MapPosition;
 import backend.component.ConnectionSet;
+import backend.pages.Counter;
 import backend.pages.CounterSecondaryType;
 import backend.pages.ElementChoice;
 import backend.pages.ElementChoiceType;
@@ -57,7 +58,7 @@ public class Scenario
 	HashMap<Integer, Chance> chanceByPriority = new HashMap<Integer, Chance>();
 	HashMap<String, ConnectionSet> connections = new HashMap<String, ConnectionSet>();
 	HashMap<String, Map> mapMap = new HashMap<String, Map>();
-	private HashMap<String, PositionCounter> positionCounterMap = new HashMap<String, PositionCounter>();
+	private HashMap<String, Counter> counterMap = new HashMap<String, Counter>();
 	int chanceRange;
 	
 	public ConnectionSet getConnectionSet(String connectionSetName)
@@ -395,24 +396,36 @@ public class Scenario
 	public void addPositionCounter(Map map, String name, CounterSecondaryType positionCounterType)
 	{
 		PositionCounter positionCounter = new PositionCounter(map, positionCounterType);
-		this.positionCounterMap.put(name, positionCounter);
+		this.counterMap.put(name, positionCounter);
 	}
 	
-	public void incrementPositionCounter(String name)
+	public void incrementCounter(String name)
 	{
-		PositionCounter positionCounter = this.positionCounterMap.get(name);
-		positionCounter.increment();
+		Counter counter = this.counterMap.get(name);
+		counter.increment();
 	}
 	
-	public MapPosition getMapPositionFromPositionCounter(String name)
+	public MapPosition getMapPositionFromPositionCounter(String name) throws Exception
 	{
-		PositionCounter positionCounter = this.positionCounterMap.get(name);
-		return positionCounter.getMapPosition();
+		Counter counter = this.counterMap.get(name);
+		if (counter == null)
+		{
+			throw new Exception(name + " is not a counter.");
+		}
+		else if (counter instanceof PositionCounter)
+		{
+			PositionCounter positionCounter = (PositionCounter) counter;
+			return positionCounter.getMapPosition();
+		}
+		else
+		{
+			throw new Exception(name + " is not a PositionCounter");
+		}
 	}
 	
-	public boolean isPositionCounterFinished(String name)
+	public boolean isCounterFinished(String name)
 	{
-		PositionCounter positionCounter = this.positionCounterMap.get(name);
-		return positionCounter.isFinished();
+		Counter counter = this.counterMap.get(name);
+		return counter.isFinished();
 	}
 }

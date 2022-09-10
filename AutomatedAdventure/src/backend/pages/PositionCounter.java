@@ -3,7 +3,7 @@ package backend.pages;
 import backend.Map;
 import backend.Map.MapPosition;
 
-public class PositionCounter
+public class PositionCounter implements Counter
 {
 	Map map;
 	CounterSecondaryType positionCounterType;

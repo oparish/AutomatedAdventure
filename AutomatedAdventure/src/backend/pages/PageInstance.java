@@ -482,7 +482,7 @@ public class PageInstance extends AbstractPageInstance
 		}
 	}
 	
-	private ElementGroup setupElementGroup(RestrictedJson<GroupChoiceRestriction> groupChoiceRestrictionData)
+	private ElementGroup setupElementGroup(RestrictedJson<GroupChoiceRestriction> groupChoiceRestrictionData) throws Exception
 	{
 		if (groupChoiceRestrictionData == null)
 			return null;
