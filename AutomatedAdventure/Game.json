@@ -60,6 +60,26 @@
                   "maxValue" : 1
                }
             }
+         },
+         "combatResult" : {
+            "elementNumbers" : {
+               "playerLoss" : {
+                  "minValue" : 1,
+                  "maxValue" : 1
+               },
+               "computerLoss" : {
+                  "minValue" : 1,
+                  "maxValue" : 1
+               }
+            },
+            "elementData" : {
+               "type" : {
+                  "options" : [ "playerLoss", "computerLoss", "draw" ]
+               },
+               "name" : {
+                  "options" : [ "Victory", "Loss", "Draw" ]
+               }
+            }
          }
       },
       "checktime" : 0,
@@ -173,6 +193,45 @@
                         "faction" : "player"
                      }
                   }
+               },
+               {
+                  "elementName" : "combatResult",
+                  "instanceDetails" : {
+                     "numberMap" : {
+                        "computerLoss" : 0,
+                        "playerLoss" : -2
+                     },
+                     "stringMap" : {
+                        "type" : "playerLoss",
+                        "name" : "Loss"
+                     }
+                  }
+               },
+               {
+                  "elementName" : "combatResult",
+                  "instanceDetails" : {
+                     "numberMap" : {
+                        "computerLoss" : -2,
+                        "playerLoss" : 0
+                     },
+                     "stringMap" : {
+                        "type" : "computerLoss",
+                        "name" : "Victory"
+                     }
+                  }
+               },
+               {
+                  "elementName" : "combatResult",
+                  "instanceDetails" : {
+                     "numberMap" : {
+                        "computerLoss" : -1,
+                        "playerLoss" : -1
+                     },
+                     "stringMap" : {
+                        "type" : "draw",
+                        "name" : "Draw"
+                     }
+                  }
                }
             ],
             "choices" : [
@@ -251,18 +310,45 @@
             "value" : "WIN",
             "choices" : [
                {
-                  "value" : "loop",
-                  "first" : "Loop"
+                  "value" : "combatResult",
+                  "first" : "Result: ",
+                  "elementChoice" : {
+                     "elementName" : "combatResult",
+                     "second" : "",
+                     "elementQuality" : "name",
+                     "type" : "menu",
+                     "elementConditions" : [
+                        {
+                           "elementQuality" : "type",
+                           "qualityName" : "computerLoss"
+                        }
+                     ]
+                  },
+                  "withContext" : true
                }
             ],
-            "panelName" : "textPanel"
+            "panelName" : "textPanel",
+            "adjustmentData" : {}
          },
          "combatDraw" : {
             "value" : "DRAW",
             "choices" : [
                {
-                  "value" : "loop",
-                  "first" : "Loop"
+                  "value" : "combatResult",
+                  "first" : "Result: ",
+                  "elementChoice" : {
+                     "elementName" : "combatResult",
+                     "second" : "",
+                     "elementQuality" : "name",
+                     "type" : "menu",
+                     "elementConditions" : [
+                        {
+                           "elementQuality" : "type",
+                           "qualityName" : "draw"
+                        }
+                     ]
+                  },
+                  "withContext" : true
                }
             ],
             "panelName" : "textPanel"
@@ -271,8 +357,21 @@
             "value" : "LOSE",
             "choices" : [
                {
-                  "value" : "loop",
-                  "first" : "Loop"
+                  "value" : "combatResult",
+                  "first" : "Result: ",
+                  "elementChoice" : {
+                     "elementName" : "combatResult",
+                     "second" : "",
+                     "elementQuality" : "name",
+                     "type" : "menu",
+                     "elementConditions" : [
+                        {
+                           "elementQuality" : "type",
+                           "qualityName" : "playerLoss"
+                        }
+                     ]
+                  },
+                  "withContext" : true
                }
             ],
             "panelName" : "textPanel"
@@ -327,7 +426,16 @@
                {
                   "counterToGroup" : "testCounter"
                }
-            ]
+            ],
+            "adjustmentData" : {
+               "counterInitialisations" : [
+                  {
+                     "counterName" : "groupCounter",
+                     "counterPrimaryType" : "group",
+                     "counterSecondaryType" : "all"
+                  }
+               ]
+            }
          },
          "combatDrawCheck" : {
             "first" : "combatDraw",
@@ -350,6 +458,75 @@
                   "type" : ">"
                }
             ]
+         },
+         "combatResult" : {
+            "first" : "playerLossAdjustment",
+            "second" : "computerLossAdjustment",
+            "contextConditions" : [
+               {
+                  "stringValue" : "player",
+                  "elementQuality" : "faction",
+                  "selectionType" : "fromGroup",
+                  "type" : "=",
+                  "groupName" : "groupCounter"
+               }
+            ]
+         },
+         "playerLossAdjustment" : {
+            "first" : "next",
+            "second" : "combatResult",
+            "contextConditions" : [
+               {
+                  "counterName" : "groupCounter",
+                  "counterCondition" : "completed"
+               }
+            ],
+            "adjustmentData" : {
+               "counterAdjustments" : [
+                  {
+                     "counterName" : "groupCounter",
+                     "counterAdjustmentType" : "increment"
+                  }
+               ],
+               "elementAdjustments" : [
+                  {
+                     "elementName" : "troop",
+                     "elementQuality" : "quantity",
+                     "sumName" : "playerLossSum",
+                     "type" : "group",
+                     "sumSign" : "+",
+                     "counterName" : "groupCounter"
+                  }
+               ]
+            }
+         },
+         "computerLossAdjustment" : {
+            "first" : "next",
+            "second" : "combatResult",
+            "contextConditions" : [
+               {
+                  "counterName" : "groupCounter",
+                  "counterCondition" : "completed"
+               }
+            ],
+            "adjustmentData" : {
+               "counterAdjustments" : [
+                  {
+                     "counterName" : "groupCounter",
+                     "counterAdjustmentType" : "increment"
+                  }
+               ],
+               "elementAdjustments" : [
+                  {
+                     "elementName" : "troop",
+                     "elementQuality" : "quantity",
+                     "sumName" : "computerLossSum",
+                     "type" : "group",
+                     "sumSign" : "+",
+                     "counterName" : "groupCounter"
+                  }
+               ]
+            }
          }
       },
       "randomRedirects" : {},
@@ -419,6 +596,13 @@
             }
          }
       },
-      "sums" : {}
+      "sums" : {
+         "playerLossSum" : {
+            "numberReference" : "combatResult:playerLoss"
+         },
+         "computerLossSum" : {
+            "numberReference" : "combatResult:computerLoss"
+         }
+      }
    }
 }

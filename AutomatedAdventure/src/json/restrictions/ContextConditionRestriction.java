@@ -14,10 +14,11 @@ import main.Pages;
 
 public enum ContextConditionRestriction implements RestrictionPointer
 {
-	TYPE(Restriction.TYPE, true), NUMBER_VALUE(Restriction.NUMBER_VALUE, true), ELEMENT_NAME(Restriction.ELEMENT_NAME, true), 
+	TYPE(Restriction.TYPE, true), STRING_VALUE(Restriction.STRING_VALUE, true), NUMBER_VALUE(Restriction.NUMBER_VALUE, true), ELEMENT_NAME(Restriction.ELEMENT_NAME, true), 
 	ELEMENT_QUALITY(Restriction.ELEMENT_QUALITY, true), CONNECTION_NAME(Restriction.CONNECTION_NAME, true), 
 	COUNTER_NAME(Restriction.COUNTER_NAME, true), COUNTER_CONDITION(Restriction.COUNTER_CONDITION, true), 
-	GROUP_CONDITION_TYPE(Restriction.GROUP_CONDITION_TYPE, true);
+	GROUP_CONDITION_TYPE(Restriction.GROUP_CONDITION_TYPE, true), SELECTION_TYPE(Restriction.SELECTION_TYPE, true), 
+	GROUP_NAME(Restriction.GROUP_NAME, true);
 	
 	private Restriction restriction;
 	private boolean optional;
@@ -120,14 +121,32 @@ public enum ContextConditionRestriction implements RestrictionPointer
 			ElementInstance selectedInstance, ElementGroup elementGroup) throws Exception
 	{			
 		String comparatorText = contextConditionData.getString(ContextConditionRestriction.TYPE);
-		String elementNumberName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_QUALITY);
-		Integer value = contextConditionData.getNumber(ContextConditionRestriction.NUMBER_VALUE);
+		String elementQualityName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_QUALITY);
+		Integer numberValue = contextConditionData.getNumber(ContextConditionRestriction.NUMBER_VALUE);
+		String stringValue = contextConditionData.getString(ContextConditionRestriction.STRING_VALUE);
 		String connectionName = contextConditionData.getString(ContextConditionRestriction.CONNECTION_NAME);
 		String counterName = contextConditionData.getString(ContextConditionRestriction.COUNTER_NAME);
 		String counterConditionString = contextConditionData.getString(ContextConditionRestriction.COUNTER_CONDITION);
 		String groupConditionString = contextConditionData.getString(ContextConditionRestriction.GROUP_CONDITION_TYPE);
+		String selectionTypeString = contextConditionData.getString(ContextConditionRestriction.SELECTION_TYPE);
 		
-		if (connectionName != null)
+		SelectionType selectionType;
+		if (selectionTypeString == null)
+		{
+			selectionType = SelectionType.SINGLE_SELECT;
+		}
+		else
+		{
+			selectionType = SelectionType.fromString(selectionTypeString);
+		}
+		
+		
+		if (selectionType == SelectionType.FROM_GROUP)
+		{
+			String groupName = contextConditionData.getString(ContextConditionRestriction.GROUP_NAME);
+			selectedInstance = scenario.getElementInstanceFromGroupCounter(groupName);
+		}
+		else if (connectionName != null)
 		{
 			ConnectionSet connectionSet = scenario.getConnectionSet(connectionName);
 			selectedInstance = connectionSet.get(selectedInstance);
@@ -146,9 +165,9 @@ public enum ContextConditionRestriction implements RestrictionPointer
 		}
 		else if (groupConditionString != null)
 		{
-			return ContextConditionRestriction.makeGroupCheck(groupConditionString, elementGroup, elementNumberName, comparatorText);
+			return ContextConditionRestriction.makeGroupCheck(groupConditionString, elementGroup, elementQualityName, comparatorText);
 		}
-		else if (elementNumberName == null)
+		else if (elementQualityName == null)
 		{
 			if (selectedInstance != null)
 			{
@@ -158,8 +177,19 @@ public enum ContextConditionRestriction implements RestrictionPointer
 			{
 				return false;
 			}
-		}		
-		else if (Pages.checkComparison(selectedInstance, comparatorText, elementNumberName, value))
+		}
+		else if (stringValue != null)
+		{
+			if (Pages.checkStringComparison(selectedInstance, elementQualityName, stringValue))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (Pages.checkNumberComparison(selectedInstance, comparatorText, elementQualityName, numberValue))
 		{
 			return true;
 		}				

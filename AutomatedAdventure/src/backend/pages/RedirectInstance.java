@@ -84,9 +84,8 @@ public class RedirectInstance extends AbstractPageInstance
 	{	
 		RestrictedJson<AdjustmentDataRestriction> adjustmentData = 
 				this.redirectJson.getRestrictedJson(RedirectRestriction.ADJUSTMENT_DATA, AdjustmentDataRestriction.class);
-		this.processAdjustmentData(adjustmentData);
-		
 		this.processContextChanges();
+		this.processAdjustmentData(adjustmentData);
 				
 		if (this.checkConditions())
 		{

@@ -3,7 +3,7 @@ package json.restrictions;
 public enum CounterInitialisationRestriction implements RestrictionPointer
 {
 	COUNTER_NAME(Restriction.COUNTER_NAME, false), COUNTER_PRIMARY_TYPE(Restriction.COUNTER_PRIMARY_TYPE, false), 
-	COUNTER_SECONDARY_TYPE(Restriction.COUNTER_SECONDARY_TYPE, false), 	MAP_NAME(Restriction.MAP_NAME, false);
+	COUNTER_SECONDARY_TYPE(Restriction.COUNTER_SECONDARY_TYPE, false), 	MAP_NAME(Restriction.MAP_NAME, true);
 	
 	private Restriction restriction;
 	private boolean optional;

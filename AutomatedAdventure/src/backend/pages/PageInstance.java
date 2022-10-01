@@ -169,13 +169,27 @@ public class PageInstance extends AbstractPageInstance
 				RestrictedJson<ElementConditionRestriction> elementConditionData = elementConditionArray.getMemberAt(i);
 				String elementQualityText = elementConditionData.getString(ElementConditionRestriction.ELEMENT_QUALITY);
 				String comparatorText = elementConditionData.getString(ElementConditionRestriction.TYPE);
-				int value = elementConditionData.getNumber(ElementConditionRestriction.NUMBER_VALUE);		
-			
-				for (ElementInstance elementInstance : element.getInstances())
+				Integer value = elementConditionData.getNumber(ElementConditionRestriction.NUMBER_VALUE);		
+				String qualityValue = elementConditionData.getString(ElementConditionRestriction.QUALITY_NAME);
+				
+				if (value == null)
 				{
-					if (!Pages.checkComparison(elementInstance, comparatorText, elementQualityText, value))
+					for (ElementInstance elementInstance : element.getInstances())
 					{
-						failCheckSet.add(elementInstance);
+						if (!Pages.checkStringComparison(elementInstance, elementQualityText, qualityValue))
+						{
+							failCheckSet.add(elementInstance);
+						}
+					}
+				}
+				else
+				{
+					for (ElementInstance elementInstance : element.getInstances())
+					{
+						if (!Pages.checkNumberComparison(elementInstance, comparatorText, elementQualityText, value))
+						{
+							failCheckSet.add(elementInstance);
+						}
 					}
 				}
 			}
@@ -326,7 +340,7 @@ public class PageInstance extends AbstractPageInstance
 			Element element = this.scenario.getElement(elementName);
 			for (ElementInstance elementInstance : element.getInstances())
 			{
-				if (Pages.checkComparison(elementInstance, comparatorText, elementNumberName, number))
+				if (Pages.checkNumberComparison(elementInstance, comparatorText, elementNumberName, number))
 					this.processRepeatedElementInstance(text, stringBuffer, elementInstance);
 			}		
 			adjustedText = repeatMatcher.replaceFirst(stringBuffer.toString());

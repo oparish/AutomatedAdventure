@@ -3,7 +3,7 @@ package json.restrictions;
 public enum SumRestriction implements RestrictionPointer
 {
 	NUMBER_REFERENCE(Restriction.NUMBER_REFERENCE, true), NUMBER_VALUE(Restriction.NUMBER_VALUE, true), 
-	SUM_COMPONENTS(Restriction.SUM_COMPONENTS);
+	SUM_COMPONENTS(Restriction.SUM_COMPONENTS, true);
 	
 	private Restriction restriction;
 	private boolean optional;

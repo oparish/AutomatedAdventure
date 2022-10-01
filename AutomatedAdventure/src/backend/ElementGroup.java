@@ -12,6 +12,16 @@ public class ElementGroup
 		return elementInstances;
 	}
 
+	public int getLength()
+	{
+		return this.elementInstances.size();
+	}
+	
+	public ElementInstance getElementInstance(int i)
+	{
+		return this.elementInstances.get(i);
+	}
+	
 	public ElementGroup(ArrayList<ElementInstance> elementInstances)
 	{
 		this.elementInstances = elementInstances;

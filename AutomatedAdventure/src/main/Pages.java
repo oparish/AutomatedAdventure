@@ -56,11 +56,17 @@ public class Pages
 		return Pages.scenario;
 	}
 	
-	public static boolean checkComparison(ElementInstance elementInstance, String comparatorText, String elementNumberName, int value) throws Exception
+	public static boolean checkNumberComparison(ElementInstance elementInstance, String comparatorText, String elementNumberName, int value) throws Exception
 	{
 		Comparator comparator = Comparator.fromText(comparatorText);		
 		int elementNumber = elementInstance.getNumberValueByName(elementNumberName);
 		return Pages.checkComparison(comparator, elementNumber, value);
+	}
+	
+	public static boolean checkStringComparison(ElementInstance elementInstance, String elementQualityName, String qualityValue) throws Exception
+	{	
+		String quality = elementInstance.getDetailValueByName(elementQualityName);
+		return quality.equals(qualityValue);
 	}
 	
 	public static boolean checkComparison(Comparator comparator, int firstValue, int secondValue) throws Exception

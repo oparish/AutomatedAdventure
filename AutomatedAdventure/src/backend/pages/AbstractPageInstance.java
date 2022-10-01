@@ -156,10 +156,13 @@ public abstract class AbstractPageInstance
 		JsonEntityArray<RestrictedJson<SumComponentRestriction>> sumComponents = 
 				sumData.getRestrictedJsonArray(SumRestriction.SUM_COMPONENTS, SumComponentRestriction.class);
 		
-		for (int i = 0; i < sumComponents.getLength(); i++)
+		if (sumComponents != null)
 		{
-			RestrictedJson<SumComponentRestriction> sumComponentData = sumComponents.getMemberAt(i);
-			value = this.assessSumComponent(sumComponentData, value);
+			for (int i = 0; i < sumComponents.getLength(); i++)
+			{
+				RestrictedJson<SumComponentRestriction> sumComponentData = sumComponents.getMemberAt(i);
+				value = this.assessSumComponent(sumComponentData, value);
+			}
 		}
 		
 		return value;
@@ -182,6 +185,9 @@ public abstract class AbstractPageInstance
 			
 			switch(counterPrimaryType)
 			{
+			case GROUP:
+				this.scenario.addGroupCounter(counterName, counterSecondaryType, this.pageContext.getSelectedElementGroup());
+				break;
 			case POSITION:
 			default:
 				this.scenario.addPositionCounter(map, counterName, counterSecondaryType);
@@ -293,6 +299,11 @@ public abstract class AbstractPageInstance
 			
 			switch(elementAdjustmentType)
 			{
+				case GROUP:
+					String counterName = elementAdjustmentData.getString(ElementAdjustmentRestriction.COUNTER_NAME);
+					ElementInstance groupInstance = this.scenario.getElementInstanceFromGroupCounter(counterName);
+					groupInstance.adjustNumber(elementNumberName, sumSign, value);
+					break;
 				case CONNECTED:
 					String connectionName = elementAdjustmentData.getString(ElementAdjustmentRestriction.CONNECTION_NAME);
 					ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);

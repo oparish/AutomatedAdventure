@@ -15,6 +15,7 @@ import backend.pages.Counter;
 import backend.pages.CounterSecondaryType;
 import backend.pages.ElementChoice;
 import backend.pages.ElementChoiceType;
+import backend.pages.GroupCounter;
 import backend.pages.PageContext;
 import backend.pages.PageInstance;
 import backend.pages.PositionCounter;
@@ -393,10 +394,16 @@ public class Scenario
 		}
 	}
 	
-	public void addPositionCounter(Map map, String name, CounterSecondaryType positionCounterType)
+	public void addPositionCounter(Map map, String name, CounterSecondaryType counterSecondaryType)
 	{
-		PositionCounter positionCounter = new PositionCounter(map, positionCounterType);
+		PositionCounter positionCounter = new PositionCounter(map, counterSecondaryType);
 		this.counterMap.put(name, positionCounter);
+	}
+	
+	public void addGroupCounter(String name, CounterSecondaryType counterSecondaryType, ElementGroup elementGroup)
+	{
+		GroupCounter groupCounter = new GroupCounter(counterSecondaryType, elementGroup);
+		this.counterMap.put(name, groupCounter);
 	}
 	
 	public void incrementCounter(String name)
@@ -420,6 +427,24 @@ public class Scenario
 		else
 		{
 			throw new Exception(name + " is not a PositionCounter");
+		}
+	}
+	
+	public ElementInstance getElementInstanceFromGroupCounter(String name) throws Exception
+	{
+		Counter counter = this.counterMap.get(name);
+		if (counter == null)
+		{
+			throw new Exception(name + " is not a counter.");
+		}
+		else if (counter instanceof GroupCounter)
+		{
+			GroupCounter groupCounter = (GroupCounter) counter;
+			return groupCounter.getSelectedElement();
+		}
+		else
+		{
+			throw new Exception(name + " is not a GroupCounter");
 		}
 	}
 	
