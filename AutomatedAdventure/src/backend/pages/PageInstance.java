@@ -31,6 +31,7 @@ import json.restrictions.MakeElementRestriction;
 import json.restrictions.PageRestriction;
 import json.restrictions.PositionAdjustmentRestriction;
 import json.restrictions.PositionAdjustmentType;
+import json.restrictions.RemoveElementRestriction;
 import json.restrictions.SumComponentRestriction;
 import json.restrictions.SumRestriction;
 import main.Main;
@@ -76,13 +77,30 @@ public class PageInstance extends AbstractPageInstance
 		ArrayList<Integer> adjustments = null;
 		
 		this.processAdjustmentData(adjustmentData);
+		this.removeElements();
 		this.setupChoices();
 		
 		String adjustedText = this.checkPatterns(this.pageJson.getString(PageRestriction.VALUE), adjustments);
 		return adjustedText;
 	}
 	
-
+	private void removeElements()
+	{
+		JsonEntityArray<RestrictedJson<RemoveElementRestriction>> removeElementArray = 
+				this.pageJson.getRestrictedJsonArray(PageRestriction.REMOVE_ELEMENTS, RemoveElementRestriction.class);
+		
+		if (removeElementArray == null)
+			return;
+		
+		for (int i = 0; i < removeElementArray.size(); i++)
+		{
+			RestrictedJson<RemoveElementRestriction> removeElementData = removeElementArray.getMemberAt(i);
+			String elementName = removeElementData.getString(RemoveElementRestriction.ELEMENT_NAME);
+			Element element = this.scenario.getElement(elementName);
+			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
+			element.removeInstance(elementInstance);
+		}
+	}
 	
 	private boolean checkContextCondition(JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray)
 			throws Exception

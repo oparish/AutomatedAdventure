@@ -106,6 +106,7 @@ public enum Restriction
 	ELEMENT_SETS("elementSets", RestrictionType.ELEMENT_SET, JsonDim.MAP),
 	MEMBERS("members", RestrictionType.ELEMENT_SET_MEMBER, JsonDim.MAP),
 	MAKE_ELEMENTS("makeElements", RestrictionType.MAKE_ELEMENT, JsonDim.ARRAY),
+	REMOVE_ELEMENTS("removeElements", RestrictionType.REMOVE_ELEMENT, JsonDim.ARRAY),
 	MAKE_CONNECTIONS("makeConnections", RestrictionType.MAKE_CONNECTION, JsonDim.ARRAY),
 	ADJUSTMENT_DATA("adjustmentData", RestrictionType.ADJUSTMENT_DATA, JsonDim.MONO),
 	ELEMENT_ADJUSTMENTS("elementAdjustments", RestrictionType.ELEMENT_ADJUSTMENT, JsonDim.ARRAY),

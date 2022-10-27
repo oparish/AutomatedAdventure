@@ -387,6 +387,11 @@ public class Element
 		return this.instances.get(index);
 	}
 	
+	public void removeInstance(ElementInstance elementInstance)
+	{
+		this.instances.remove(elementInstance);
+	}
+	
 	public class ElementInstance
 	{
 		HashMap<Map, Route> routeMap = new HashMap<Map, Route>();
