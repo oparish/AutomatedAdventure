@@ -68,38 +68,17 @@ public class PageInstance extends AbstractPageInstance
 		this.pageJson = pageJson;
 	}
 
-	public String parseText() throws Exception
+	public String parseContents() throws Exception
 	{
-		this.makeElements();
-		this.makeConnections();
 		RestrictedJson<AdjustmentDataRestriction> adjustmentData = 
 				this.pageJson.getRestrictedJson(PageRestriction.ADJUSTMENT_DATA, AdjustmentDataRestriction.class);
 		ArrayList<Integer> adjustments = null;
 		
 		this.processAdjustmentData(adjustmentData);
-		this.removeElements();
 		this.setupChoices();
 		
 		String adjustedText = this.checkPatterns(this.pageJson.getString(PageRestriction.VALUE), adjustments);
 		return adjustedText;
-	}
-	
-	private void removeElements()
-	{
-		JsonEntityArray<RestrictedJson<RemoveElementRestriction>> removeElementArray = 
-				this.pageJson.getRestrictedJsonArray(PageRestriction.REMOVE_ELEMENTS, RemoveElementRestriction.class);
-		
-		if (removeElementArray == null)
-			return;
-		
-		for (int i = 0; i < removeElementArray.size(); i++)
-		{
-			RestrictedJson<RemoveElementRestriction> removeElementData = removeElementArray.getMemberAt(i);
-			String elementName = removeElementData.getString(RemoveElementRestriction.ELEMENT_NAME);
-			Element element = this.scenario.getElement(elementName);
-			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
-			element.removeInstance(elementInstance);
-		}
 	}
 	
 	private boolean checkContextCondition(JsonEntityArray<RestrictedJson<ContextConditionRestriction>> contextConditionDataArray)
@@ -466,52 +445,6 @@ public class PageInstance extends AbstractPageInstance
 			keyString = startString + qualityString + endString;
 		}		
 		this.addChoice(keyString, elementChoice);
-	}
-	
-	private void makeConnections() throws Exception
-	{
-		JsonEntityArray<RestrictedJson<MakeConnectionRestriction>> makeConnectionArray = 
-				this.pageJson.getRestrictedJsonArray(PageRestriction.MAKE_CONNECTIONS, MakeConnectionRestriction.class);
-		
-		if (makeConnectionArray == null)
-			return;
-			
-		for (int i = 0; i < makeConnectionArray.size(); i++)
-		{
-			RestrictedJson<MakeConnectionRestriction> makeConnectionData = makeConnectionArray.getMemberAt(i);
-			int connectionNumber = makeConnectionData.getNumber(MakeConnectionRestriction.NUMBER_VALUE);
-			String connectionName = makeConnectionData.getString(MakeConnectionRestriction.NAME);
-			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
-			connectionSet.makeUniqueConnections(connectionNumber);
-		}
-	}
-	
-	private void makeElements() throws Exception
-	{
-		JsonEntityArray<RestrictedJson<MakeElementRestriction>> makeElementArray = 
-				this.pageJson.getRestrictedJsonArray(PageRestriction.MAKE_ELEMENTS, MakeElementRestriction.class);
-		
-		if (makeElementArray == null)
-			return;
-		
-		for (int i = 0; i < makeElementArray.size(); i++)
-		{
-			RestrictedJson<MakeElementRestriction> makeElementData = makeElementArray.getMemberAt(i);
-			String elementName = makeElementData.getString(MakeElementRestriction.ELEMENT_NAME);
-			Element element = this.scenario.getElement(elementName);
-			Integer numberValue = makeElementData.getNumber(MakeElementRestriction.NUMBER_VALUE);
-			
-			if (numberValue != null)
-			{
-				element.makeInstances(numberValue);
-			}
-			else
-			{
-				RestrictedJson<InstanceDetailsRestriction> instanceDetailsData = 
-						makeElementData.getRestrictedJson(MakeElementRestriction.INSTANCE_DETAILS, InstanceDetailsRestriction.class);
-				element.makeInstance(instanceDetailsData);
-			}				
-		}
 	}
 	
 	private ElementGroup setupElementGroup(RestrictedJson<GroupChoiceRestriction> groupChoiceRestrictionData) throws Exception

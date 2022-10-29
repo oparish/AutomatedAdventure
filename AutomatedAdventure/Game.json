@@ -92,148 +92,6 @@
          "initial" : {
             "value" : "TEST",
             "panelName" : "mapPanel",
-            "makeElements" : [
-               {
-                  "elementName" : "village",
-                  "instanceDetails" : {
-                     "name" : "one",
-                     "stringMap" : {
-                        "name" : "One",
-                        "faction" : "player"
-                     },
-                     "mapMap" : {
-                        "testMap" : {
-                           "x" : 3,
-                           "y" : 3
-                        }
-                     }
-                  }
-               },
-               {
-                  "elementName" : "village",
-                  "instanceDetails" : {
-                     "name" : "two",
-                     "stringMap" : {
-                        "name" : "Two",
-                        "faction" : "player"
-                     },
-                     "mapMap" : {
-                        "testMap" : {
-                           "x" : 6,
-                           "y" : 6
-                        }
-                     }
-                  }
-               },
-               {
-                  "elementName" : "troop",
-                  "instanceDetails" : {
-                     "name" : "one",
-                     "mapMap" : {
-                        "testMap" : {
-                           "x" : 2,
-                           "y" : 2
-                        }
-                     },
-                     "numberMap" : {
-                        "quantity" : 30
-                     },
-                     "stringMap" : {
-                        "faction" : "computer"
-                     }
-                  }
-               },
-               {
-                  "elementName" : "troop",
-                  "instanceDetails" : {
-                     "name" : "one",
-                     "mapMap" : {
-                        "testMap" : {
-                           "x" : 1,
-                           "y" : 1
-                        }
-                     },
-                     "numberMap" : {
-                        "quantity" : 30
-                     },
-                     "stringMap" : {
-                        "faction" : "player"
-                     }
-                  }
-               },
-               {
-                  "elementName" : "troop",
-                  "instanceDetails" : {
-                     "name" : "one",
-                     "mapMap" : {
-                        "testMap" : {
-                           "x" : 2,
-                           "y" : 2
-                        }
-                     },
-                     "numberMap" : {
-                        "quantity" : 30
-                     },
-                     "stringMap" : {
-                        "faction" : "player"
-                     }
-                  }
-               },
-               {
-                  "elementName" : "self",
-                  "instanceDetails" : {
-                     "name" : "one",
-                     "mapMap" : {
-                        "testMap" : {
-                           "x" : 2,
-                           "y" : 3
-                        }
-                     },
-                     "stringMap" : {
-                        "faction" : "player"
-                     }
-                  }
-               },
-               {
-                  "elementName" : "combatResult",
-                  "instanceDetails" : {
-                     "numberMap" : {
-                        "computerLoss" : 0,
-                        "playerLoss" : -2
-                     },
-                     "stringMap" : {
-                        "type" : "playerLoss",
-                        "name" : "Loss"
-                     }
-                  }
-               },
-               {
-                  "elementName" : "combatResult",
-                  "instanceDetails" : {
-                     "numberMap" : {
-                        "computerLoss" : -2,
-                        "playerLoss" : 0
-                     },
-                     "stringMap" : {
-                        "type" : "computerLoss",
-                        "name" : "Victory"
-                     }
-                  }
-               },
-               {
-                  "elementName" : "combatResult",
-                  "instanceDetails" : {
-                     "numberMap" : {
-                        "computerLoss" : -1,
-                        "playerLoss" : -1
-                     },
-                     "stringMap" : {
-                        "type" : "draw",
-                        "name" : "Draw"
-                     }
-                  }
-               }
-            ],
             "choices" : [
                {
                   "value" : "next",
@@ -276,6 +134,148 @@
                      "counterSecondaryType" : "all",
                      "counterPrimaryType" : "position"
                   }
+               ],
+               "makeElements" : [
+                  {
+                     "elementName" : "village",
+                     "instanceDetails" : {
+                        "name" : "one",
+                        "stringMap" : {
+                           "name" : "One",
+                           "faction" : "player"
+                        },
+                        "mapMap" : {
+                           "testMap" : {
+                              "x" : 3,
+                              "y" : 3
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "elementName" : "village",
+                     "instanceDetails" : {
+                        "name" : "two",
+                        "stringMap" : {
+                           "name" : "Two",
+                           "faction" : "player"
+                        },
+                        "mapMap" : {
+                           "testMap" : {
+                              "x" : 6,
+                              "y" : 6
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "elementName" : "troop",
+                     "instanceDetails" : {
+                        "name" : "one",
+                        "mapMap" : {
+                           "testMap" : {
+                              "x" : 2,
+                              "y" : 2
+                           }
+                        },
+                        "numberMap" : {
+                           "quantity" : 30
+                        },
+                        "stringMap" : {
+                           "faction" : "computer"
+                        }
+                     }
+                  },
+                  {
+                     "elementName" : "troop",
+                     "instanceDetails" : {
+                        "name" : "one",
+                        "mapMap" : {
+                           "testMap" : {
+                              "x" : 1,
+                              "y" : 1
+                           }
+                        },
+                        "numberMap" : {
+                           "quantity" : 30
+                        },
+                        "stringMap" : {
+                           "faction" : "player"
+                        }
+                     }
+                  },
+                  {
+                     "elementName" : "troop",
+                     "instanceDetails" : {
+                        "name" : "one",
+                        "mapMap" : {
+                           "testMap" : {
+                              "x" : 2,
+                              "y" : 2
+                           }
+                        },
+                        "numberMap" : {
+                           "quantity" : 30
+                        },
+                        "stringMap" : {
+                           "faction" : "player"
+                        }
+                     }
+                  },
+                  {
+                     "elementName" : "self",
+                     "instanceDetails" : {
+                        "name" : "one",
+                        "mapMap" : {
+                           "testMap" : {
+                              "x" : 2,
+                              "y" : 3
+                           }
+                        },
+                        "stringMap" : {
+                           "faction" : "player"
+                        }
+                     }
+                  },
+                  {
+                     "elementName" : "combatResult",
+                     "instanceDetails" : {
+                        "numberMap" : {
+                           "computerLoss" : 0,
+                           "playerLoss" : -2
+                        },
+                        "stringMap" : {
+                           "type" : "playerLoss",
+                           "name" : "Loss"
+                        }
+                     }
+                  },
+                  {
+                     "elementName" : "combatResult",
+                     "instanceDetails" : {
+                        "numberMap" : {
+                           "computerLoss" : -2,
+                           "playerLoss" : 0
+                        },
+                        "stringMap" : {
+                           "type" : "computerLoss",
+                           "name" : "Victory"
+                        }
+                     }
+                  },
+                  {
+                     "elementName" : "combatResult",
+                     "instanceDetails" : {
+                        "numberMap" : {
+                           "computerLoss" : -1,
+                           "playerLoss" : -1
+                        },
+                        "stringMap" : {
+                           "type" : "draw",
+                           "name" : "Draw"
+                        }
+                     }
+                  }
                ]
             }
          },
@@ -303,11 +303,6 @@
                      "type" : "menu",
                      "elementQuality" : "name"
                   }
-               }
-            ],
-            "removeElements" : [
-               {
-                  "elementName" : "troop"
                }
             ]
          },
@@ -501,6 +496,11 @@
                      "type" : "group",
                      "sumSign" : "+",
                      "counterName" : "groupCounter"
+                  }
+               ],
+               "removeElements" : [
+                  {
+                     "elementName" : "troop"
                   }
                ]
             }

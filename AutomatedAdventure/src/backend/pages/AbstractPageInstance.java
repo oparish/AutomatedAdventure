@@ -19,8 +19,13 @@ import json.restrictions.CounterInitialisationRestriction;
 import json.restrictions.ElementAdjustmentRestriction;
 import json.restrictions.ElementAdjustmentType;
 import json.restrictions.GroupChoiceRestriction;
+import json.restrictions.InstanceDetailsRestriction;
+import json.restrictions.MakeConnectionRestriction;
+import json.restrictions.MakeElementRestriction;
+import json.restrictions.PageRestriction;
 import json.restrictions.PositionAdjustmentRestriction;
 import json.restrictions.PositionAdjustmentType;
+import json.restrictions.RemoveElementRestriction;
 import json.restrictions.SumComponentRestriction;
 import json.restrictions.SumRestriction;
 
@@ -55,11 +60,55 @@ public abstract class AbstractPageInstance
 		this.position = position;
 	}
 	
+	private void removeElements(JsonEntityArray<RestrictedJson<RemoveElementRestriction>> removeElementArray)
+	{	
+		if (removeElementArray == null)
+			return;
+		
+		for (int i = 0; i < removeElementArray.size(); i++)
+		{
+			RestrictedJson<RemoveElementRestriction> removeElementData = removeElementArray.getMemberAt(i);
+			String elementName = removeElementData.getString(RemoveElementRestriction.ELEMENT_NAME);
+			Element element = this.scenario.getElement(elementName);
+			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
+			element.removeInstance(elementInstance);
+		}
+	}
+	
+	private void makeElements(JsonEntityArray<RestrictedJson<MakeElementRestriction>> makeElementArray) throws Exception
+	{		
+		if (makeElementArray == null)
+			return;
+		
+		for (int i = 0; i < makeElementArray.size(); i++)
+		{
+			RestrictedJson<MakeElementRestriction> makeElementData = makeElementArray.getMemberAt(i);
+			String elementName = makeElementData.getString(MakeElementRestriction.ELEMENT_NAME);
+			Element element = this.scenario.getElement(elementName);
+			Integer numberValue = makeElementData.getNumber(MakeElementRestriction.NUMBER_VALUE);
+			
+			if (numberValue != null)
+			{
+				element.makeInstances(numberValue);
+			}
+			else
+			{
+				RestrictedJson<InstanceDetailsRestriction> instanceDetailsData = 
+						makeElementData.getRestrictedJson(MakeElementRestriction.INSTANCE_DETAILS, InstanceDetailsRestriction.class);
+				element.makeInstance(instanceDetailsData);
+			}				
+		}
+	}
+	
 	protected void processAdjustmentData(RestrictedJson<AdjustmentDataRestriction> adjustmentData) throws Exception
 	{
 		if (adjustmentData == null)
 			return;
 		
+		JsonEntityArray<RestrictedJson<MakeConnectionRestriction>> makeConnectionArray = 
+				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.MAKE_CONNECTIONS, MakeConnectionRestriction.class);
+		JsonEntityArray<RestrictedJson<MakeElementRestriction>> makeElementArray = 
+				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.MAKE_ELEMENTS, MakeElementRestriction.class);
 		JsonEntityArray<RestrictedJson<PositionAdjustmentRestriction>> positionAdjustmentArray = 
 				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.POSITION_ADJUSTMENTS, PositionAdjustmentRestriction.class);
 		JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray = 
@@ -68,11 +117,31 @@ public abstract class AbstractPageInstance
 				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.COUNTER_ADJUSTMENTS, CounterAdjustmentRestriction.class);
 		JsonEntityArray<RestrictedJson<CounterInitialisationRestriction>> counterInitialisationArray = 
 				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.COUNTER_INITIALISATIONS, CounterInitialisationRestriction.class);
+		JsonEntityArray<RestrictedJson<RemoveElementRestriction>> removeElementArray = 
+				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.REMOVE_ELEMENTS, RemoveElementRestriction.class);
 		
+		this.makeConnections(makeConnectionArray);
+		this.makeElements(makeElementArray);
 		this.makeElementAdjustments(elementAdjustmentArray);
 		this.makePositionAdjustments(positionAdjustmentArray);
 		this.initialiseCounters(counterInitialisationArray);
-		this.makeCounterAdjustments(counterAdjustmentArray);	
+		this.makeCounterAdjustments(counterAdjustmentArray);
+		this.removeElements(removeElementArray);
+	}
+	
+	private void makeConnections(JsonEntityArray<RestrictedJson<MakeConnectionRestriction>> makeConnectionArray) throws Exception
+	{		
+		if (makeConnectionArray == null)
+			return;
+			
+		for (int i = 0; i < makeConnectionArray.size(); i++)
+		{
+			RestrictedJson<MakeConnectionRestriction> makeConnectionData = makeConnectionArray.getMemberAt(i);
+			int connectionNumber = makeConnectionData.getNumber(MakeConnectionRestriction.NUMBER_VALUE);
+			String connectionName = makeConnectionData.getString(MakeConnectionRestriction.NAME);
+			ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
+			connectionSet.makeUniqueConnections(connectionNumber);
+		}
 	}
 	
 	private Integer assessReference(String numberReference) throws Exception
