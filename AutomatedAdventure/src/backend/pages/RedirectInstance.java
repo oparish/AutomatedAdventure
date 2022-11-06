@@ -73,10 +73,18 @@ public class RedirectInstance extends AbstractPageInstance
 	private void processContextChange(RestrictedJson<ContextChangeRestriction> changeRestriction) throws Exception
 	{
 		String counterToGroup = changeRestriction.getString(ContextChangeRestriction.COUNTER_TO_GROUP);
+		String addElementToContext = changeRestriction.getString(ContextChangeRestriction.ADD_ELEMENT_TO_CONTEXT);
 		if (counterToGroup != null)
 		{
 			ElementGroup elementGroup = this.setupElementGroup(counterToGroup);
 			this.pageContext.setSelectedElementGroup(elementGroup);
+		}
+		if (addElementToContext != null)
+		{
+			String[] stringArray = addElementToContext.split("\\:");
+			Element element = this.scenario.getElement(stringArray[0]);
+			ElementInstance elementInstance = element.getUniqueInstance(stringArray[1]);
+			this.pageContext.addElementInstance(elementInstance);
 		}
 	}
 		

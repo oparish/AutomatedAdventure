@@ -37,6 +37,7 @@ public class Element
 	HashMap<Map, RestrictedJson<ImageRestriction>> mapMap = new HashMap<Map, RestrictedJson<ImageRestriction>>();
 	HashMap<Map, MapElementType> typeMap = new HashMap<Map, MapElementType>();
 	HashMap<Map, RestrictedJson<TooltipRestriction>> tooltipMap = new HashMap<Map, RestrictedJson<TooltipRestriction>>();
+	HashMap<String, ElementInstance> uniqueMap = new HashMap<String, ElementInstance>();
 	
 	public ArrayList<ElementInstance> getInstances() {
 		return instances;
@@ -80,6 +81,11 @@ public class Element
 	public ElementInstance getUniqueInstance()
 	{
 		return this.instances.get(0);
+	}
+	
+	public ElementInstance getUniqueInstance(String uniqueName)
+	{
+		return this.uniqueMap.get(uniqueName);
 	}
 	
 	private void makeInstance(int number, int existingInstances) throws Exception
@@ -155,6 +161,12 @@ public class Element
 	public void makeInstance(RestrictedJson<InstanceDetailsRestriction> instanceDetailsData)
 			throws Exception
 	{
+		this.makeInstance(instanceDetailsData, null);
+	}
+	
+	public void makeInstance(RestrictedJson<InstanceDetailsRestriction> instanceDetailsData, String uniqueName)
+			throws Exception
+	{
 		JsonEntityMap<JsonEntityString> detailStringJsonMap = instanceDetailsData.getStringMap(InstanceDetailsRestriction.STRING_MAP);
 		HashMap<String, Integer> detailValues;
 		if (detailStringJsonMap!= null)
@@ -184,17 +196,21 @@ public class Element
 		else
 			positionMap = new HashMap<Map, MapPosition>();
 		
-		this.makeInstance(1, this.instances.size(), detailValues, numberValues, setValues, positionMap);
+		ElementInstance elementInstance = this.makeInstance(1, this.instances.size(), detailValues, numberValues, setValues, positionMap);
+		if (uniqueName != null)
+			this.uniqueMap.put(uniqueName, elementInstance);
 	}
 	
-	private void makeInstance(int number, int existingInstances, HashMap<String, Integer> detailValues, HashMap<String, Integer> numberValues,
+	private ElementInstance makeInstance(int number, int existingInstances, HashMap<String, Integer> detailValues, HashMap<String, Integer> numberValues,
 			HashMap<String, Integer> setValues, HashMap<Map, MapPosition> positionMap) throws Exception
 	{
 		this.completeElementDataValues(detailValues, number, existingInstances);
 		this.completeElementNumberValues(numberValues);
 		this.completeElementSetValues(setValues, number, existingInstances);
 		this.completePositionMap(positionMap);
-		this.instances.add(new ElementInstance(detailValues, numberValues, setValues, positionMap));
+		ElementInstance elementInstance = new ElementInstance(detailValues, numberValues, setValues, positionMap);
+		this.instances.add(elementInstance);
+		return elementInstance;
 	}
 	
 	public RestrictedJson<ImageRestriction> getMapImageData(Map map)

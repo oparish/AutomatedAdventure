@@ -248,7 +248,8 @@
                            "type" : "playerLoss",
                            "name" : "Loss"
                         }
-                     }
+                     },
+                     "uniqueName" : "playerLoss"
                   },
                   {
                      "elementName" : "combatResult",
@@ -261,7 +262,8 @@
                            "type" : "computerLoss",
                            "name" : "Victory"
                         }
-                     }
+                     },
+                     "uniqueName" : "computerLoss"
                   },
                   {
                      "elementName" : "combatResult",
@@ -274,7 +276,8 @@
                            "type" : "draw",
                            "name" : "Draw"
                         }
-                     }
+                     },
+                     "uniqueName" : "draw"
                   }
                ]
             }
@@ -305,76 +308,6 @@
                   }
                }
             ]
-         },
-         "combatWin" : {
-            "value" : "WIN",
-            "choices" : [
-               {
-                  "value" : "combatResult",
-                  "first" : "Result: ",
-                  "elementChoice" : {
-                     "elementName" : "combatResult",
-                     "second" : "",
-                     "elementQuality" : "name",
-                     "type" : "menu",
-                     "elementConditions" : [
-                        {
-                           "elementQuality" : "type",
-                           "qualityName" : "computerLoss"
-                        }
-                     ]
-                  },
-                  "withContext" : true
-               }
-            ],
-            "panelName" : "textPanel",
-            "adjustmentData" : {}
-         },
-         "combatDraw" : {
-            "value" : "DRAW",
-            "choices" : [
-               {
-                  "value" : "combatResult",
-                  "first" : "Result: ",
-                  "elementChoice" : {
-                     "elementName" : "combatResult",
-                     "second" : "",
-                     "elementQuality" : "name",
-                     "type" : "menu",
-                     "elementConditions" : [
-                        {
-                           "elementQuality" : "type",
-                           "qualityName" : "draw"
-                        }
-                     ]
-                  },
-                  "withContext" : true
-               }
-            ],
-            "panelName" : "textPanel"
-         },
-         "combatLose" : {
-            "value" : "LOSE",
-            "choices" : [
-               {
-                  "value" : "combatResult",
-                  "first" : "Result: ",
-                  "elementChoice" : {
-                     "elementName" : "combatResult",
-                     "second" : "",
-                     "elementQuality" : "name",
-                     "type" : "menu",
-                     "elementConditions" : [
-                        {
-                           "elementQuality" : "type",
-                           "qualityName" : "playerLoss"
-                        }
-                     ]
-                  },
-                  "withContext" : true
-               }
-            ],
-            "panelName" : "textPanel"
          }
       },
       "connections" : {},
@@ -455,6 +388,30 @@
                {
                   "groupConditionType" : "factionContest",
                   "elementQuality" : "quantity",
+                  "type" : ">"
+               }
+            ]
+         },
+         "combatLose" : {
+            "first" : "combatComputerUnitReduced",
+            "second" : "combatComputerUnitDestroyed",
+            "contextConditions" : [
+               {
+                  "elementName" : "troop",
+                  "elementQuality" : "quantity",
+                  "numberValue" : 0,
+                  "type" : ">"
+               }
+            ]
+         },
+         "combatWin" : {
+            "first" : "combatPlayerUnitReduced",
+            "second" : "combatPlayerUnitDestroyed",
+            "contextConditions" : [
+               {
+                  "elementName" : "troop",
+                  "elementQuality" : "quantity",
+                  "numberValue" : 0,
                   "type" : ">"
                }
             ]

@@ -86,6 +86,7 @@ public abstract class AbstractPageInstance
 			String elementName = makeElementData.getString(MakeElementRestriction.ELEMENT_NAME);
 			Element element = this.scenario.getElement(elementName);
 			Integer numberValue = makeElementData.getNumber(MakeElementRestriction.NUMBER_VALUE);
+			String uniqueName = makeElementData.getString(MakeElementRestriction.UNIQUE_NAME);
 			
 			if (numberValue != null)
 			{
@@ -95,7 +96,7 @@ public abstract class AbstractPageInstance
 			{
 				RestrictedJson<InstanceDetailsRestriction> instanceDetailsData = 
 						makeElementData.getRestrictedJson(MakeElementRestriction.INSTANCE_DETAILS, InstanceDetailsRestriction.class);
-				element.makeInstance(instanceDetailsData);
+				element.makeInstance(instanceDetailsData, uniqueName);
 			}				
 		}
 	}

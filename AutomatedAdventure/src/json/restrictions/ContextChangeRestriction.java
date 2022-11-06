@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum ContextChangeRestriction implements RestrictionPointer
 {
-	COUNTER_TO_GROUP(Restriction.COUNTER_TO_GROUP);
+	COUNTER_TO_GROUP(Restriction.COUNTER_TO_GROUP), ADD_ELEMENT_TO_CONTEXT(Restriction.ADD_ELEMENT_TO_CONTEXT);
 	
 	private Restriction restriction;
 	private boolean optional;
