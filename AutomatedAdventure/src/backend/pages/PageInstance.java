@@ -157,43 +157,12 @@ public class PageInstance extends AbstractPageInstance
 		
 		JsonEntityArray<RestrictedJson<ElementConditionRestriction>> elementConditionArray = 
 				elementChoiceData.getRestrictedJsonArray(ElementChoiceRestriction.ELEMENT_CONDITIONS, ElementConditionRestriction.class);
-		
 		if (elementConditionArray != null)
 		{
-			HashSet<ElementInstance> failCheckSet = new HashSet<ElementInstance>();
-			for (int i = 0; i < elementConditionArray.getLength(); i++)
-			{
-				RestrictedJson<ElementConditionRestriction> elementConditionData = elementConditionArray.getMemberAt(i);
-				String elementQualityText = elementConditionData.getString(ElementConditionRestriction.ELEMENT_QUALITY);
-				String comparatorText = elementConditionData.getString(ElementConditionRestriction.TYPE);
-				Integer value = elementConditionData.getNumber(ElementConditionRestriction.NUMBER_VALUE);		
-				String qualityValue = elementConditionData.getString(ElementConditionRestriction.QUALITY_NAME);
-				
-				if (value == null)
-				{
-					for (ElementInstance elementInstance : element.getInstances())
-					{
-						if (!Pages.checkStringComparison(elementInstance, elementQualityText, qualityValue))
-						{
-							failCheckSet.add(elementInstance);
-						}
-					}
-				}
-				else
-				{
-					for (ElementInstance elementInstance : element.getInstances())
-					{
-						if (!Pages.checkNumberComparison(elementInstance, comparatorText, elementQualityText, value))
-						{
-							failCheckSet.add(elementInstance);
-						}
-					}
-				}
-			}
-			
 			for (ElementInstance elementInstance : element.getInstances())
 			{
-				if (!failCheckSet.contains(elementInstance))
+				boolean check = this.checkElementConditions(elementConditionArray, elementInstance);
+				if (!check)
 					this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second, type, rangeAttribute, 
 							elementGroup);
 			}

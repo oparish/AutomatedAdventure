@@ -4,7 +4,7 @@ public enum ElementAdjustmentRestriction implements RestrictionPointer
 {
 	CONNECTION_NAME(Restriction.CONNECTION_NAME, true), ELEMENT_NAME(Restriction.ELEMENT_NAME), ELEMENT_QUALITY(Restriction.ELEMENT_QUALITY), 
 	NUMBER_VALUE(Restriction.NUMBER_VALUE, true), SUM_NAME(Restriction.SUM_NAME, true), TYPE(Restriction.TYPE), SUM_SIGN(Restriction.SUM_SIGN),
-	COUNTER_NAME(Restriction.COUNTER_NAME, true);
+	COUNTER_NAME(Restriction.COUNTER_NAME, true), ELEMENT_CONDITIONS(Restriction.ELEMENT_CONDITIONS, true);
 	
 	private Restriction restriction;
 	private boolean optional;
