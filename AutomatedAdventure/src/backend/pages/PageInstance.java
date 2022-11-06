@@ -160,7 +160,7 @@ public class PageInstance extends AbstractPageInstance
 			for (ElementInstance elementInstance : element.getInstances())
 			{
 				boolean check = this.checkElementConditions(elementConditionArray, elementInstance);
-				if (!check)
+				if (check)
 					this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second, type, rangeAttribute, 
 							elementGroup);
 			}
