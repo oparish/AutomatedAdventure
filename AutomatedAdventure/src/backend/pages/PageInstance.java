@@ -157,8 +157,6 @@ public class PageInstance extends AbstractPageInstance
 		
 		JsonEntityArray<RestrictedJson<ElementConditionRestriction>> elementConditionArray = 
 				elementChoiceData.getRestrictedJsonArray(ElementChoiceRestriction.ELEMENT_CONDITIONS, ElementConditionRestriction.class);
-		if (elementConditionArray != null)
-		{
 			for (ElementInstance elementInstance : element.getInstances())
 			{
 				boolean check = this.checkElementConditions(elementConditionArray, elementInstance);
@@ -166,15 +164,6 @@ public class PageInstance extends AbstractPageInstance
 					this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second, type, rangeAttribute, 
 							elementGroup);
 			}
-		}
-		else
-		{
-			for (ElementInstance elementInstance : element.getInstances())
-			{
-				this.makeElementChoice(elementInstance, keyword, withContext, elementQualityName, first, second, type, rangeAttribute, 
-						elementGroup);
-			}
-		}
 	}
 	
 	private void setupChoice(RestrictedJson<ChoiceRestriction> choiceData) throws Exception
