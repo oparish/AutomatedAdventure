@@ -43,6 +43,7 @@ public abstract class AbstractPageInstance
 	protected static final Pattern repeatedElementPattern = Pattern.compile("<repeatedElement:([^<>]*)>");
 	protected static final Pattern numberAdjustmentPattern = Pattern.compile("<numberAdjustment:([0-9]*)>");
 	protected static final Pattern numberReferencePattern = Pattern.compile("^(.*):(.*)$");
+	protected static final Pattern reportReferencePattern = Pattern.compile("<report:([^<>]*):([^<>]*)>([^<>]*)</report>");
 	
 	protected Scenario scenario;
 	protected PageContext pageContext;
@@ -68,6 +69,7 @@ public abstract class AbstractPageInstance
 		if (removeElementArray == null)
 			return;
 		
+		Report report = this.pageContext.getReport();
 		for (int i = 0; i < removeElementArray.size(); i++)
 		{
 			RestrictedJson<RemoveElementRestriction> removeElementData = removeElementArray.getMemberAt(i);
@@ -78,7 +80,10 @@ public abstract class AbstractPageInstance
 					removeElementData.getRestrictedJsonArray(RemoveElementRestriction.ELEMENT_CONDITIONS, ElementConditionRestriction.class);
 			boolean result = this.checkElementConditions(elementConditionArray, elementInstance);
 			if (result)
+			{
+				report.addRemovedElement(elementInstance);
 				element.removeInstance(elementInstance);
+			}
 		}
 	}
 	
@@ -87,6 +92,7 @@ public abstract class AbstractPageInstance
 		if (makeElementArray == null)
 			return;
 		
+		Report report = this.pageContext.getReport();
 		for (int i = 0; i < makeElementArray.size(); i++)
 		{
 			RestrictedJson<MakeElementRestriction> makeElementData = makeElementArray.getMemberAt(i);
@@ -97,14 +103,19 @@ public abstract class AbstractPageInstance
 			
 			if (numberValue != null)
 			{
-				element.makeInstances(numberValue);
+				ArrayList<Element.ElementInstance> instances = element.makeInstances(numberValue);
+				for (ElementInstance instance : instances)
+				{
+					report.addMadeElement(instance);
+				}
 			}
 			else
 			{
 				RestrictedJson<InstanceDetailsRestriction> instanceDetailsData = 
 						makeElementData.getRestrictedJson(MakeElementRestriction.INSTANCE_DETAILS, InstanceDetailsRestriction.class);
-				element.makeInstance(instanceDetailsData, uniqueName);
-			}				
+				ElementInstance instance = element.makeInstance(instanceDetailsData, uniqueName);
+				report.addMadeElement(instance);
+			}
 		}
 	}
 	

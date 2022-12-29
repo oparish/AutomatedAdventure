@@ -12,10 +12,17 @@ public class PageContext
 	private HashMap<Element, ElementInstance> elementInstanceMap = new HashMap<Element, ElementInstance>();
 	private ElementChoice elementChoice;
 	private String topPage;
+	private Report report;
 	
 	public PageContext(String topPage)
 	{
 		this.topPage = topPage;
+		this.report = new Report();
+	}
+	
+	public Report getReport()
+	{
+		return this.report;
 	}
 	
 	public ElementGroup getSelectedElementGroup() {

@@ -18,7 +18,7 @@
          "troop" : {
             "elementData" : {
                "name" : {
-                  "options" : [ "Example 1", "Example 2", "Example 3" ],
+                  "options" : [ "Example 1", "Example 2", "Example 3", "Example 4", "Example 5" ],
                   "unique" : true
                },
                "faction" : {
@@ -308,6 +308,16 @@
                   }
                }
             ]
+         },
+         "showCombatResult" : {
+            "panelName" : "textPanel",
+            "choices" : [
+               {
+                  "first" : "Next",
+                  "value" : "next"
+               }
+            ],
+            "value" : "<report:madeElementInstances:name>Troop Made: </report>"
          }
       },
       "connections" : {},
@@ -327,7 +337,7 @@
                   }
                ]
             },
-            "first" : "next"
+            "first" : "loop"
          },
          "loop" : {
             "adjustmentData" : {
@@ -393,28 +403,13 @@
             ]
          },
          "combatLose" : {
-            "first" : "combatComputerUnitReduced",
-            "second" : "combatComputerUnitDestroyed",
-            "contextConditions" : [
-               {
-                  "elementName" : "troop",
-                  "elementQuality" : "quantity",
-                  "numberValue" : 0,
-                  "type" : ">"
-               }
-            ]
+            "first" : "testRemoval"
          },
          "combatWin" : {
-            "first" : "combatPlayerUnitReduced",
-            "second" : "combatPlayerUnitDestroyed",
-            "contextConditions" : [
-               {
-                  "elementName" : "troop",
-                  "elementQuality" : "quantity",
-                  "numberValue" : 0,
-                  "type" : ">"
-               }
-            ]
+            "first" : "testRemoval"
+         },
+         "combatDraw" : {
+            "first" : "testRemoval"
          },
          "combatResult" : {
             "first" : "playerLossAdjustment",
@@ -430,7 +425,7 @@
             ]
          },
          "playerLossAdjustment" : {
-            "first" : "next",
+            "first" : "showCombatResult",
             "second" : "combatResult",
             "contextConditions" : [
                {
@@ -463,7 +458,7 @@
             }
          },
          "computerLossAdjustment" : {
-            "first" : "next",
+            "first" : "showCombatResult",
             "second" : "combatResult",
             "contextConditions" : [
                {
@@ -489,6 +484,43 @@
                   }
                ]
             }
+         },
+         "testRemoval" : {
+            "adjustmentData" : {
+               "counterAdjustments" : [
+                  {
+                     "counterName" : "groupCounter",
+                     "counterAdjustmentType" : "increment"
+                  }
+               ],
+               "makeElements" : [
+                  {
+                     "elementName" : "troop",
+                     "instanceDetails" : {
+                        "mapMap" : {
+                           "testMap" : {
+                              "x" : 2,
+                              "y" : 6
+                           }
+                        },
+                        "numberMap" : {
+                           "quantity" : 30
+                        },
+                        "stringMap" : {
+                           "faction" : "player"
+                        }
+                     }
+                  }
+               ]
+            },
+            "first" : "showCombatResult",
+            "second" : "testRemoval",
+            "contextConditions" : [
+               {
+                  "counterName" : "groupCounter",
+                  "counterCondition" : "completed"
+               }
+            ]
          }
       },
       "randomRedirects" : {},

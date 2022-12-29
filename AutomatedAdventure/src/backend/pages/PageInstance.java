@@ -337,6 +337,30 @@ public class PageInstance extends AbstractPageInstance
 		adjustedText = this.checkForRepeatForElementPattern(adjustedText);
 		adjustedText = this.checkForConditionalRepeatForElementPattern(adjustedText);
 		adjustedText = this.checkForElementAdjustmentText(adjustedText, adjustments);
+		adjustedText = this.checkForReportText(adjustedText);
+		return adjustedText;
+	}
+	
+	private String checkForReportText(String bodyText)
+	{
+		String adjustedText = bodyText;
+		Matcher reportMatcher = reportReferencePattern.matcher(adjustedText);
+		Report report = this.pageContext.getReport();
+		while (reportMatcher.find())
+		{
+			String reportListTypeName = reportMatcher.group(1);
+			String reportQuality = reportMatcher.group(2);
+			String reportContents = reportMatcher.group(3);
+			ArrayList<Element.ElementInstance> reportList = report.getReportList(reportListTypeName);
+			StringBuilder resultBuilder = new StringBuilder();
+			for (Element.ElementInstance elementInstance : reportList)
+			{
+				String elementValue = elementInstance.getStringValue(reportQuality);
+				resultBuilder.append(reportContents + elementValue + "\r\n");
+			}
+			adjustedText = reportMatcher.replaceFirst(resultBuilder.toString());
+			reportMatcher = reportReferencePattern.matcher(adjustedText);
+		}		
 		return adjustedText;
 	}
 	

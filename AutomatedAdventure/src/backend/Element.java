@@ -59,13 +59,16 @@ public class Element
 		tooltipMap.put(map, tooltip);
 	}
 	
-	public void makeInstances(int number) throws Exception
+	public ArrayList<ElementInstance> makeInstances(int number) throws Exception
 	{	
+		ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
 		int existingInstances = this.instances.size();
 		for (int i = 0; i < number; i++)
 		{
-			this.makeInstance(number, existingInstances);
+			ElementInstance elementInstance = this.makeInstance(number, existingInstances);
+			instances.add(elementInstance);
 		}
+		return instances;
 	}
 	
 	public MapElementType getMapElementType(Map map)
@@ -88,13 +91,13 @@ public class Element
 		return this.uniqueMap.get(uniqueName);
 	}
 	
-	private void makeInstance(int number, int existingInstances) throws Exception
+	private ElementInstance makeInstance(int number, int existingInstances) throws Exception
 	{
 		HashMap<String, Integer> detailValues = new HashMap<String, Integer>();
 		HashMap<String, Integer> numberValues = new HashMap<String, Integer>();
 		HashMap<String, Integer> setValues = new HashMap<String, Integer>();
 		HashMap<Map, MapPosition> positionMap = new HashMap<Map, MapPosition>();
-		this.makeInstance(number, existingInstances, detailValues, numberValues, setValues, positionMap);
+		return this.makeInstance(number, existingInstances, detailValues, numberValues, setValues, positionMap);
 	}
 	
 	private HashMap<String, Integer> convertDetailsMap(JsonEntityMap<JsonEntityString> detailStringJsonMap) throws Exception
@@ -164,7 +167,7 @@ public class Element
 		this.makeInstance(instanceDetailsData, null);
 	}
 	
-	public void makeInstance(RestrictedJson<InstanceDetailsRestriction> instanceDetailsData, String uniqueName)
+	public ElementInstance makeInstance(RestrictedJson<InstanceDetailsRestriction> instanceDetailsData, String uniqueName)
 			throws Exception
 	{
 		JsonEntityMap<JsonEntityString> detailStringJsonMap = instanceDetailsData.getStringMap(InstanceDetailsRestriction.STRING_MAP);
@@ -199,6 +202,8 @@ public class Element
 		ElementInstance elementInstance = this.makeInstance(1, this.instances.size(), detailValues, numberValues, setValues, positionMap);
 		if (uniqueName != null)
 			this.uniqueMap.put(uniqueName, elementInstance);
+		
+		return elementInstance;
 	}
 	
 	private ElementInstance makeInstance(int number, int existingInstances, HashMap<String, Integer> detailValues, HashMap<String, Integer> numberValues,
