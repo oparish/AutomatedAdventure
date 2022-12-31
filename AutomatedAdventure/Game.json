@@ -317,7 +317,7 @@
                   "value" : "next"
                }
             ],
-            "value" : "<report:madeElementInstances:name>Troop Made: </report>"
+            "value" : "<report:removedElementInstances:name>Troop Removed: </report>"
          }
       },
       "connections" : {},
@@ -424,67 +424,6 @@
                }
             ]
          },
-         "playerLossAdjustment" : {
-            "first" : "showCombatResult",
-            "second" : "combatResult",
-            "contextConditions" : [
-               {
-                  "counterName" : "groupCounter",
-                  "counterCondition" : "completed"
-               }
-            ],
-            "adjustmentData" : {
-               "counterAdjustments" : [
-                  {
-                     "counterName" : "groupCounter",
-                     "counterAdjustmentType" : "increment"
-                  }
-               ],
-               "elementAdjustments" : [
-                  {
-                     "elementName" : "troop",
-                     "elementQuality" : "quantity",
-                     "sumName" : "playerLossSum",
-                     "type" : "group",
-                     "sumSign" : "+",
-                     "counterName" : "groupCounter"
-                  }
-               ],
-               "removeElements" : [
-                  {
-                     "elementName" : "troop"
-                  }
-               ]
-            }
-         },
-         "computerLossAdjustment" : {
-            "first" : "showCombatResult",
-            "second" : "combatResult",
-            "contextConditions" : [
-               {
-                  "counterName" : "groupCounter",
-                  "counterCondition" : "completed"
-               }
-            ],
-            "adjustmentData" : {
-               "counterAdjustments" : [
-                  {
-                     "counterName" : "groupCounter",
-                     "counterAdjustmentType" : "increment"
-                  }
-               ],
-               "elementAdjustments" : [
-                  {
-                     "elementName" : "troop",
-                     "elementQuality" : "quantity",
-                     "sumName" : "computerLossSum",
-                     "type" : "group",
-                     "sumSign" : "+",
-                     "counterName" : "groupCounter"
-                  }
-               ]
-            }
-         },
          "testRemoval" : {
             "adjustmentData" : {
                "counterAdjustments" : [
@@ -509,6 +448,15 @@
                         "stringMap" : {
                            "faction" : "player"
                         }
+                     }
+                  }
+               ],
+               "removeElements" : [
+                  {
+                     "targetIdentification" : {
+                        "elementName" : "troop",
+                        "type" : "group",
+                        "counterName" : "groupCounter"
                      }
                   }
                ]

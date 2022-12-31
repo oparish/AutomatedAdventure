@@ -30,6 +30,7 @@ import json.restrictions.PositionAdjustmentType;
 import json.restrictions.RemoveElementRestriction;
 import json.restrictions.SumComponentRestriction;
 import json.restrictions.SumRestriction;
+import json.restrictions.TargetIdentificationRestriction;
 import main.Pages;
 
 public abstract class AbstractPageInstance
@@ -73,15 +74,14 @@ public abstract class AbstractPageInstance
 		for (int i = 0; i < removeElementArray.size(); i++)
 		{
 			RestrictedJson<RemoveElementRestriction> removeElementData = removeElementArray.getMemberAt(i);
-			String elementName = removeElementData.getString(RemoveElementRestriction.ELEMENT_NAME);
-			Element element = this.scenario.getElement(elementName);
-			ElementInstance elementInstance = this.pageContext.getElementInstance(element);
+			RestrictedJson<TargetIdentificationRestriction> targetIdentificationRestriction = removeElementData.getRestrictedJson(RemoveElementRestriction.TARGET_IDENTIFICATION, TargetIdentificationRestriction.class);
 			JsonEntityArray<RestrictedJson<ElementConditionRestriction>> elementConditionArray = 
 					removeElementData.getRestrictedJsonArray(RemoveElementRestriction.ELEMENT_CONDITIONS, ElementConditionRestriction.class);
-			boolean result = this.checkElementConditions(elementConditionArray, elementInstance);
-			if (result)
+			ElementInstance elementInstance = this.getElementInstanceToAdjust(elementConditionArray, targetIdentificationRestriction);
+			if (elementInstance != null)
 			{
 				report.addRemovedElement(elementInstance);
+				Element element = elementInstance.getElement();
 				element.removeInstance(elementInstance);
 			}
 		}
@@ -144,8 +144,8 @@ public abstract class AbstractPageInstance
 		this.makeElementAdjustments(elementAdjustmentArray);
 		this.makePositionAdjustments(positionAdjustmentArray);
 		this.initialiseCounters(counterInitialisationArray);
-		this.makeCounterAdjustments(counterAdjustmentArray);
 		this.removeElements(removeElementArray);
+		this.makeCounterAdjustments(counterAdjustmentArray);
 	}
 	
 	private void makeConnections(JsonEntityArray<RestrictedJson<MakeConnectionRestriction>> makeConnectionArray) throws Exception
@@ -390,6 +390,41 @@ public abstract class AbstractPageInstance
 		return true;
 	}
 	
+	private ElementInstance getElementInstanceToAdjust(JsonEntityArray<RestrictedJson<ElementConditionRestriction>> elementConditionArray, 
+			RestrictedJson<TargetIdentificationRestriction> targetIdentificationRestriction) throws Exception
+	{
+		String typeString = targetIdentificationRestriction.getString(TargetIdentificationRestriction.TYPE);
+		ElementAdjustmentType elementAdjustmentType = ElementAdjustmentType.stringToType(typeString);
+		String elementType = targetIdentificationRestriction.getString(TargetIdentificationRestriction.ELEMENT_NAME);
+		Element element = this.scenario.getElement(elementType);
+		switch(elementAdjustmentType)
+		{
+			case GROUP:
+				String counterName = targetIdentificationRestriction.getString(TargetIdentificationRestriction.COUNTER_NAME);
+				ElementInstance groupInstance = this.scenario.getElementInstanceFromGroupCounter(counterName);
+				if (this.checkElementConditions(elementConditionArray, groupInstance))
+					return groupInstance;
+			case CONNECTED:
+				String connectionName = targetIdentificationRestriction.getString(TargetIdentificationRestriction.CONNECTION_NAME);
+				ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
+				ElementInstance elementInstance = this.getSelectedElementInstance(element);
+				ElementInstance connectedInstance = connectionSet.get(elementInstance);
+				if (this.checkElementConditions(elementConditionArray, connectedInstance))
+					return connectedInstance;
+			case EACH:
+				for (ElementInstance instance : element.getInstances())
+				{
+					if (this.checkElementConditions(elementConditionArray, instance))
+						return instance;
+				}
+			case SELECTED:
+				ElementInstance selectedInstance = this.getSelectedElementInstance(element);
+				if (this.checkElementConditions(elementConditionArray, selectedInstance))
+					return selectedInstance;
+		}
+		return null;
+	}
+	
 	protected ArrayList<Integer> makeElementAdjustments(JsonEntityArray<RestrictedJson<ElementAdjustmentRestriction>> elementAdjustmentArray) throws Exception
 	{
 		ArrayList<Integer> adjustmentValues = new ArrayList<Integer>();
@@ -400,9 +435,7 @@ public abstract class AbstractPageInstance
 		for (int i = 0; i < elementAdjustmentArray.size(); i++)
 		{
 			RestrictedJson<ElementAdjustmentRestriction> elementAdjustmentData = elementAdjustmentArray.getMemberAt(i);
-			String typeString = elementAdjustmentData.getString(ElementAdjustmentRestriction.TYPE);
-			ElementAdjustmentType elementAdjustmentType = ElementAdjustmentType.stringToType(typeString);
-			String elementType = elementAdjustmentData.getString(ElementAdjustmentRestriction.ELEMENT_NAME);
+
 			String elementNumberName = elementAdjustmentData.getString(ElementAdjustmentRestriction.ELEMENT_QUALITY);			
 			Integer value = elementAdjustmentData.getNumber(ElementAdjustmentRestriction.NUMBER_VALUE);
 			String sumSign = elementAdjustmentData.getString(ElementAdjustmentRestriction.SUM_SIGN);
@@ -415,39 +448,13 @@ public abstract class AbstractPageInstance
 				throw new Exception("No number available for element adjustment.");
 			}
 			adjustmentValues.add(value);
-			Element element = this.scenario.getElement(elementType);
-			JsonEntityArray<RestrictedJson<ElementConditionRestriction>> elementConditionArray = 
-					elementAdjustmentData.getRestrictedJsonArray(ElementAdjustmentRestriction.ELEMENT_CONDITIONS, ElementConditionRestriction.class);
 			
-			switch(elementAdjustmentType)
-			{
-				case GROUP:
-					String counterName = elementAdjustmentData.getString(ElementAdjustmentRestriction.COUNTER_NAME);
-					ElementInstance groupInstance = this.scenario.getElementInstanceFromGroupCounter(counterName);
-					if (this.checkElementConditions(elementConditionArray, groupInstance))
-						groupInstance.adjustNumber(elementNumberName, sumSign, value);
-					break;
-				case CONNECTED:
-					String connectionName = elementAdjustmentData.getString(ElementAdjustmentRestriction.CONNECTION_NAME);
-					ConnectionSet connectionSet = this.scenario.getConnectionSet(connectionName);
-					ElementInstance elementInstance = this.getSelectedElementInstance(element);
-					ElementInstance connectedInstance = connectionSet.get(elementInstance);
-					if (this.checkElementConditions(elementConditionArray, connectedInstance))
-						connectedInstance.adjustNumber(elementNumberName, sumSign, value);
-					break;
-				case EACH:
-					for (ElementInstance instance : element.getInstances())
-					{
-						if (this.checkElementConditions(elementConditionArray, instance))
-							instance.adjustNumber(elementNumberName, sumSign, value);
-					}
-					break;
-				case SELECTED:
-					ElementInstance selectedInstance = this.getSelectedElementInstance(element);
-					if (this.checkElementConditions(elementConditionArray, selectedInstance))
-						selectedInstance.adjustNumber(elementNumberName, sumSign, value);
-					break;
-			}
+			JsonEntityArray<RestrictedJson<ElementConditionRestriction>> elementConditionArray = elementAdjustmentData.getRestrictedJsonArray(ElementAdjustmentRestriction.ELEMENT_CONDITIONS, ElementConditionRestriction.class);
+			RestrictedJson<TargetIdentificationRestriction> targetIdentificationRestriction = elementAdjustmentData.getRestrictedJson(ElementAdjustmentRestriction.TARGET_IDENTIFICATION, TargetIdentificationRestriction.class);
+			
+			ElementInstance elementInstance = this.getElementInstanceToAdjust(elementConditionArray, targetIdentificationRestriction);
+			if (elementInstance != null)
+				elementInstance.adjustNumber(elementNumberName, sumSign, value);
 		}
 		
 		return adjustmentValues;

@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum RemoveElementRestriction implements RestrictionPointer
 {
-	ELEMENT_NAME(Restriction.ELEMENT_NAME), ELEMENT_CONDITIONS(Restriction.ELEMENT_CONDITIONS, true);
+	TARGET_IDENTIFICATION(Restriction.TARGET_IDENTIFICATION), ELEMENT_CONDITIONS(Restriction.ELEMENT_CONDITIONS, true);
 	
 	private Restriction restriction;
 	private boolean optional;

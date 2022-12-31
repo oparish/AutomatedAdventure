@@ -111,6 +111,7 @@ public enum Restriction
 	REMOVE_ELEMENTS("removeElements", RestrictionType.REMOVE_ELEMENT, JsonDim.ARRAY),
 	MAKE_CONNECTIONS("makeConnections", RestrictionType.MAKE_CONNECTION, JsonDim.ARRAY),
 	ADJUSTMENT_DATA("adjustmentData", RestrictionType.ADJUSTMENT_DATA, JsonDim.MONO),
+	TARGET_IDENTIFICATION("targetIdentification", RestrictionType.TARGET_IDENTIFICATION, JsonDim.MONO),
 	ELEMENT_ADJUSTMENTS("elementAdjustments", RestrictionType.ELEMENT_ADJUSTMENT, JsonDim.ARRAY),
 	POSITION_ADJUSTMENTS("positionAdjustments", RestrictionType.POSITION_ADJUSTMENT, JsonDim.ARRAY),
 	COUNTER_NAME("counterName", STRING, JsonDim.MONO),
