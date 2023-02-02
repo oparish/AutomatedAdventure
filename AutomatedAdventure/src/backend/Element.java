@@ -413,7 +413,7 @@ public class Element
 		this.instances.remove(elementInstance);
 	}
 	
-	public class ElementInstance
+	public class ElementInstance implements ReportInstance
 	{
 		HashMap<Map, Route> routeMap = new HashMap<Map, Route>();
 		HashMap<String, Integer> detailValues;
@@ -618,6 +618,39 @@ public class Element
 			}	
 			return stringBuilder.toString();
 		}
+		
+		public AdjustmentInstance makeAdjustmentInstance(String qualityName, String value)
+		{
+			return new AdjustmentInstance(qualityName, value);
+		}
+
+		public class AdjustmentInstance implements ReportInstance
+		{
+			private String key;
+			private String value;
+			
+			public AdjustmentInstance(String key, String value)
+			{
+				this.key = key;
+				this.value = value;
+			}
+			
+			@Override
+			public String getStringValue(String name)
+			{
+				if (name.equals(this.key))
+				{
+					return value;
+				}
+				return ElementInstance.this.getStringValue(name);
+			}
+
+			@Override
+			public Element getElement() {
+				return Element.this;
+			}
+		}
+
 	}
 	
 	public static void main(String[] args)

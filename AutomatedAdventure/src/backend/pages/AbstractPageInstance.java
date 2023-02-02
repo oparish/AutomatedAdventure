@@ -44,7 +44,8 @@ public abstract class AbstractPageInstance
 	protected static final Pattern repeatedElementPattern = Pattern.compile("<repeatedElement:([^<>]*)>");
 	protected static final Pattern numberAdjustmentPattern = Pattern.compile("<numberAdjustment:([0-9]*)>");
 	protected static final Pattern numberReferencePattern = Pattern.compile("^(.*):(.*)$");
-	protected static final Pattern reportReferencePattern = Pattern.compile("<report:([^<>]*):([^<>]*)>([^<>]*)</report>");
+	protected static final Pattern reportReferencePattern = Pattern.compile("<report:([^<>]*):([^<>]*)>([\\s\\S]*)</report>");
+	protected static final Pattern reportInnerReferencePattern = Pattern.compile("<reportInner:([^<>]*)>");
 	
 	protected Scenario scenario;
 	protected PageContext pageContext;
@@ -454,7 +455,11 @@ public abstract class AbstractPageInstance
 			
 			ElementInstance elementInstance = this.getElementInstanceToAdjust(elementConditionArray, targetIdentificationRestriction);
 			if (elementInstance != null)
+			{
 				elementInstance.adjustNumber(elementNumberName, sumSign, value);
+				Report report = this.pageContext.getReport();
+				report.addIntegerAdjustment(elementInstance, elementNumberName, value);
+			}
 		}
 		
 		return adjustmentValues;

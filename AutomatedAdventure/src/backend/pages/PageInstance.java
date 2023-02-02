@@ -13,6 +13,7 @@ import backend.ElementGroup;
 import backend.Map;
 import backend.Map.MapPosition;
 import backend.NumberRange;
+import backend.ReportInstance;
 import backend.Scenario;
 import backend.component.ConnectionSet;
 import json.JsonEntityArray;
@@ -349,14 +350,28 @@ public class PageInstance extends AbstractPageInstance
 		while (reportMatcher.find())
 		{
 			String reportListTypeName = reportMatcher.group(1);
-			String reportQuality = reportMatcher.group(2);
-			String reportContents = reportMatcher.group(3);
-			ArrayList<Element.ElementInstance> reportList = report.getReportList(reportListTypeName);
+			String reportElementString = reportMatcher.group(2);
+			String reportContentsString = reportMatcher.group(3);
+			Scenario scenario = this.getScenario();
+			Element element = scenario.getElement(reportElementString);
+			ArrayList<ReportInstance> reportList = report.getReportList(reportListTypeName);
+			
 			StringBuilder resultBuilder = new StringBuilder();
-			for (Element.ElementInstance elementInstance : reportList)
+			for (ReportInstance reportInstance : reportList)
 			{
-				String elementValue = elementInstance.getStringValue(reportQuality);
-				resultBuilder.append(reportContents + elementValue + "\r\n");
+				if (reportInstance.getElement() == element)
+				{
+					Matcher reportInnerMatcher = reportInnerReferencePattern.matcher(reportContentsString);
+					String reportContentsStringAdjusted = reportContentsString;
+					while (reportInnerMatcher.find())
+					{
+						String reportQualityName = reportInnerMatcher.group(1);
+						String reportQuality = reportInstance.getStringValue(reportQualityName);
+						reportContentsStringAdjusted = reportInnerMatcher.replaceFirst(reportQuality);
+						reportInnerMatcher = reportInnerReferencePattern.matcher(reportContentsStringAdjusted);
+					}
+					resultBuilder.append(reportContentsStringAdjusted + "\r\n");
+				}
 			}
 			adjustedText = reportMatcher.replaceFirst(resultBuilder.toString());
 			reportMatcher = reportReferencePattern.matcher(adjustedText);

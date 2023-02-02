@@ -317,7 +317,7 @@
                   "value" : "next"
                }
             ],
-            "value" : "<report:removedElementInstances:name>Troop Removed: </report>"
+            "value" : "<report:adjustment:troop>Troop Adjusted: <reportInner:name>\r\nAdjustment Amount:<reportInner:quantity></report>"
          }
       },
       "connections" : {},
@@ -432,32 +432,16 @@
                      "counterAdjustmentType" : "increment"
                   }
                ],
-               "makeElements" : [
-                  {
-                     "elementName" : "troop",
-                     "instanceDetails" : {
-                        "mapMap" : {
-                           "testMap" : {
-                              "x" : 2,
-                              "y" : 6
-                           }
-                        },
-                        "numberMap" : {
-                           "quantity" : 30
-                        },
-                        "stringMap" : {
-                           "faction" : "player"
-                        }
-                     }
-                  }
-               ],
-               "removeElements" : [
+               "elementAdjustments" : [
                   {
                      "targetIdentification" : {
                         "elementName" : "troop",
                         "type" : "group",
                         "counterName" : "groupCounter"
-                     }
+                     },
+                     "elementQuality" : "quantity",
+                     "numberValue" : 10,
+                     "sumSign" : "+"
                   }
                ]
             },
