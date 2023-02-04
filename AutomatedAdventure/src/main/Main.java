@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -28,6 +29,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 
+import backend.MapElementType;
 import backend.Mode;
 import backend.Scenario;
 import frontEnd.RoomsWindow;
@@ -42,8 +44,9 @@ public class Main
 	private static Random random = new Random();
 	private static HashMap<String, ImageIcon> icons = new HashMap<String, ImageIcon>();
 	private static HashMap<String, ImageIcon> disabledIcons = new HashMap<String, ImageIcon>();
-	private static HashMap<String, HashMap<String, ImageIcon>> combinedIcons = new HashMap<String, HashMap<String, ImageIcon>>();
-	private static HashMap<String, HashMap<String, ImageIcon>> combinedDisabledIcons = new HashMap<String, HashMap<String, ImageIcon>>();
+	private static HashMap<String, HashMap<String, HashMap<String, ImageIcon>>> combinedIcons = new HashMap<String, HashMap<String, HashMap<String, ImageIcon>>>();
+	private static HashMap<String, HashMap<String, HashMap<String, ImageIcon>>> combinedDisabledIcons = new HashMap<String, HashMap<String, HashMap<String, ImageIcon>>>();
+	private static final String NULL = "null";
 	
 	public static Dimension findScreenCentre()
 	{
@@ -102,37 +105,84 @@ public class Main
 		}
 	}
 	
-	private static ImageIcon loadCombinedImageIcon(HashMap<String, HashMap<String, ImageIcon>> iconMap, String baseFilename, String filename, 
-			boolean disabled) throws Exception
-	{		
-		if (iconMap.containsKey(baseFilename))
+	private static <K> K produceImageMap(HashMap<String, K> outerMap, K emptyMap, String filename)
+	{
+		K innerMap;
+		if (filename != null)
 		{
-			HashMap<String, ImageIcon> innerIcons = iconMap.get(baseFilename);
-			if (innerIcons.containsKey(filename))
+			if (outerMap.containsKey(filename))
 			{
-				return innerIcons.get(filename);
+				innerMap = outerMap.get(filename);
+			}
+			else
+			{
+				innerMap = emptyMap;
+				outerMap.put(filename, innerMap);
 			}
 		}
+		else
+		{
+			if (outerMap.containsKey(NULL))
+			{
+				innerMap = outerMap.get(NULL);
+			}
+			else
+			{
+				innerMap = emptyMap;
+				outerMap.put(NULL, innerMap);
+			}
+		}
+		return innerMap;
+	}
+	
+	private static ImageIcon loadCombinedImageIcon(HashMap<String, HashMap<String, HashMap<String, ImageIcon>>> iconMap, String baseFilename, 
+			String characterFilename, String effectFilename, boolean disabled) throws Exception
+	{		
+		HashMap<String, HashMap<String, ImageIcon>> characterMap = Main.produceImageMap(iconMap, new HashMap<String, 
+				HashMap<String, ImageIcon>>(), baseFilename);	
+		HashMap<String, ImageIcon> effectMap = Main.produceImageMap(characterMap, new HashMap<String, ImageIcon>(), characterFilename);
 		
-		BufferedImage baseImg = Main.loadImageFromFile(baseFilename);
-		BufferedImage img = Main.loadImageFromFile(filename);
-		
-		Graphics2D graphics = baseImg.createGraphics();
-		graphics.drawImage(img, 0, 0, null);
+		if (effectMap.containsKey(effectFilename))
+		{
+			return effectMap.get(effectFilename);
+		}
+		else if (effectFilename == null && effectMap.containsKey(NULL))
+		{
+			return effectMap.get(NULL);
+		}
+			
+		BufferedImage baseImg = Main.produceCombinedImageIcon(baseFilename, characterFilename, effectFilename);
 		
 		if (disabled)
 			Main.applyDisabledEffect(baseImg);
 			
-		ImageIcon imageIcon = new ImageIcon(baseImg);
-		
-		if (!iconMap.containsKey(baseFilename))
-			iconMap.put(baseFilename, new HashMap<String, ImageIcon>());
-		
-		HashMap<String, ImageIcon> innerIcons = iconMap.get(baseFilename);
-		innerIcons.put(filename, imageIcon);
+		ImageIcon imageIcon = new ImageIcon(baseImg);	
+		if (effectFilename != null)	
+			effectMap.put(effectFilename, imageIcon);
+		else
+			effectMap.put(NULL, imageIcon);
 
 	    return imageIcon;
 	} 
+	
+	private static BufferedImage produceCombinedImageIcon(String baseFilename, String characterFilename, String effectFilename) throws Exception
+	{
+		BufferedImage baseImg = Main.loadImageFromFile(baseFilename);
+		Graphics2D graphics = baseImg.createGraphics();
+		
+		if (characterFilename != null)
+		{
+			BufferedImage characterImg = Main.loadImageFromFile(characterFilename);
+			graphics.drawImage(characterImg, 0, 0, null);
+		}
+		
+		if (effectFilename != null)
+		{
+			BufferedImage effectImg = Main.loadImageFromFile(effectFilename);
+			graphics.drawImage(effectImg, 0, 0, null);
+		}
+		return baseImg;
+	}
 	
 	private static void applyDisabledEffect(BufferedImage baseImg)
 	{
@@ -148,14 +198,14 @@ public class Main
 		}
 	}
 	
-	public static ImageIcon loadCombinedImageIcon(String baseFilename, String filename) throws Exception
+	public static ImageIcon loadCombinedImageIcon(String baseFilename, String characterFilename, String effectFilename) throws Exception
 	{		
-		return Main.loadCombinedImageIcon(Main.combinedIcons, baseFilename, filename, false);
+		return Main.loadCombinedImageIcon(Main.combinedIcons, baseFilename, characterFilename, effectFilename, false);
 	}
 	
-	public static ImageIcon loadDisableCombinedImageIcon(String baseFilename, String filename) throws Exception
+	public static ImageIcon loadDisableCombinedImageIcon(String baseFilename, String characterFilename, String effectFilename) throws Exception
 	{		
-		return Main.loadCombinedImageIcon(Main.combinedDisabledIcons, baseFilename, filename, true);
+		return Main.loadCombinedImageIcon(Main.combinedDisabledIcons, baseFilename, characterFilename, effectFilename, true);
 	}
 	
 	public static ImageIcon loadImageIcon(String filename) throws Exception

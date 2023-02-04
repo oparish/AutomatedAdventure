@@ -1,5 +1,5 @@
 package backend;
 
 public enum MapElementType {
-	LOCATION, CHARACTER;
+	LOCATION, CHARACTER, EFFECT;
 }

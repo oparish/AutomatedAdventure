@@ -602,63 +602,53 @@ public class MapPanel extends JPanel implements ActionListener
 		}
 	}
 	
+	private void populateLocationButtonData(LocationButtonData locationButtonData, MapElementType mapElementType, ArrayList<ElementInstance> instances) throws Exception
+	{
+		Element locationElement = instances.get(0).getElement();
+		RestrictedJson<ImageRestriction> locationImageData = locationElement.getMapImageData(this.map);
+		String fileName = locationImageData.getString(ImageRestriction.FILENAME);
+		locationButtonData.addFilename(mapElementType, fileName);
+		RestrictedJson<TooltipRestriction> tooltipData = locationElement.getTooltip(map);
+		for (ElementInstance locationInstance : instances)
+		{
+			String locationTooltip = this.createTooltipText(tooltipData, locationInstance);
+			locationButtonData.tooltipText += this.assessTooltipText(locationInstance, locationTooltip);
+			locationButtonData.elementInstances.add(locationInstance);
+		}
+	}
+	
 	private LocationButtonData createLocationButtonData(int x, int y, HashMap<MapElementType, ArrayList<ElementInstance>> dataMap) throws Exception
 	{
 		LocationButtonData locationButtonData = new LocationButtonData();	
 		locationButtonData.elementInstances = new ArrayList<ElementInstance>();
-		ArrayList<ElementInstance> locationInstances = null;
-		ArrayList<ElementInstance> characterInstances = null;
-		String locationFileName = null;
-		String characterFileName = null;
 		locationButtonData.tooltipText = "";
 		
-		if (dataMap.containsKey(MapElementType.LOCATION))
+		for (MapElementType mapElementType : MapElementType.values())
 		{
-			locationInstances = dataMap.get(MapElementType.LOCATION);
-			Element locationElement = locationInstances.get(0).getElement();
-			RestrictedJson<ImageRestriction> locationImageData = locationElement.getMapImageData(this.map);
-			locationFileName = locationImageData.getString(ImageRestriction.FILENAME);
-			RestrictedJson<TooltipRestriction> tooltipData = locationElement.getTooltip(map);
-			for (ElementInstance locationInstance : locationInstances)
-			{
-				String locationTooltip = this.createTooltipText(tooltipData, locationInstance);
-				locationButtonData.tooltipText += this.assessTooltipText(locationInstance, locationTooltip);
-				locationButtonData.elementInstances.add(locationInstance);
-			}		
+			ArrayList<ElementInstance> instances = dataMap.get(mapElementType);
+			if (instances != null)
+				this.populateLocationButtonData(locationButtonData, mapElementType, instances);	
 		}
 		
-		if (dataMap.containsKey(MapElementType.CHARACTER))
-		{
-			characterInstances = dataMap.get(MapElementType.CHARACTER);
-			Element characterElement = characterInstances.get(0).getElement();
-			RestrictedJson<ImageRestriction> pcImageData = characterElement.getMapImageData(this.map);
-			characterFileName = pcImageData.getString(ImageRestriction.FILENAME);
-			RestrictedJson<TooltipRestriction> tooltipData = characterElement.getTooltip(map);
-			for (ElementInstance characterInstance : characterInstances)
-			{
-				String characterTooltip = this.createTooltipText(tooltipData, characterInstance);
-				locationButtonData.tooltipText += this.assessTooltipText(characterInstance, characterTooltip);
-				locationButtonData.elementInstances.add(characterInstance);
-			}
-		}
+		ArrayList<ElementInstance> locationInstances = dataMap.get(MapElementType.LOCATION);
 		
-		if (locationInstances != null && characterInstances != null)
-		{
-			locationButtonData.imageIcon = Main.loadCombinedImageIcon(locationFileName, characterFileName);
-			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(locationFileName, characterFileName);
-		}
-		else if (locationInstances != null)
-		{
-			locationButtonData.imageIcon = Main.loadImageIcon(locationFileName);
-			locationButtonData.disabledImageIcon = Main.loadDisabledImageIcon(locationFileName);
-		}
-		else
+		String locationFileName = locationButtonData.getFilename(MapElementType.LOCATION);
+		String characterFileName = locationButtonData.getFilename(MapElementType.CHARACTER);
+		String effectFileName = locationButtonData.getFilename(MapElementType.EFFECT);
+		
+		if (locationInstances == null)
 		{
 			RestrictedJson<ImageRestriction> imageRestriction = this.map.getMapData().getRestrictedJson((MapRestriction.IMAGE), ImageRestriction.class);
 			String baseFileName = imageRestriction.getString(ImageRestriction.FILENAME);
-			locationButtonData.imageIcon = Main.loadCombinedImageIcon(baseFileName, characterFileName);
-			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(baseFileName, characterFileName);
+			locationButtonData.imageIcon = Main.loadCombinedImageIcon(baseFileName, characterFileName, effectFileName);
+			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(baseFileName, characterFileName, effectFileName);
 		}
+		else
+		{
+			locationButtonData.imageIcon = Main.loadCombinedImageIcon(locationFileName, characterFileName, effectFileName);
+			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(locationFileName, characterFileName, effectFileName);
+		}
+
 		return locationButtonData;
 	}
 	
@@ -833,10 +823,21 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private class LocationButtonData
 	{
+		private HashMap<MapElementType, String> filenameMap = new HashMap<MapElementType, String>();
 		public ArrayList<ElementInstance> elementInstances;
 		public ImageIcon imageIcon;
 		public ImageIcon disabledImageIcon;
 		public String tooltipText;
+		
+		public void addFilename(MapElementType key, String value)
+		{
+			this.filenameMap.put(key, value);
+		}
+		
+		public String getFilename(MapElementType key)
+		{
+			return this.filenameMap.get(key);
+		}
 	}
 	
 	@SuppressWarnings("serial")

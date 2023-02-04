@@ -80,6 +80,9 @@
                   "options" : [ "Victory", "Loss", "Draw" ]
                }
             }
+         },
+         "battle" : {
+            "elementData" : {}
          }
       },
       "checktime" : 0,
@@ -486,6 +489,19 @@
                      ]
                   },
                   "mapElementType" : "location"
+               },
+               "battle" : {
+                  "image" : {
+                     "filename" : "battle.png"
+                  },
+                  "tooltip" : {
+                     "tooltipComponents" : [
+                        {
+                           "tooltipText" : "Battle!"
+                        }
+                     ]
+                  },
+                  "mapElementType" : "effect"
                },
                "troop" : {
                   "image" : {
