@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import backend.Element;
 import backend.Map;
 import backend.Map.MapPosition;
+import backend.PositionType;
 import backend.Scenario;
 import backend.Element.ElementInstance;
 import backend.ElementGroup;
@@ -97,26 +98,51 @@ public abstract class AbstractPageInstance
 		for (int i = 0; i < makeElementArray.size(); i++)
 		{
 			RestrictedJson<MakeElementRestriction> makeElementData = makeElementArray.getMemberAt(i);
-			String elementName = makeElementData.getString(MakeElementRestriction.ELEMENT_NAME);
-			Element element = this.scenario.getElement(elementName);
-			Integer numberValue = makeElementData.getNumber(MakeElementRestriction.NUMBER_VALUE);
-			String uniqueName = makeElementData.getString(MakeElementRestriction.UNIQUE_NAME);
-			
-			if (numberValue != null)
+			ArrayList<Element.ElementInstance> elementInstanceList = this.makeElementInstanceList(makeElementData);
+			for (ElementInstance elementInstance : elementInstanceList)
 			{
-				ArrayList<Element.ElementInstance> instances = element.makeInstances(numberValue);
-				for (ElementInstance instance : instances)
-				{
-					report.addMadeElement(instance);
-				}
+				report.addMadeElement(elementInstance);
 			}
-			else
+		}
+	}
+	
+	private ArrayList<Element.ElementInstance> makeElementInstanceList(RestrictedJson<MakeElementRestriction> makeElementData) throws Exception
+	{
+		String elementName = makeElementData.getString(MakeElementRestriction.ELEMENT_NAME);
+		Element element = this.scenario.getElement(elementName);
+		Integer numberValue = makeElementData.getNumber(MakeElementRestriction.NUMBER_VALUE);
+		String uniqueName = makeElementData.getString(MakeElementRestriction.UNIQUE_NAME);
+		String positionTypeString = makeElementData.getString(MakeElementRestriction.POSITION_TYPE);
+		MapPosition mapPosition = null;
+		Map map = null;
+		
+		if (positionTypeString != null)
+		{
+			PositionType positionType = PositionType.valueOf(positionTypeString.toUpperCase());
+			switch (positionType)
 			{
-				RestrictedJson<InstanceDetailsRestriction> instanceDetailsData = 
-						makeElementData.getRestrictedJson(MakeElementRestriction.INSTANCE_DETAILS, InstanceDetailsRestriction.class);
-				ElementInstance instance = element.makeInstance(instanceDetailsData, uniqueName);
-				report.addMadeElement(instance);
+				case POSITIONCOUNTER:
+					String positionCounterName = makeElementData.getString(MakeElementRestriction.POSITION_COUNTER_NAME);
+					PositionCounter positionCounter = this.scenario.getPositionCounter(positionCounterName);
+					mapPosition = positionCounter.getMapPosition();
+					map = positionCounter.getMap();
+					break;
 			}
+		}
+		
+		if (numberValue != null)
+		{
+			return element.makeInstances(numberValue, map, mapPosition);
+		}
+		else
+		{
+			RestrictedJson<InstanceDetailsRestriction> instanceDetailsData = 
+					makeElementData.getRestrictedJson(MakeElementRestriction.INSTANCE_DETAILS, InstanceDetailsRestriction.class);
+			ArrayList<Element.ElementInstance> instances = new ArrayList<Element.ElementInstance>();
+			ElementInstance instance = element.makeInstance(instanceDetailsData, uniqueName, map, mapPosition);
+
+			instances.add(instance);
+			return instances;
 		}
 	}
 	

@@ -17,6 +17,11 @@ public class PositionCounter implements Counter
 		this.init();
 	}
 	
+	public Map getMap()
+	{
+		return map;
+	}
+	
 	private void init()
 	{
 		switch(this.positionCounterType)

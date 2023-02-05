@@ -118,6 +118,7 @@ public enum Restriction
 	COUNTER_ADJUSTMENTS("counterAdjustments", RestrictionType.COUNTER_ADJUSTMENT, JsonDim.ARRAY),
 	COUNTER_INITIALISATIONS("counterInitialisations", RestrictionType.COUNTER_INITIALISATION, JsonDim.ARRAY),
 	POSITION_COUNTER_NAME("positionCounterName", STRING, JsonDim.MONO),
+	POSITION_TYPE("positionType", STRING, JsonDim.MONO),
 	NUMBER_MAP("numberMap", NUMBER, JsonDim.MAP),
 	STRING_MAP("stringMap", STRING, JsonDim.MAP),
 	SET_MAP("setMap", NUMBER, JsonDim.MAP),

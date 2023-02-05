@@ -123,7 +123,7 @@ public class Scenario
 		for (Element element : this.elementMap.values())
 		{
 			if (element.getUnique())
-				element.makeInstances(1);
+				element.makeInstances(1, null, null);
 		}			
 	}
 	
@@ -412,7 +412,7 @@ public class Scenario
 		counter.increment();
 	}
 	
-	public MapPosition getMapPositionFromPositionCounter(String name) throws Exception
+	public PositionCounter getPositionCounter(String name) throws Exception
 	{
 		Counter counter = this.counterMap.get(name);
 		if (counter == null)
@@ -422,12 +422,17 @@ public class Scenario
 		else if (counter instanceof PositionCounter)
 		{
 			PositionCounter positionCounter = (PositionCounter) counter;
-			return positionCounter.getMapPosition();
+			return positionCounter;
 		}
 		else
 		{
 			throw new Exception(name + " is not a PositionCounter");
 		}
+	}
+	
+	public MapPosition getMapPositionFromPositionCounter(String name) throws Exception
+	{
+		return this.getPositionCounter(name).getMapPosition();
 	}
 	
 	public ElementInstance getElementInstanceFromGroupCounter(String name) throws Exception

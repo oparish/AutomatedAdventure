@@ -380,6 +380,14 @@
                      "counterPrimaryType" : "group",
                      "counterSecondaryType" : "all"
                   }
+               ],
+               "makeElements" : [
+                  {
+                     "elementName" : "battle",
+                     "positionType" : "positioncounter",
+                     "positionCounterName" : "testCounter",
+                     "instanceDetails" : {}
+                  }
                ]
             }
          },

@@ -59,13 +59,13 @@ public class Element
 		tooltipMap.put(map, tooltip);
 	}
 	
-	public ArrayList<ElementInstance> makeInstances(int number) throws Exception
+	public ArrayList<ElementInstance> makeInstances(int number, Map map, MapPosition mapPosition) throws Exception
 	{	
 		ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
 		int existingInstances = this.instances.size();
 		for (int i = 0; i < number; i++)
 		{
-			ElementInstance elementInstance = this.makeInstance(number, existingInstances);
+			ElementInstance elementInstance = this.makeInstance(number, existingInstances, map, mapPosition);
 			instances.add(elementInstance);
 		}
 		return instances;
@@ -91,13 +91,14 @@ public class Element
 		return this.uniqueMap.get(uniqueName);
 	}
 	
-	private ElementInstance makeInstance(int number, int existingInstances) throws Exception
+	private ElementInstance makeInstance(int number, int existingInstances, Map map, MapPosition mapPosition) throws Exception
 	{
 		HashMap<String, Integer> detailValues = new HashMap<String, Integer>();
 		HashMap<String, Integer> numberValues = new HashMap<String, Integer>();
 		HashMap<String, Integer> setValues = new HashMap<String, Integer>();
 		HashMap<Map, MapPosition> positionMap = new HashMap<Map, MapPosition>();
-		return this.makeInstance(number, existingInstances, detailValues, numberValues, setValues, positionMap);
+		
+		return this.makeInstance(number, existingInstances, detailValues, numberValues, setValues, positionMap, map, mapPosition);
 	}
 	
 	private HashMap<String, Integer> convertDetailsMap(JsonEntityMap<JsonEntityString> detailStringJsonMap) throws Exception
@@ -164,10 +165,11 @@ public class Element
 	public void makeInstance(RestrictedJson<InstanceDetailsRestriction> instanceDetailsData)
 			throws Exception
 	{
-		this.makeInstance(instanceDetailsData, null);
+		this.makeInstance(instanceDetailsData, null, null, null);
 	}
 	
-	public ElementInstance makeInstance(RestrictedJson<InstanceDetailsRestriction> instanceDetailsData, String uniqueName)
+	public ElementInstance makeInstance(RestrictedJson<InstanceDetailsRestriction> instanceDetailsData, String uniqueName, Map map, 
+			MapPosition mapPosition)
 			throws Exception
 	{
 		JsonEntityMap<JsonEntityString> detailStringJsonMap = instanceDetailsData.getStringMap(InstanceDetailsRestriction.STRING_MAP);
@@ -199,7 +201,7 @@ public class Element
 		else
 			positionMap = new HashMap<Map, MapPosition>();
 		
-		ElementInstance elementInstance = this.makeInstance(1, this.instances.size(), detailValues, numberValues, setValues, positionMap);
+		ElementInstance elementInstance = this.makeInstance(1, this.instances.size(), detailValues, numberValues, setValues, positionMap, map, mapPosition);
 		if (uniqueName != null)
 			this.uniqueMap.put(uniqueName, elementInstance);
 		
@@ -207,11 +209,13 @@ public class Element
 	}
 	
 	private ElementInstance makeInstance(int number, int existingInstances, HashMap<String, Integer> detailValues, HashMap<String, Integer> numberValues,
-			HashMap<String, Integer> setValues, HashMap<Map, MapPosition> positionMap) throws Exception
+			HashMap<String, Integer> setValues, HashMap<Map, MapPosition> positionMap, Map map, MapPosition mapPosition) throws Exception
 	{
 		this.completeElementDataValues(detailValues, number, existingInstances);
 		this.completeElementNumberValues(numberValues);
 		this.completeElementSetValues(setValues, number, existingInstances);
+		if (map != null)
+			positionMap.put(map, mapPosition);
 		this.completePositionMap(positionMap);
 		ElementInstance elementInstance = new ElementInstance(detailValues, numberValues, setValues, positionMap);
 		this.instances.add(elementInstance);
@@ -399,7 +403,7 @@ public class Element
 	
 	public ElementInstance createInstance() throws Exception
 	{
-		this.makeInstances(1);
+		this.makeInstances(1, null, null);
 		return this.instances.get(this.instances.size() - 1);
 	}
 	
