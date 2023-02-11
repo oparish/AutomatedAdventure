@@ -452,6 +452,8 @@ public class Element
 		public Faction getFaction()
 		{
 			String factionString = this.getStringValue(FACTION);
+			if (factionString == null)
+				return null;
 			Faction faction = Faction.match(factionString);
 			return faction;
 		}

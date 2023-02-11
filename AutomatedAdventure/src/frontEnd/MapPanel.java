@@ -318,7 +318,7 @@ public class MapPanel extends JPanel implements ActionListener
 		HashMap<String, ElementChoice> combinedChoices = new HashMap<String, ElementChoice>();
 		for (ElementInstance elementInstance : button.elementInstances)
 		{
-			if (elementInstance.getFaction() == Faction.COMPUTER)
+			if (elementInstance.getFaction() != Faction.PLAYER)
 			{
 				return;
 			}

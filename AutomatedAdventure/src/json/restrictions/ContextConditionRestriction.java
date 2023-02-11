@@ -88,11 +88,14 @@ public enum ContextConditionRestriction implements RestrictionPointer
 		boolean computerPresence = false;
 		for (ElementInstance elementInstance : elementGroup.getElementInstances())
 		{
-			if (elementInstance.getFaction() == Faction.PLAYER && computerPresence)
+			Faction faction = elementInstance.getFaction();
+			if (faction == null)
+				return false;
+			else if (faction == Faction.PLAYER && computerPresence)
 				return true;
-			else if (elementInstance.getFaction() == Faction.COMPUTER && playerPresence)
+			else if (faction == Faction.COMPUTER && playerPresence)
 				return true;
-			else if (elementInstance.getFaction() == Faction.PLAYER)
+			else if (faction == Faction.PLAYER)
 				playerPresence = true;
 			else
 				computerPresence = true;
@@ -108,9 +111,10 @@ public enum ContextConditionRestriction implements RestrictionPointer
 		int computerTotal = 0;
 		for (ElementInstance elementInstance : elementGroup.getElementInstances())
 		{
-			if (elementInstance.getFaction() == Faction.PLAYER)
+			Faction faction = elementInstance.getFaction();
+			if (faction == Faction.PLAYER)
 				playerTotal += elementInstance.getNumberValueByName(elementQuality);
-			else
+			else if (faction == Faction.COMPUTER)
 				computerTotal += elementInstance.getNumberValueByName(elementQuality);			
 		}
 		Comparator comparator = Comparator.fromText(comparatorText);
@@ -119,7 +123,8 @@ public enum ContextConditionRestriction implements RestrictionPointer
 	
 	public static boolean checkCondition(Scenario scenario, RestrictedJson<ContextConditionRestriction> contextConditionData, 
 			ElementInstance selectedInstance, ElementGroup elementGroup) throws Exception
-	{			
+	{		
+		String elementName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_NAME);
 		String comparatorText = contextConditionData.getString(ContextConditionRestriction.TYPE);
 		String elementQualityName = contextConditionData.getString(ContextConditionRestriction.ELEMENT_QUALITY);
 		Integer numberValue = contextConditionData.getNumber(ContextConditionRestriction.NUMBER_VALUE);
@@ -140,11 +145,12 @@ public enum ContextConditionRestriction implements RestrictionPointer
 			selectionType = SelectionType.fromString(selectionTypeString);
 		}
 		
+		Element element = scenario.getElement(elementName);
 		
 		if (selectionType == SelectionType.FROM_GROUP)
 		{
 			String groupName = contextConditionData.getString(ContextConditionRestriction.GROUP_NAME);
-			selectedInstance = scenario.getElementInstanceFromGroupCounter(groupName);
+			selectedInstance = scenario.getElementInstanceFromGroupCounter(element, groupName);
 		}
 		else if (connectionName != null)
 		{

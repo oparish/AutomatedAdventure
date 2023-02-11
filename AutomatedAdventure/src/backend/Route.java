@@ -30,7 +30,7 @@ public class Route {
 		MapPosition position = this.positions.get(nextPos);
 		for (ElementInstance elementInstance : position.elementInstances)
 		{
-			if (faction != elementInstance.getFaction())
+			if (faction != null && faction != elementInstance.getFaction())
 				return false;
 		}
 		

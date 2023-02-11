@@ -428,7 +428,7 @@ public abstract class AbstractPageInstance
 		{
 			case GROUP:
 				String counterName = targetIdentificationRestriction.getString(TargetIdentificationRestriction.COUNTER_NAME);
-				ElementInstance groupInstance = this.scenario.getElementInstanceFromGroupCounter(counterName);
+				ElementInstance groupInstance = this.scenario.getElementInstanceFromGroupCounter(element, counterName);
 				if (this.checkElementConditions(elementConditionArray, groupInstance))
 					return groupInstance;
 			case CONNECTED:

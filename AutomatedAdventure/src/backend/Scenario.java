@@ -435,7 +435,7 @@ public class Scenario
 		return this.getPositionCounter(name).getMapPosition();
 	}
 	
-	public ElementInstance getElementInstanceFromGroupCounter(String name) throws Exception
+	public ElementInstance getElementInstanceFromGroupCounter(Element element, String name) throws Exception
 	{
 		Counter counter = this.counterMap.get(name);
 		if (counter == null)
@@ -445,7 +445,11 @@ public class Scenario
 		else if (counter instanceof GroupCounter)
 		{
 			GroupCounter groupCounter = (GroupCounter) counter;
-			return groupCounter.getSelectedElement();
+			ElementInstance elementInstance = groupCounter.getSelectedElement();
+			if (elementInstance.getElement() == element)
+				return elementInstance;
+			else
+				return null;
 		}
 		else
 		{
