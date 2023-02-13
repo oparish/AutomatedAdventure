@@ -807,12 +807,14 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		private MapPosition position;
 		
-		public MapButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, MapPosition position)
+		public MapButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, MapPosition position) throws Exception
 		{
 			super(imageIcon);
 			this.setDisabledIcon(disabledImageIcon);
 			this.setMargin(new Insets(-4, -4, -4, -4));
 			this.position = position;
+			if (position == null)
+				throw new Exception("A MapButton should never be at a NULL position.");
 		}
 		
 		public MapPosition getPosition()
@@ -845,7 +847,7 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		public ArrayList<ElementInstance> elementInstances;
 		
-		public LocationButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, MapPosition position, ArrayList<ElementInstance> elementInstances, String tooltipText)
+		public LocationButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, MapPosition position, ArrayList<ElementInstance> elementInstances, String tooltipText) throws Exception
 		{
 			super(imageIcon, disabledImageIcon, position);
 			this.elementInstances = elementInstances;
@@ -853,7 +855,7 @@ public class MapPanel extends JPanel implements ActionListener
 				this.updateTooltip(tooltipText);
 		}
 		
-		public LocationButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, MapPosition position, ArrayList<ElementInstance> elementInstances)
+		public LocationButton(ImageIcon imageIcon, ImageIcon disabledImageIcon, MapPosition position, ArrayList<ElementInstance> elementInstances) throws Exception
 		{
 			this(imageIcon, disabledImageIcon, position, elementInstances, null);
 		}
