@@ -38,14 +38,21 @@ public class Element
 	HashMap<Map, MapElementType> typeMap = new HashMap<Map, MapElementType>();
 	HashMap<Map, RestrictedJson<TooltipRestriction>> tooltipMap = new HashMap<Map, RestrictedJson<TooltipRestriction>>();
 	HashMap<String, ElementInstance> uniqueMap = new HashMap<String, ElementInstance>();
+	String name;
 	
 	public ArrayList<ElementInstance> getInstances() {
 		return instances;
 	}
 
-	public Element(RestrictedJson<ElementRestriction> elementJson) throws Exception
+	public Element(Entry<String, RestrictedJson<ElementRestriction>> entry) throws Exception
 	{
-		this.elementJson = elementJson;
+		this.elementJson = entry.getValue();
+		this.name = entry.getKey();
+	}
+	
+	public String getName()
+	{
+		return this.name;
 	}
 	
 	public void addMap(Map map, RestrictedJson<ImageRestriction> imageData, MapElementType type)

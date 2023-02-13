@@ -367,7 +367,7 @@ public class Scenario
 		
 		for (Entry<String, RestrictedJson<ElementRestriction>> elementJsonEntry : elementJsonMap.getEntityMap().entrySet())
 		{
-			this.elementMap.put(elementJsonEntry.getKey(), new Element(elementJsonEntry.getValue()));
+			this.elementMap.put(elementJsonEntry.getKey(), new Element(elementJsonEntry));
 		}
 	}
 	
