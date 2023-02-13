@@ -2,7 +2,7 @@ package json.restrictions;
 
 public enum ElementAdjustmentType
 {
-	CONNECTED, SELECTED, EACH, GROUP;
+	CONNECTED, SELECTED, EACH, GROUP, ATPOSITION;
 	
 	public static ElementAdjustmentType stringToType(String typeString)
 	{

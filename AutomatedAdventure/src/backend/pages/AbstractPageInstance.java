@@ -426,6 +426,17 @@ public abstract class AbstractPageInstance
 		Element element = this.scenario.getElement(elementType);
 		switch(elementAdjustmentType)
 		{
+			case ATPOSITION:
+				String positionCounterName = targetIdentificationRestriction.getString(TargetIdentificationRestriction.COUNTER_NAME);
+				PositionCounter positionCounter = this.scenario.getPositionCounter(positionCounterName);
+				MapPosition mapPosition = positionCounter.getMapPosition();
+				ArrayList<ElementInstance> instances = mapPosition.getElementInstances();
+				for (ElementInstance instance : instances)
+				{
+					if (instance.getElement() == element && this.checkElementConditions(elementConditionArray, instance))
+						return instance;
+				}
+				break;
 			case GROUP:
 				String counterName = targetIdentificationRestriction.getString(TargetIdentificationRestriction.COUNTER_NAME);
 				ElementInstance groupInstance = this.scenario.getElementInstanceFromGroupCounter(element, counterName);
