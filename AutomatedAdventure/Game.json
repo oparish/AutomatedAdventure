@@ -317,10 +317,11 @@
             "choices" : [
                {
                   "first" : "Next",
-                  "value" : "next"
+                  "value" : "nextCombat"
                }
             ],
-            "value" : "<report:adjustment:troop>Troop Adjusted: <reportInner:name>\r\nAdjustment Amount:<reportInner:quantity></report>"
+            "value" : "<report:adjustment:troop>Troop Adjusted: <reportInner:name>\r\nAdjustment Amount:<reportInner:quantity></report>",
+            "secondaryPanelName" : "mapPanel"
          }
       },
       "connections" : {},
@@ -380,14 +381,6 @@
                      "counterPrimaryType" : "group",
                      "counterSecondaryType" : "all"
                   }
-               ],
-               "makeElements" : [
-                  {
-                     "elementName" : "battle",
-                     "positionType" : "positioncounter",
-                     "positionCounterName" : "testCounter",
-                     "instanceDetails" : {}
-                  }
                ]
             }
          },
@@ -400,7 +393,17 @@
                   "elementQuality" : "quantity",
                   "type" : "="
                }
-            ]
+            ],
+            "adjustmentData" : {
+               "makeElements" : [
+                  {
+                     "elementName" : "battle",
+                     "positionType" : "positioncounter",
+                     "positionCounterName" : "testCounter",
+                     "instanceDetails" : {}
+                  }
+               ]
+            }
          },
          "combatWinCheck" : {
             "first" : "combatWin",
@@ -464,6 +467,20 @@
                   "counterCondition" : "completed"
                }
             ]
+         },
+         "nextCombat" : {
+            "adjustmentData" : {
+               "removeElements" : [
+                  {
+                     "targetIdentification" : {
+                        "elementName" : "battle",
+                        "type" : "atPosition",
+                        "counterName" : "testCounter"
+                     }
+                  }
+               ]
+            },
+            "first" : "loop"
          }
       },
       "randomRedirects" : {},

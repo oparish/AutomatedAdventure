@@ -38,6 +38,8 @@ public abstract class PagePanel extends JPanel
 		this.textArea.setText(pageInstance.parseContents());
 	}
 	
+	public abstract void secondaryUpdate(PageInstance pageInstance) throws Exception;
+	
 	public void clear()
 	{
 		this.textArea.setText("");

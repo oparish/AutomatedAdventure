@@ -47,6 +47,11 @@ public class PageWithChoicesPanel extends PagePanel
 		this.choiceBox.updateChoiceBox(pageInstance);
 	}
 	
+	public void secondaryUpdate(PageInstance pageInstance) throws Exception
+	{
+
+	}
+	
 	public void clear()
 	{
 		super.clear();

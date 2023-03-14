@@ -652,7 +652,7 @@ public class MapPanel extends JPanel implements ActionListener
 		return locationButtonData;
 	}
 	
-	private void repaintMap() throws Exception
+	public void repaintMap() throws Exception
 	{		
 		this.movingMap = new HashMap<Integer, HashMap<Integer, HashMap<MapElementType, ArrayList<ElementInstance>>>>();
 		this.populateInstanceMap(this.movingMap, false);

@@ -84,12 +84,18 @@ public class PageWindow extends MyWindow
 	{
 		RestrictedJson<PageRestriction> panelJson = pageInstance.getPageJson();
 		String panelName = panelJson.getString(PageRestriction.PANEL_NAME);
+		String secondaryPanelName = panelJson.getString(PageRestriction.SECONDARY_PANEL_NAME);
 		for(Entry<String, PagePanel> entry : this.panelMap.entrySet())
 		{
 			PagePanel pagePanel = entry.getValue();
-			if (panelName.equals(entry.getKey()))
+			String key = entry.getKey();
+			if (panelName.equals(key))
 			{
 				pagePanel.update(pageInstance);
+			}
+			else if (secondaryPanelName != null && secondaryPanelName.equals(key))
+			{
+				pagePanel.secondaryUpdate(pageInstance);
 			}
 			else
 			{

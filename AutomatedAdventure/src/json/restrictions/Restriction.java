@@ -97,6 +97,7 @@ public enum Restriction
 	TILE_SIZE("tileSize", NUMBER, JsonDim.MONO),
 	MAP_NAME("mapName", STRING, JsonDim.MONO),
 	PANEL_NAME("panelName", STRING, JsonDim.MONO),
+	SECONDARY_PANEL_NAME("secondaryPanelName", STRING, JsonDim.MONO),
 	ELEMENT_NAME("elementName", STRING, JsonDim.MONO),
 	ELEMENT_QUALITY("elementQuality", STRING, JsonDim.MONO),
 	ELEMENT_CONDITIONS("elementConditions", RestrictionType.ELEMENT_CONDITION, JsonDim.ARRAY),
