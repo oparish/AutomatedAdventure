@@ -29,6 +29,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 
+import backend.ImageData;
+import backend.ImageDataKey;
 import backend.MapElementType;
 import backend.Mode;
 import backend.Scenario;
@@ -44,8 +46,8 @@ public class Main
 	private static Random random = new Random();
 	private static HashMap<String, ImageIcon> icons = new HashMap<String, ImageIcon>();
 	private static HashMap<String, ImageIcon> disabledIcons = new HashMap<String, ImageIcon>();
-	private static HashMap<String, HashMap<String, HashMap<String, ImageIcon>>> combinedIcons = new HashMap<String, HashMap<String, HashMap<String, ImageIcon>>>();
-	private static HashMap<String, HashMap<String, HashMap<String, ImageIcon>>> combinedDisabledIcons = new HashMap<String, HashMap<String, HashMap<String, ImageIcon>>>();
+	private static HashMap<ImageData, ImageIcon> combinedIcons = new HashMap<ImageData, ImageIcon>();
+	private static HashMap<ImageData, ImageIcon> combinedDisabledIcons = new HashMap<ImageData, ImageIcon>();
 	private static final String NULL = "null";
 	
 	public static Dimension findScreenCentre()
@@ -108,75 +110,62 @@ public class Main
 		}
 	}
 	
-	private static <K> K produceImageMap(HashMap<String, K> outerMap, K emptyMap, String filename)
-	{
-		K innerMap;
-		if (filename != null)
-		{
-			if (outerMap.containsKey(filename))
-			{
-				innerMap = outerMap.get(filename);
-			}
-			else
-			{
-				innerMap = emptyMap;
-				outerMap.put(filename, innerMap);
-			}
-		}
-		else
-		{
-			if (outerMap.containsKey(NULL))
-			{
-				innerMap = outerMap.get(NULL);
-			}
-			else
-			{
-				innerMap = emptyMap;
-				outerMap.put(NULL, innerMap);
-			}
-		}
-		return innerMap;
-	}
-	
-	private static ImageIcon loadCombinedImageIcon(HashMap<String, HashMap<String, HashMap<String, ImageIcon>>> iconMap, String baseFilename, 
+	private static ImageIcon loadCombinedImageIcon(HashMap<ImageData, ImageIcon> iconMap, String baseFilename, 
 			String characterFilename, String effectFilename, boolean disabled) throws Exception
-	{		
-		HashMap<String, HashMap<String, ImageIcon>> characterMap = Main.produceImageMap(iconMap, new HashMap<String, 
-				HashMap<String, ImageIcon>>(), baseFilename);	
-		HashMap<String, ImageIcon> effectMap = Main.produceImageMap(characterMap, new HashMap<String, ImageIcon>(), characterFilename);
+	{
+		ImageData imageData = new ImageData();
+		imageData.put(ImageDataKey.BACKGROUND, baseFilename);
+		imageData.put(ImageDataKey.CENTRE_CHARACTER, characterFilename);
+		imageData.put(ImageDataKey.EFFECT, effectFilename);
 		
-		if (effectMap.containsKey(effectFilename))
+		for (ImageData key : iconMap.keySet())
 		{
-			return effectMap.get(effectFilename);
+			if (key.isEqualTo(imageData))
+			{
+				return iconMap.get(key);
+			}
 		}
-		else if (effectFilename == null && effectMap.containsKey(NULL))
-		{
-			return effectMap.get(NULL);
-		}
-			
-		BufferedImage baseImg = Main.produceCombinedImageIcon(baseFilename, characterFilename, effectFilename);
+		
+		BufferedImage baseImg = Main.produceCombinedImageIcon(imageData);
 		
 		if (disabled)
 			Main.applyDisabledEffect(baseImg);
 			
 		ImageIcon imageIcon = new ImageIcon(baseImg);	
-		if (effectFilename != null)	
-			effectMap.put(effectFilename, imageIcon);
-		else
-			effectMap.put(NULL, imageIcon);
+		iconMap.put(imageData, imageIcon);
 
 	    return imageIcon;
 	} 
 	
-	private static BufferedImage produceCombinedImageIcon(String baseFilename, String characterFilename, String effectFilename) throws Exception
+	private static BufferedImage produceCombinedImageIcon(ImageData characterData) throws Exception
 	{
+		String baseFilename = characterData.get(ImageDataKey.BACKGROUND);
+		String leftImageName = characterData.get(ImageDataKey.LEFT_CHARACTER);
+		String rightImageName = characterData.get(ImageDataKey.RIGHT_CHARACTER);
+		String centreImageName = characterData.get(ImageDataKey.CENTRE_CHARACTER);
+		String effectFilename = characterData.get(ImageDataKey.EFFECT);
+		
 		BufferedImage baseImg = Main.loadImageFromFile(baseFilename);
 		Graphics2D graphics = baseImg.createGraphics();
 		
-		if (characterFilename != null)
+		if (leftImageName != null)
 		{
-			BufferedImage characterImg = Main.loadImageFromFile(characterFilename);
-			graphics.drawImage(characterImg, 0, 0, null);
+			BufferedImage leftCharacterImg = Main.loadImageFromFile(leftImageName);
+			int segmentWidth = leftCharacterImg.getWidth() * 5 / 24;
+			graphics.drawImage(leftCharacterImg, 0 - segmentWidth, 0, null);
+		}
+		
+		if (rightImageName != null)
+		{
+			BufferedImage rightCharacterImg = Main.loadImageFromFile(rightImageName);
+			int segmentWidth = rightCharacterImg.getWidth() * 5 / 24;
+			graphics.drawImage(rightCharacterImg, 0 + segmentWidth, 0, null);
+		}
+		
+		if (centreImageName != null)
+		{
+			BufferedImage centreCharacterImg = Main.loadImageFromFile(centreImageName);
+			graphics.drawImage(centreCharacterImg, 0, 0, null);
 		}
 		
 		if (effectFilename != null)
