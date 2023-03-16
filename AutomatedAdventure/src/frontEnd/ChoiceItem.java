@@ -7,7 +7,7 @@ import backend.Map.MapPosition;
 import backend.pages.ElementChoice;
 
 @SuppressWarnings("serial")
-public class ChoiceItem extends JMenuItem
+public class ChoiceItem extends JMenuItem implements Positioned
 {
 	private MapPosition position;
 	private ElementChoice elementChoice;

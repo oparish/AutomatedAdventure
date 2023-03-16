@@ -355,14 +355,13 @@ public class MapPanel extends JPanel implements ActionListener
 	}
 	
 	private void performMenuAction(ElementChoice elementChoice) throws Exception
-	{
+	{	
 		Pages.getScenario().loadPage(elementChoice);
 	}
 	
 	private void performMenuRangeAction(ChoiceItem choiceItem, ElementChoice elementChoice) throws Exception
 	{
 		this.mode = MapMode.LOCATION_RANGE;
-		this.selectedPosition = choiceItem.getPosition();
 		this.selectedChoice = choiceItem.getElementChoice();
 		this.disableButtonsOutsideRange();
 		this.cancelButton.setEnabled(true);
@@ -371,7 +370,6 @@ public class MapPanel extends JPanel implements ActionListener
 	private void performRouteSelectionAction(ChoiceItem choiceItem, ElementChoice elementChoice, MapMode mapMode)
 	{
 		this.mode = mapMode;
-		this.selectedPosition = choiceItem.getPosition();
 		this.selectedChoice = choiceItem.getElementChoice();
 		this.disableButtonsOutsideRange();
 		this.cancelButton.setEnabled(true);
@@ -471,6 +469,13 @@ public class MapPanel extends JPanel implements ActionListener
 		}
 		else
 		{
+			if (e.getSource() instanceof Positioned)
+			{
+				Positioned positioned = (Positioned) e.getSource();
+				this.selectedPosition = positioned.getPosition();
+				this.map.setSelectedPosition(selectedPosition);
+			}
+			
 			try
 			{
 				switch (this.mode)
@@ -553,7 +558,7 @@ public class MapPanel extends JPanel implements ActionListener
 	}
 	
 	private void performLocationAction(ActionEvent e) throws Exception
-	{
+	{	
 		if (e.getSource() instanceof LocationButton)
 		{
 			this.performLocationButtonAction((LocationButton) e.getSource());
@@ -803,7 +808,7 @@ public class MapPanel extends JPanel implements ActionListener
 		DISABLED, LOCATION, LOCATION_RANGE, ROUTE_SELECTION_WAIT, ROUTE_SELECTION_RETURN;
 	}
 	
-	private class MapButton extends JButton
+	private class MapButton extends JButton implements Positioned
 	{
 		private MapPosition position;
 		

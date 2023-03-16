@@ -127,6 +127,11 @@ public abstract class AbstractPageInstance
 					mapPosition = positionCounter.getMapPosition();
 					map = positionCounter.getMap();
 					break;
+				case SELECTEDPOSITION:
+					String mapName = makeElementData.getString(MakeElementRestriction.MAP_NAME);
+					map = this.scenario.getMapByName(mapName);
+					mapPosition = map.getSelectedPosition();
+					break;
 			}
 		}
 		

@@ -13,6 +13,16 @@ import main.Main;
 
 public class Map
 {
+	MapPosition selectedPosition;
+	
+	public MapPosition getSelectedPosition() {
+		return selectedPosition;
+	}
+
+	public void setSelectedPosition(MapPosition selectedPosition) {
+		this.selectedPosition = selectedPosition;
+	}
+
 	Scenario scenario;
 	public Scenario getScenario() {
 		return scenario;

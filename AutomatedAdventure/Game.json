@@ -127,6 +127,15 @@
                      "type" : "menu",
                      "elementQuality" : "name"
                   }
+               },
+               {
+                  "value" : "createTroop",
+                  "first" : "Create Troop",
+                  "elementChoice" : {
+                     "elementName" : "village",
+                     "second" : "",
+                     "type" : "menu"
+                  }
                }
             ],
             "adjustmentData" : {
@@ -481,6 +490,33 @@
                ]
             },
             "first" : "loop"
+         },
+         "createTroop" : {
+            "first" : "next",
+            "adjustmentData" : {
+               "makeElements" : [
+                  {
+                     "elementName" : "troop",
+                     "mapName" : "testMap",
+                     "positionType" : "selectedPosition",
+                     "instanceDetails" : {
+                        "name" : "new",
+                        "mapMap" : {
+                           "testMap" : {
+                              "x" : 2,
+                              "y" : 2
+                           }
+                        },
+                        "numberMap" : {
+                           "quantity" : 30
+                        },
+                        "stringMap" : {
+                           "faction" : "player"
+                        }
+                     }
+                  }
+               ]
+            }
          }
       },
       "randomRedirects" : {},
