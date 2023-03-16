@@ -487,13 +487,13 @@
       "panels" : {
          "mapPanel" : {
             "x" : 0,
-            "y" : 1,
-            "width" : 1,
-            "height" : 4,
+            "y" : 0,
+            "width" : 3,
+            "height" : 1,
             "mapName" : "testMap"
          },
          "textPanel" : {
-            "x" : 0,
+            "x" : 3,
             "y" : 0,
             "width" : 1,
             "height" : 1
