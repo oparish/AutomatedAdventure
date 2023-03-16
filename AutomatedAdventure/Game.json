@@ -566,7 +566,7 @@
                },
                "troop" : {
                   "image" : {
-                     "filename" : "wizard.png"
+                     "filename" : "troop.png"
                   },
                   "tooltip" : {
                      "tooltipComponents" : [

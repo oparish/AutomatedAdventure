@@ -97,7 +97,10 @@ public class Main
 	{
 		try
 		{
-			return ImageIO.read(new File(filename));
+			BufferedImage rawImage = ImageIO.read(new File(filename));
+			BufferedImage baseImage = new BufferedImage(rawImage.getWidth(), rawImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			baseImage.getGraphics().drawImage(rawImage, 0, 0, null);
+			return baseImage;
 		}
 		catch (IOException e)
 		{
