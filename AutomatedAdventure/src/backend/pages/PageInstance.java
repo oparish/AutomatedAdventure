@@ -433,7 +433,7 @@ public class PageInstance extends AbstractPageInstance
 			elementChoice.context = this.getPageContext();
 		String qualityString = elementInstance.getDetailValueByName(elementNamingQuality);
 		String keyString;
-		if (elementInstance.getElement().getUnique())
+		if (elementInstance.getElement().getUnique() || qualityString == null)
 		{
 			keyString = startString;
 		}

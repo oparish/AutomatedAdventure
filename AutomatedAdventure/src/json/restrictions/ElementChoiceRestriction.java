@@ -3,7 +3,7 @@ package json.restrictions;
 public enum ElementChoiceRestriction implements RestrictionPointer
 {
 	ELEMENT_NAME(Restriction.ELEMENT_NAME), ELEMENT_QUALITY(Restriction.ELEMENT_QUALITY, true), 
-	SECOND(Restriction.SECOND), ELEMENT_CONDITIONS(Restriction.ELEMENT_CONDITIONS, true), TYPE(Restriction.TYPE), 
+	SECOND(Restriction.SECOND, true), ELEMENT_CONDITIONS(Restriction.ELEMENT_CONDITIONS, true), TYPE(Restriction.TYPE), 
 	RANGE_ATTRIBUTE(Restriction.RANGE_ATTRIBUTE, true);
 	
 	private Restriction restriction;
