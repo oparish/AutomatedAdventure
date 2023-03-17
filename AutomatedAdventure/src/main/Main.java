@@ -110,14 +110,8 @@ public class Main
 		}
 	}
 	
-	private static ImageIcon loadCombinedImageIcon(HashMap<ImageData, ImageIcon> iconMap, String baseFilename, 
-			String characterFilename, String effectFilename, boolean disabled) throws Exception
+	private static ImageIcon loadCombinedImageIcon(HashMap<ImageData, ImageIcon> iconMap, ImageData imageData, boolean disabled) throws Exception
 	{
-		ImageData imageData = new ImageData();
-		imageData.put(ImageDataKey.BACKGROUND, baseFilename);
-		imageData.put(ImageDataKey.CENTRE_CHARACTER, characterFilename);
-		imageData.put(ImageDataKey.EFFECT, effectFilename);
-		
 		for (ImageData key : iconMap.keySet())
 		{
 			if (key.isEqualTo(imageData))
@@ -190,14 +184,14 @@ public class Main
 		}
 	}
 	
-	public static ImageIcon loadCombinedImageIcon(String baseFilename, String characterFilename, String effectFilename) throws Exception
+	public static ImageIcon loadCombinedImageIcon(ImageData imageData) throws Exception
 	{		
-		return Main.loadCombinedImageIcon(Main.combinedIcons, baseFilename, characterFilename, effectFilename, false);
+		return Main.loadCombinedImageIcon(Main.combinedIcons, imageData, false);
 	}
 	
-	public static ImageIcon loadDisableCombinedImageIcon(String baseFilename, String characterFilename, String effectFilename) throws Exception
+	public static ImageIcon loadDisableCombinedImageIcon(ImageData imageData) throws Exception
 	{		
-		return Main.loadCombinedImageIcon(Main.combinedDisabledIcons, baseFilename, characterFilename, effectFilename, true);
+		return Main.loadCombinedImageIcon(Main.combinedDisabledIcons, imageData, true);
 	}
 	
 	public static ImageIcon loadImageIcon(String filename) throws Exception

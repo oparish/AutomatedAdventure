@@ -41,6 +41,8 @@ import javax.swing.plaf.metal.MetalToolTipUI;
 import backend.Element;
 import backend.Element.ElementInstance;
 import backend.Faction;
+import backend.ImageData;
+import backend.ImageDataKey;
 import backend.Map;
 import backend.Map.ChangeInPosition;
 import backend.Map.MapPosition;
@@ -608,14 +610,45 @@ public class MapPanel extends JPanel implements ActionListener
 	}
 	
 	private void populateLocationButtonData(LocationButtonData locationButtonData, MapElementType mapElementType, ArrayList<ElementInstance> instances) throws Exception
-	{
-		Element locationElement = instances.get(0).getElement();
-		RestrictedJson<ImageRestriction> locationImageData = locationElement.getMapImageData(this.map);
-		String fileName = locationImageData.getString(ImageRestriction.FILENAME);
-		locationButtonData.addFilename(mapElementType, fileName);
-		RestrictedJson<TooltipRestriction> tooltipData = locationElement.getTooltip(map);
+	{	
+		ImageDataKey[] keyArray;
+		switch (mapElementType)
+		{
+		case CHARACTER:
+			int instancesCount = instances.size();
+			if (instancesCount > 2)
+				keyArray = new ImageDataKey[]{ImageDataKey.LEFT_CHARACTER, ImageDataKey.RIGHT_CHARACTER, ImageDataKey.CENTRE_CHARACTER};
+			else if (instancesCount == 2)
+				keyArray = new ImageDataKey[]{ImageDataKey.LEFT_CHARACTER, ImageDataKey.RIGHT_CHARACTER};
+			else if (instancesCount == 1)
+				keyArray = new ImageDataKey[]{ImageDataKey.CENTRE_CHARACTER};
+			else
+				keyArray = new ImageDataKey[]{};
+			break;
+		case EFFECT:
+			keyArray = new ImageDataKey[]{ImageDataKey.EFFECT};
+			break;
+		case LOCATION:
+			keyArray = new ImageDataKey[]{ImageDataKey.BACKGROUND};
+			break;
+		default:
+			throw new Exception("Unrecognised map element type.");
+		}
+
+		int i = 0;
+		for (ImageDataKey imageDatakey : keyArray)
+		{
+			Element locationElement = instances.get(i).getElement();
+			RestrictedJson<ImageRestriction> locationImageData = locationElement.getMapImageData(this.map);
+			String fileName = locationImageData.getString(ImageRestriction.FILENAME);	
+			locationButtonData.addFilename(imageDatakey, fileName);		
+			i++;
+		}
+		
 		for (ElementInstance locationInstance : instances)
 		{
+			Element locationElement = locationInstance.getElement();
+			RestrictedJson<TooltipRestriction> tooltipData = locationElement.getTooltip(map);
 			String locationTooltip = this.createTooltipText(tooltipData, locationInstance);
 			locationButtonData.tooltipText += this.assessTooltipText(locationInstance, locationTooltip);
 			locationButtonData.elementInstances.add(locationInstance);
@@ -637,22 +670,15 @@ public class MapPanel extends JPanel implements ActionListener
 		
 		ArrayList<ElementInstance> locationInstances = dataMap.get(MapElementType.LOCATION);
 		
-		String locationFileName = locationButtonData.getFilename(MapElementType.LOCATION);
-		String characterFileName = locationButtonData.getFilename(MapElementType.CHARACTER);
-		String effectFileName = locationButtonData.getFilename(MapElementType.EFFECT);
-		
 		if (locationInstances == null)
 		{
 			RestrictedJson<ImageRestriction> imageRestriction = this.map.getMapData().getRestrictedJson((MapRestriction.IMAGE), ImageRestriction.class);
 			String baseFileName = imageRestriction.getString(ImageRestriction.FILENAME);
-			locationButtonData.imageIcon = Main.loadCombinedImageIcon(baseFileName, characterFileName, effectFileName);
-			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(baseFileName, characterFileName, effectFileName);
+			locationButtonData.imageData.put(ImageDataKey.BACKGROUND, baseFileName);
 		}
-		else
-		{
-			locationButtonData.imageIcon = Main.loadCombinedImageIcon(locationFileName, characterFileName, effectFileName);
-			locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(locationFileName, characterFileName, effectFileName);
-		}
+		
+		locationButtonData.imageIcon = Main.loadCombinedImageIcon(locationButtonData.imageData);
+		locationButtonData.disabledImageIcon = Main.loadDisableCombinedImageIcon(locationButtonData.imageData);
 
 		return locationButtonData;
 	}
@@ -830,20 +856,15 @@ public class MapPanel extends JPanel implements ActionListener
 	
 	private class LocationButtonData
 	{
-		private HashMap<MapElementType, String> filenameMap = new HashMap<MapElementType, String>();
+		public ImageData imageData = new ImageData();
 		public ArrayList<ElementInstance> elementInstances;
 		public ImageIcon imageIcon;
 		public ImageIcon disabledImageIcon;
 		public String tooltipText;
 		
-		public void addFilename(MapElementType key, String value)
+		public void addFilename(ImageDataKey key, String value)
 		{
-			this.filenameMap.put(key, value);
-		}
-		
-		public String getFilename(MapElementType key)
-		{
-			return this.filenameMap.get(key);
+			this.imageData.put(key, value);
 		}
 	}
 	
