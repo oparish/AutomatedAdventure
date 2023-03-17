@@ -163,13 +163,17 @@ public class Scenario
 				Element element = this.getElement(elementName);
 				RestrictedJson<MapElementRestriction> mapData = innerEntry.getValue();
 				RestrictedJson<ImageRestriction> imageData = mapData.getRestrictedJson(MapElementRestriction.IMAGE, ImageRestriction.class);
+				RestrictedJson<ImageRestriction> computerImageData = 
+						mapData.getRestrictedJson(MapElementRestriction.COMPUTER_IMAGE, ImageRestriction.class);
+				if (computerImageData == null)
+					computerImageData = imageData;
 				String mapElementTypeString = mapData.getString(MapElementRestriction.MAP_ELEMENT_TYPE);
 				MapElementType mapElementType = MapElementType.valueOf(mapElementTypeString.toUpperCase());
 				
 				if (mapElementType == null)
 					throw new Exception("Unrecognised map element type: " + mapElementTypeString);
 				
-				element.addMap(map, imageData, mapElementType);
+				element.addMap(map, imageData, computerImageData, mapElementType);
 				RestrictedJson<TooltipRestriction> tooltipData = 
 						mapData.getRestrictedJson(MapElementRestriction.TOOLTIP, TooltipRestriction.class);
 				element.addTooltip(map, tooltipData);

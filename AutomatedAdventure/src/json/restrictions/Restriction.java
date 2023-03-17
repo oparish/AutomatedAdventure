@@ -90,6 +90,7 @@ public enum Restriction
 	COUNTER_ADJUSTMENT_TYPE("counterAdjustmentType", STRING, JsonDim.MONO),
 	COUNTER_CONDITION("counterCondition", STRING, JsonDim.MONO),
 	IMAGE("image", RestrictionType.IMAGE, JsonDim.MONO),
+	COMPUTER_IMAGE("computerImage", RestrictionType.IMAGE, JsonDim.MONO),
 	MAPS("maps", RestrictionType.MAP, JsonDim.MAP),
 	MAP_ELEMENTS("mapElements", RestrictionType.MAP_ELEMENT, JsonDim.MAP),
 	FILENAME("filename", STRING, JsonDim.MONO),

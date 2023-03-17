@@ -32,7 +32,7 @@ public class Element
 {	
 	RestrictedJson<ElementRestriction> elementJson;
 	ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
-	HashMap<Map, RestrictedJson<ImageRestriction>> mapMap = new HashMap<Map, RestrictedJson<ImageRestriction>>();
+	HashMap<Map, ImageSet> mapMap = new HashMap<Map, ImageSet>();
 	HashMap<Map, MapElementType> typeMap = new HashMap<Map, MapElementType>();
 	HashMap<Map, RestrictedJson<TooltipRestriction>> tooltipMap = new HashMap<Map, RestrictedJson<TooltipRestriction>>();
 	HashMap<Map, String> factionIdentifierMap = new HashMap<Map, String>();
@@ -59,9 +59,13 @@ public class Element
 		return this.name;
 	}
 	
-	public void addMap(Map map, RestrictedJson<ImageRestriction> imageData, MapElementType type)
+	public void addMap(Map map, RestrictedJson<ImageRestriction> playerImage, RestrictedJson<ImageRestriction> computerImage, MapElementType type)
 	{
-		mapMap.put(map, imageData);
+		ImageSet imageSet = new ImageSet();
+		imageSet.put(Faction.PLAYER, playerImage);
+		if (computerImage != null)
+			imageSet.put(Faction.COMPUTER, computerImage);
+		mapMap.put(map, imageSet);
 		typeMap.put(map, type);
 	}
 	
@@ -233,9 +237,17 @@ public class Element
 		return elementInstance;
 	}
 	
-	public RestrictedJson<ImageRestriction> getMapImageData(Map map)
-	{
-		return this.mapMap.get(map);
+	public RestrictedJson<ImageRestriction> getMapImageData(Map map, Faction faction)
+	{			
+		ImageSet imageSet = this.mapMap.get(map);
+		if (faction == null)
+		{
+			return imageSet.get(Faction.PLAYER);
+		}
+		else
+		{
+			return imageSet.get(faction);
+		}
 	}
 	
 	public RestrictedJson<TooltipRestriction> getTooltip(Map map)
@@ -245,9 +257,8 @@ public class Element
 	
 	private void completePositionMap(HashMap<Map, MapPosition> positionMap) throws Exception
 	{
-		for(Entry<Map, RestrictedJson<ImageRestriction>> entry : this.mapMap.entrySet())
+		for(Map map: this.mapMap.keySet())
 		{
-			Map map = entry.getKey();
 			if (positionMap.containsKey(map))
 				continue;
 			MapPosition mapPosition = map.getRandomPosition();
@@ -463,6 +474,8 @@ public class Element
 		public Faction getFaction(Map map)
 		{
 			String factionIdentifier = this.getElement().factionIdentifierMap.get(map);
+			if (factionIdentifier == null)
+				return null;
 			String factionString = this.getStringValue(factionIdentifier);
 			if (factionString == null)
 				return null;
@@ -668,7 +681,11 @@ public class Element
 				return Element.this;
 			}
 		}
-
+	}
+	
+	private class ImageSet extends HashMap<Faction, RestrictedJson<ImageRestriction>>
+	{
+		
 	}
 	
 	public static void main(String[] args)

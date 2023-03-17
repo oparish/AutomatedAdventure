@@ -320,7 +320,7 @@ public class MapPanel extends JPanel implements ActionListener
 		HashMap<String, ElementChoice> combinedChoices = new HashMap<String, ElementChoice>();
 		for (ElementInstance elementInstance : button.elementInstances)
 		{
-			if (elementInstance.getFaction(this.map) != Faction.PLAYER)
+			if (elementInstance.getFaction(this.map) == Faction.COMPUTER)
 			{
 				return;
 			}
@@ -638,8 +638,10 @@ public class MapPanel extends JPanel implements ActionListener
 		int i = 0;
 		for (ImageDataKey imageDatakey : keyArray)
 		{
-			Element locationElement = instances.get(i).getElement();
-			RestrictedJson<ImageRestriction> locationImageData = locationElement.getMapImageData(this.map);
+			ElementInstance instance = instances.get(i);
+			Element locationElement = instance.getElement();
+			Faction faction = instance.getFaction(this.map);
+			RestrictedJson<ImageRestriction> locationImageData = locationElement.getMapImageData(this.map, faction);
 			String fileName = locationImageData.getString(ImageRestriction.FILENAME);	
 			locationButtonData.addFilename(imageDatakey, fileName);		
 			i++;
@@ -752,7 +754,8 @@ public class MapPanel extends JPanel implements ActionListener
 			{
 				ElementInstance elementInstance = changeInPositionEntry.getKey();
 				ChangeInPosition changeInPosition = changeInPositionEntry.getValue();
-				RestrictedJson<ImageRestriction> mapImageData = elementInstance.getElement().getMapImageData(this.map);
+				Faction faction = elementInstance.getFaction(this.map);
+				RestrictedJson<ImageRestriction> mapImageData = elementInstance.getElement().getMapImageData(this.map, faction);
 				String instanceFileName = mapImageData.getString(ImageRestriction.FILENAME);
 				BufferedImage instanceImage = Main.loadImageFromFile(instanceFileName);
 				MapPosition oldPosition = changeInPosition.oldPosition;

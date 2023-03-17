@@ -569,6 +569,9 @@
                   "mapElementType" : "effect"
                },
                "troop" : {
+                  "computerImage" : {
+                     "filename" : "computerTroop.png"
+                  },
                   "image" : {
                      "filename" : "troop.png"
                   },
