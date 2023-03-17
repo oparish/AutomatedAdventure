@@ -28,9 +28,10 @@ public class Route {
 	private boolean checkNextStep(Faction faction, int nextPos)
 	{
 		MapPosition position = this.positions.get(nextPos);
+		Map map = position.getMap();
 		for (ElementInstance elementInstance : position.elementInstances)
 		{
-			if (faction != null && faction != elementInstance.getFaction())
+			if (faction != null && faction != elementInstance.getFaction(map))
 				return false;
 		}
 		

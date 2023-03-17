@@ -4,6 +4,7 @@ import backend.Element;
 import backend.Element.ElementInstance;
 import backend.ElementGroup;
 import backend.Faction;
+import backend.Map;
 import backend.Scenario;
 import backend.component.ConnectionSet;
 import backend.pages.Comparator;
@@ -18,7 +19,7 @@ public enum ContextConditionRestriction implements RestrictionPointer
 	ELEMENT_QUALITY(Restriction.ELEMENT_QUALITY, true), CONNECTION_NAME(Restriction.CONNECTION_NAME, true), 
 	COUNTER_NAME(Restriction.COUNTER_NAME, true), COUNTER_CONDITION(Restriction.COUNTER_CONDITION, true), 
 	GROUP_CONDITION_TYPE(Restriction.GROUP_CONDITION_TYPE, true), SELECTION_TYPE(Restriction.SELECTION_TYPE, true), 
-	GROUP_NAME(Restriction.GROUP_NAME, true);
+	GROUP_NAME(Restriction.GROUP_NAME, true), MAP_NAME(Restriction.MAP_NAME, true);
 	
 	private Restriction restriction;
 	private boolean optional;
@@ -67,20 +68,20 @@ public enum ContextConditionRestriction implements RestrictionPointer
 		return check;
 	}
 	
-	private static boolean makeGroupCheck(String groupConditionString, ElementGroup elementGroup, String elementQuality, String comparatorText) throws Exception
+	private static boolean makeGroupCheck(Map map, String groupConditionString, ElementGroup elementGroup, String elementQuality, String comparatorText) throws Exception
 	{
 		GroupConditionType groupConditionType = GroupConditionType.getByName(groupConditionString);
 		switch (groupConditionType)
 		{
 		case FACTION_CONFLICT_CHECK:
-			return ContextConditionRestriction.makeFactionConflictCheck(elementGroup);
+			return ContextConditionRestriction.makeFactionConflictCheck(map, elementGroup);
 		case FACTION_CONTEST:
 		default:
-			return ContextConditionRestriction.makeFactionContestCheck(elementGroup, elementQuality, comparatorText);
+			return ContextConditionRestriction.makeFactionContestCheck(map, elementGroup, elementQuality, comparatorText);
 		}
 	}
 	
-	private static boolean makeFactionConflictCheck(ElementGroup elementGroup)
+	private static boolean makeFactionConflictCheck(Map map, ElementGroup elementGroup)
 	{
 		if (elementGroup == null)
 			return false;
@@ -88,7 +89,7 @@ public enum ContextConditionRestriction implements RestrictionPointer
 		boolean computerPresence = false;
 		for (ElementInstance elementInstance : elementGroup.getElementInstances())
 		{
-			Faction faction = elementInstance.getFaction();
+			Faction faction = elementInstance.getFaction(map);
 			if (faction == null)
 				return false;
 			else if (faction == Faction.PLAYER && computerPresence)
@@ -103,7 +104,7 @@ public enum ContextConditionRestriction implements RestrictionPointer
 		return false;
 	}
 	
-	private static boolean makeFactionContestCheck(ElementGroup elementGroup, String elementQuality, String comparatorText) throws Exception
+	private static boolean makeFactionContestCheck(Map map, ElementGroup elementGroup, String elementQuality, String comparatorText) throws Exception
 	{
 		if (elementGroup == null)
 			return false;
@@ -111,7 +112,7 @@ public enum ContextConditionRestriction implements RestrictionPointer
 		int computerTotal = 0;
 		for (ElementInstance elementInstance : elementGroup.getElementInstances())
 		{
-			Faction faction = elementInstance.getFaction();
+			Faction faction = elementInstance.getFaction(map);
 			if (faction == Faction.PLAYER)
 				playerTotal += elementInstance.getNumberValueByName(elementQuality);
 			else if (faction == Faction.COMPUTER)
@@ -134,6 +135,7 @@ public enum ContextConditionRestriction implements RestrictionPointer
 		String counterConditionString = contextConditionData.getString(ContextConditionRestriction.COUNTER_CONDITION);
 		String groupConditionString = contextConditionData.getString(ContextConditionRestriction.GROUP_CONDITION_TYPE);
 		String selectionTypeString = contextConditionData.getString(ContextConditionRestriction.SELECTION_TYPE);
+		String mapName = contextConditionData.getString(ContextConditionRestriction.MAP_NAME); 
 		
 		SelectionType selectionType;
 		if (selectionTypeString == null)
@@ -171,7 +173,8 @@ public enum ContextConditionRestriction implements RestrictionPointer
 		}
 		else if (groupConditionString != null)
 		{
-			return ContextConditionRestriction.makeGroupCheck(groupConditionString, elementGroup, elementQualityName, comparatorText);
+			Map map = scenario.getMapByName(mapName);
+			return ContextConditionRestriction.makeGroupCheck(map, groupConditionString, elementGroup, elementQualityName, comparatorText);
 		}
 		else if (elementQualityName == null)
 		{

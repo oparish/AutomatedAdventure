@@ -138,6 +138,11 @@ public class Map
 		{
 			return this.elementInstances;
 		}
+		
+		public Map getMap()
+		{
+			return Map.this;
+		}
 	}
 	
 	public class ChangeInPosition

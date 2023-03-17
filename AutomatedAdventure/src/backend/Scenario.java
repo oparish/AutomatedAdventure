@@ -173,6 +173,9 @@ public class Scenario
 				RestrictedJson<TooltipRestriction> tooltipData = 
 						mapData.getRestrictedJson(MapElementRestriction.TOOLTIP, TooltipRestriction.class);
 				element.addTooltip(map, tooltipData);
+				String factionIdentifier = mapData.getString(MapElementRestriction.FACTION_IDENTIFIER);
+				if (factionIdentifier != null)
+					element.addFactionIdentifier(map, factionIdentifier);	
 			}
 		}
 	}

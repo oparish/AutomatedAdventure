@@ -11,6 +11,7 @@ public enum Restriction
 {	
 	NAME("name", STRING, JsonDim.MONO),
 	CONNECTION_NAME("connectionName", STRING, JsonDim.MONO),
+	FACTION_IDENTIFIER("factionIdentifier", STRING, JsonDim.MONO),
 	UNIQUE("unique", BOOLEAN, JsonDim.MONO),
 	UNIQUE_NAME("uniqueName", STRING, JsonDim.MONO),
 	ELEMENT_DATA("elementData", RestrictionType.ELEMENTDATA, JsonDim.MAP),

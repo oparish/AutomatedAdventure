@@ -29,16 +29,20 @@ import main.Main;
 import main.Pages;
 
 public class Element
-{
-	private static final String FACTION = "faction";
-	
+{	
 	RestrictedJson<ElementRestriction> elementJson;
 	ArrayList<ElementInstance> instances = new ArrayList<ElementInstance>();
 	HashMap<Map, RestrictedJson<ImageRestriction>> mapMap = new HashMap<Map, RestrictedJson<ImageRestriction>>();
 	HashMap<Map, MapElementType> typeMap = new HashMap<Map, MapElementType>();
 	HashMap<Map, RestrictedJson<TooltipRestriction>> tooltipMap = new HashMap<Map, RestrictedJson<TooltipRestriction>>();
+	HashMap<Map, String> factionIdentifierMap = new HashMap<Map, String>();
 	HashMap<String, ElementInstance> uniqueMap = new HashMap<String, ElementInstance>();
 	String name;
+	
+	public void addFactionIdentifier(Map map, String factionIdentifier)
+	{
+		this.factionIdentifierMap.put(map, factionIdentifier);
+	}
 	
 	public ArrayList<ElementInstance> getInstances() {
 		return instances;
@@ -456,9 +460,10 @@ public class Element
 			route.resetPosition();
 		}
 		
-		public Faction getFaction()
+		public Faction getFaction(Map map)
 		{
-			String factionString = this.getStringValue(FACTION);
+			String factionIdentifier = this.getElement().factionIdentifierMap.get(map);
+			String factionString = this.getStringValue(factionIdentifier);
 			if (factionString == null)
 				return null;
 			Faction faction = Faction.match(factionString);
@@ -468,7 +473,7 @@ public class Element
 		public MapPosition incrementRoutePos(Map map)
 		{
 			Route route = this.routeMap.get(map);
-			Faction faction = this.getFaction();
+			Faction faction = this.getFaction(map);
 			route.incrementPosition(faction);
 			RouteState routeState = route.getRouteState();
 			MapPosition position = this.getPosition(map);
@@ -489,7 +494,7 @@ public class Element
 		public MapPosition decrementRoutePos(Map map)
 		{
 			Route route = this.routeMap.get(map);
-			Faction faction = this.getFaction();
+			Faction faction = this.getFaction(map);
 			route.decrementPosition(faction);
 			RouteState routeState = route.getRouteState();
 			MapPosition position = this.getPosition(map);

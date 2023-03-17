@@ -375,7 +375,8 @@
             "second" : "loop",
             "contextConditions" : [
                {
-                  "groupConditionType" : "factionConflictCheck"
+                  "groupConditionType" : "factionConflictCheck",
+                  "mapName" : "testMap"
                }
             ],
             "contextChanges" : [
@@ -400,7 +401,8 @@
                {
                   "groupConditionType" : "factionContest",
                   "elementQuality" : "quantity",
-                  "type" : "="
+                  "type" : "=",
+                  "mapName" : "testMap"
                }
             ],
             "adjustmentData" : {
@@ -421,7 +423,8 @@
                {
                   "groupConditionType" : "factionContest",
                   "elementQuality" : "quantity",
-                  "type" : ">"
+                  "type" : ">",
+                  "mapName" : "testMap"
                }
             ]
          },
@@ -549,7 +552,8 @@
                         }
                      ]
                   },
-                  "mapElementType" : "location"
+                  "mapElementType" : "location",
+                  "factionIdentifier" : "faction"
                },
                "battle" : {
                   "image" : {
@@ -575,7 +579,8 @@
                         }
                      ]
                   },
-                  "mapElementType" : "character"
+                  "mapElementType" : "character",
+                  "factionIdentifier" : "faction"
                },
                "self" : {
                   "image" : {
@@ -588,7 +593,8 @@
                         }
                      ]
                   },
-                  "mapElementType" : "character"
+                  "mapElementType" : "character",
+                  "factionIdentifier" : "faction"
                }
             },
             "width" : 10,
