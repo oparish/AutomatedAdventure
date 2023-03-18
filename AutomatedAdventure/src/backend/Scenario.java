@@ -304,6 +304,10 @@ public class Scenario
 			RandomRedirectInstance randomRedirectInstance = new RandomRedirectInstance(this, pageContext, randomRedirectJson, position);
 			randomRedirectInstance.load(elementInstance, elementChoice);			
 		}
+		else
+		{
+			throw new Exception("Can't find anything to load with the name: " + keyword);
+		}
 	}
 	
 	public int getIntervalTime(int intervalIndex)
