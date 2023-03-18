@@ -63,7 +63,8 @@ public enum RestrictionType implements JsonType
 	TRIGGER(TriggerRestriction.class),
 	PANEL(PanelRestriction.class),
 	INSTANCE_DETAILS(InstanceDetailsRestriction.class),
-	CONNECTION(ConnectionRestriction.class);
+	CONNECTION(ConnectionRestriction.class),
+	PACKAGE(PackageRestriction.class);
 	
 	private final Class<? extends RestrictionPointer> clazz;
 	

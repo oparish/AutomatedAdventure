@@ -34,6 +34,7 @@ import json.restrictions.ImageRestriction;
 import json.restrictions.IntervalRestriction;
 import json.restrictions.MapElementRestriction;
 import json.restrictions.MapRestriction;
+import json.restrictions.PackageRestriction;
 import json.restrictions.PageRestriction;
 import json.restrictions.RandomRedirectRestriction;
 import json.restrictions.RedirectRestriction;
@@ -61,7 +62,12 @@ public class Scenario
 	HashMap<String, Map> mapMap = new HashMap<String, Map>();
 	private HashMap<String, Counter> counterMap = new HashMap<String, Counter>();
 	int chanceRange;
+	String currentPackage;
 	
+	public void setCurrentPackage(String currentPackage) {
+		this.currentPackage = currentPackage;
+	}
+
 	public ConnectionSet getConnectionSet(String connectionSetName)
 	{
 		return this.connections.get(connectionSetName);
@@ -234,23 +240,34 @@ public class Scenario
 		}
 	}
 	
-	public RestrictedJson<PageRestriction> getPageTemplate(String key)
+	public RestrictedJson<PageRestriction> getPageTemplate(String packageName, String key)
 	{
-		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PAGES, PageRestriction.class);
+		RestrictedJson<PackageRestriction> packageData = this.getPackageData(packageName);
+		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = 
+				packageData.getRestrictedJsonMap(PackageRestriction.PAGES, PageRestriction.class);
 		return pageTemplateMap.getMemberBy(key);
 	}
 	
-	public RestrictedJson<RedirectRestriction> getRedirect(String key)
+	private RestrictedJson<PackageRestriction> getPackageData(String packageName)
 	{
+		JsonEntityMap<RestrictedJson<PackageRestriction>> packageMap = 
+				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PACKAGEMAP, PackageRestriction.class);
+		return packageMap.getMemberBy(packageName);
+	}
+	
+	public RestrictedJson<RedirectRestriction> getRedirect(String packageName, String key)
+	{
+		RestrictedJson<PackageRestriction> packageData = this.getPackageData(packageName);
 		JsonEntityMap<RestrictedJson<RedirectRestriction>> redirectMap = 
-				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.REDIRECTS, RedirectRestriction.class);
+				packageData.getRestrictedJsonMap(PackageRestriction.REDIRECTS, RedirectRestriction.class);
 		return redirectMap.getMemberBy(key);
 	}
 	
-	public RestrictedJson<RandomRedirectRestriction> getRandomRedirect(String key)
+	public RestrictedJson<RandomRedirectRestriction> getRandomRedirect(String packageName, String key)
 	{
+		RestrictedJson<PackageRestriction> packageData = this.getPackageData(packageName);
 		JsonEntityMap<RestrictedJson<RandomRedirectRestriction>> redirectMap = 
-				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.RANDOM_REDIRECTS, RandomRedirectRestriction.class);
+				packageData.getRestrictedJsonMap(PackageRestriction.RANDOM_REDIRECTS, RandomRedirectRestriction.class);
 		return redirectMap.getMemberBy(key);
 	}
 	
@@ -269,16 +286,33 @@ public class Scenario
 	public void loadPage(String keyword, PageContext oldContext, ElementInstance elementInstance, ElementGroup elementGroup,
 			ElementChoice elementChoice, MapPosition position) throws Exception
 	{
-		RestrictedJson<PageRestriction> pageJson = this.getPageTemplate(keyword);
-		RestrictedJson<RedirectRestriction> redirectJson = this.getRedirect(keyword);
-		RestrictedJson<RandomRedirectRestriction> randomRedirectJson = this.getRandomRedirect(keyword);
+		String packageName;
+		String pageName; 
+		if (keyword.contains("."))
+		{
+			String[] keywordParts = keyword.split("\\.");
+			if (keywordParts.length != 2)
+				throw new Exception("Invalid keyword: " + keyword);
+			packageName = keywordParts[0];
+			pageName = keywordParts[1];
+			this.currentPackage = packageName;
+		}
+		else
+		{
+			packageName = this.currentPackage;
+			pageName = keyword;
+		}
+	
+		RestrictedJson<PageRestriction> pageJson = this.getPageTemplate(packageName, pageName);
+		RestrictedJson<RedirectRestriction> redirectJson = this.getRedirect(packageName, pageName);
+		RestrictedJson<RandomRedirectRestriction> randomRedirectJson = this.getRandomRedirect(packageName, pageName);
 		
 		PageContext pageContext;
 		
 		if (oldContext != null)
 			pageContext = oldContext;
 		else
-			pageContext = new PageContext(keyword);
+			pageContext = new PageContext(pageName);
 		
 		if (elementInstance != null)
 			pageContext.addElementInstance(elementInstance);
@@ -306,7 +340,7 @@ public class Scenario
 		}
 		else
 		{
-			throw new Exception("Can't find anything to load with the name: " + keyword);
+			throw new Exception("Can't find anything to load with the name: " + pageName);
 		}
 	}
 	

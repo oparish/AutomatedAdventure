@@ -4,9 +4,8 @@ public enum ScenarioRestriction implements RestrictionPointer
 {
 	ROOMS(Restriction.ROOMS), STATES(Restriction.STATES), INTERVALS(Restriction.INTERVALS), ELEMENTS(Restriction.ELEMENTS), 
 	CHECKTIME(Restriction.CHECKTIME), CHANCES(Restriction.CHANCES), MODE(Restriction.MODE), ACTION_TYPES(Restriction.ACTION_TYPES),
-	COMPONENTS(Restriction.COMPONENTS), ENDINGS(Restriction.ENDINGS), PAGES(Restriction.PAGES), 
-	CONNECTIONS(Restriction.CONNECTIONS), REDIRECTS(Restriction.REDIRECTS), RANDOM_REDIRECTS(Restriction.RANDOM_REDIRECTS), 
-	PANELS(Restriction.PANELS), MAPS(Restriction.MAPS), SUMS(Restriction.SUMS);
+	COMPONENTS(Restriction.COMPONENTS), ENDINGS(Restriction.ENDINGS), CONNECTIONS(Restriction.CONNECTIONS), PANELS(Restriction.PANELS), 
+	MAPS(Restriction.MAPS), SUMS(Restriction.SUMS), PACKAGEMAP(Restriction.PACKAGEMAP);
 	
 	private Restriction restriction;
 	private boolean optional;

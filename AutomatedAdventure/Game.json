@@ -91,438 +91,7 @@
       "actionTypes" : [],
       "components" : {},
       "endings" : [],
-      "pages" : {
-         "initial" : {
-            "value" : "TEST",
-            "panelName" : "mapPanel",
-            "choices" : [
-               {
-                  "value" : "next",
-                  "first" : "Order Route Wait ",
-                  "elementChoice" : {
-                     "elementName" : "troop",
-                     "second" : "",
-                     "type" : "routeSelectionWait",
-                     "elementQuality" : "name",
-                     "rangeAttribute" : "move"
-                  }
-               },
-               {
-                  "value" : "next",
-                  "first" : "Order Route Return ",
-                  "elementChoice" : {
-                     "elementName" : "troop",
-                     "second" : "",
-                     "type" : "routeSelectionReturn",
-                     "elementQuality" : "name",
-                     "rangeAttribute" : "move"
-                  }
-               },
-               {
-                  "value" : "loop",
-                  "first" : "Loop",
-                  "elementChoice" : {
-                     "elementName" : "troop",
-                     "second" : "",
-                     "type" : "menu",
-                     "elementQuality" : "name"
-                  }
-               },
-               {
-                  "value" : "createTroop",
-                  "first" : "Create Troop",
-                  "elementChoice" : {
-                     "elementName" : "village",
-                     "second" : "",
-                     "type" : "menu"
-                  }
-               }
-            ],
-            "adjustmentData" : {
-               "counterInitialisations" : [
-                  {
-                     "counterName" : "testCounter",
-                     "mapName" : "testMap",
-                     "counterSecondaryType" : "all",
-                     "counterPrimaryType" : "position"
-                  }
-               ],
-               "makeElements" : [
-                  {
-                     "elementName" : "village",
-                     "instanceDetails" : {
-                        "name" : "one",
-                        "stringMap" : {
-                           "name" : "One",
-                           "faction" : "player"
-                        },
-                        "mapMap" : {
-                           "testMap" : {
-                              "x" : 3,
-                              "y" : 3
-                           }
-                        }
-                     }
-                  },
-                  {
-                     "elementName" : "village",
-                     "instanceDetails" : {
-                        "name" : "two",
-                        "stringMap" : {
-                           "name" : "Two",
-                           "faction" : "player"
-                        },
-                        "mapMap" : {
-                           "testMap" : {
-                              "x" : 6,
-                              "y" : 6
-                           }
-                        }
-                     }
-                  },
-                  {
-                     "elementName" : "troop",
-                     "instanceDetails" : {
-                        "name" : "one",
-                        "mapMap" : {
-                           "testMap" : {
-                              "x" : 2,
-                              "y" : 2
-                           }
-                        },
-                        "numberMap" : {
-                           "quantity" : 30
-                        },
-                        "stringMap" : {
-                           "faction" : "computer"
-                        }
-                     }
-                  },
-                  {
-                     "elementName" : "troop",
-                     "instanceDetails" : {
-                        "name" : "one",
-                        "mapMap" : {
-                           "testMap" : {
-                              "x" : 1,
-                              "y" : 1
-                           }
-                        },
-                        "numberMap" : {
-                           "quantity" : 30
-                        },
-                        "stringMap" : {
-                           "faction" : "player"
-                        }
-                     }
-                  },
-                  {
-                     "elementName" : "troop",
-                     "instanceDetails" : {
-                        "name" : "one",
-                        "mapMap" : {
-                           "testMap" : {
-                              "x" : 2,
-                              "y" : 2
-                           }
-                        },
-                        "numberMap" : {
-                           "quantity" : 30
-                        },
-                        "stringMap" : {
-                           "faction" : "player"
-                        }
-                     }
-                  },
-                  {
-                     "elementName" : "self",
-                     "instanceDetails" : {
-                        "name" : "one",
-                        "mapMap" : {
-                           "testMap" : {
-                              "x" : 2,
-                              "y" : 3
-                           }
-                        },
-                        "stringMap" : {
-                           "faction" : "player"
-                        }
-                     }
-                  },
-                  {
-                     "elementName" : "combatResult",
-                     "instanceDetails" : {
-                        "numberMap" : {
-                           "computerLoss" : 0,
-                           "playerLoss" : -2
-                        },
-                        "stringMap" : {
-                           "type" : "playerLoss",
-                           "name" : "Loss"
-                        }
-                     },
-                     "uniqueName" : "playerLoss"
-                  },
-                  {
-                     "elementName" : "combatResult",
-                     "instanceDetails" : {
-                        "numberMap" : {
-                           "computerLoss" : -2,
-                           "playerLoss" : 0
-                        },
-                        "stringMap" : {
-                           "type" : "computerLoss",
-                           "name" : "Victory"
-                        }
-                     },
-                     "uniqueName" : "computerLoss"
-                  },
-                  {
-                     "elementName" : "combatResult",
-                     "instanceDetails" : {
-                        "numberMap" : {
-                           "computerLoss" : -1,
-                           "playerLoss" : -1
-                        },
-                        "stringMap" : {
-                           "type" : "draw",
-                           "name" : "Draw"
-                        }
-                     },
-                     "uniqueName" : "draw"
-                  }
-               ]
-            }
-         },
-         "next" : {
-            "value" : "",
-            "panelName" : "mapPanel",
-            "choices" : [
-               {
-                  "value" : "routeWalking",
-                  "first" : "Move ",
-                  "elementChoice" : {
-                     "elementName" : "self",
-                     "second" : "",
-                     "type" : "menuRange",
-                     "elementQuality" : "name",
-                     "rangeAttribute" : "move"
-                  }
-               },
-               {
-                  "value" : "routeWalking",
-                  "first" : "Wait",
-                  "elementChoice" : {
-                     "elementName" : "self",
-                     "second" : "",
-                     "type" : "menu",
-                     "elementQuality" : "name"
-                  }
-               }
-            ]
-         },
-         "showCombatResult" : {
-            "panelName" : "textPanel",
-            "choices" : [
-               {
-                  "first" : "Next",
-                  "value" : "nextCombat"
-               }
-            ],
-            "value" : "<report:adjustment:troop>Troop Adjusted: <reportInner:name>\r\nAdjustment Amount:<reportInner:quantity></report>",
-            "secondaryPanelName" : "mapPanel"
-         }
-      },
       "connections" : {},
-      "redirects" : {
-         "routeWalking" : {
-            "adjustmentData" : {
-               "positionAdjustments" : [
-                  {
-                     "mapName" : "testMap",
-                     "elementName" : "troop",
-                     "adjustmentType" : "route"
-                  },
-                  {
-                     "mapName" : "testMap",
-                     "elementName" : "self",
-                     "adjustmentType" : "direct"
-                  }
-               ]
-            },
-            "first" : "loop"
-         },
-         "loop" : {
-            "adjustmentData" : {
-               "counterAdjustments" : [
-                  {
-                     "counterName" : "testCounter",
-                     "counterAdjustmentType" : "increment"
-                  }
-               ]
-            },
-            "first" : "next",
-            "second" : "combatCheck",
-            "contextConditions" : [
-               {
-                  "counterName" : "testCounter",
-                  "counterCondition" : "completed"
-               }
-            ]
-         },
-         "combatCheck" : {
-            "first" : "combatDrawCheck",
-            "second" : "loop",
-            "contextConditions" : [
-               {
-                  "groupConditionType" : "factionConflictCheck",
-                  "mapName" : "testMap"
-               }
-            ],
-            "contextChanges" : [
-               {
-                  "counterToGroup" : "testCounter"
-               }
-            ],
-            "adjustmentData" : {
-               "counterInitialisations" : [
-                  {
-                     "counterName" : "groupCounter",
-                     "counterPrimaryType" : "group",
-                     "counterSecondaryType" : "all"
-                  }
-               ]
-            }
-         },
-         "combatDrawCheck" : {
-            "first" : "combatDraw",
-            "second" : "combatWinCheck",
-            "contextConditions" : [
-               {
-                  "groupConditionType" : "factionContest",
-                  "elementQuality" : "quantity",
-                  "type" : "=",
-                  "mapName" : "testMap"
-               }
-            ],
-            "adjustmentData" : {
-               "makeElements" : [
-                  {
-                     "elementName" : "battle",
-                     "positionType" : "positioncounter",
-                     "positionCounterName" : "testCounter",
-                     "instanceDetails" : {}
-                  }
-               ]
-            }
-         },
-         "combatWinCheck" : {
-            "first" : "combatWin",
-            "second" : "combatLose",
-            "contextConditions" : [
-               {
-                  "groupConditionType" : "factionContest",
-                  "elementQuality" : "quantity",
-                  "type" : ">",
-                  "mapName" : "testMap"
-               }
-            ]
-         },
-         "combatLose" : {
-            "first" : "testRemoval"
-         },
-         "combatWin" : {
-            "first" : "testRemoval"
-         },
-         "combatDraw" : {
-            "first" : "testRemoval"
-         },
-         "combatResult" : {
-            "first" : "playerLossAdjustment",
-            "second" : "computerLossAdjustment",
-            "contextConditions" : [
-               {
-                  "stringValue" : "player",
-                  "elementQuality" : "faction",
-                  "selectionType" : "fromGroup",
-                  "type" : "=",
-                  "groupName" : "groupCounter"
-               }
-            ]
-         },
-         "testRemoval" : {
-            "adjustmentData" : {
-               "counterAdjustments" : [
-                  {
-                     "counterName" : "groupCounter",
-                     "counterAdjustmentType" : "increment"
-                  }
-               ],
-               "elementAdjustments" : [
-                  {
-                     "targetIdentification" : {
-                        "elementName" : "troop",
-                        "type" : "group",
-                        "counterName" : "groupCounter"
-                     },
-                     "elementQuality" : "quantity",
-                     "numberValue" : 10,
-                     "sumSign" : "+"
-                  }
-               ]
-            },
-            "first" : "showCombatResult",
-            "second" : "testRemoval",
-            "contextConditions" : [
-               {
-                  "counterName" : "groupCounter",
-                  "counterCondition" : "completed"
-               }
-            ]
-         },
-         "nextCombat" : {
-            "adjustmentData" : {
-               "removeElements" : [
-                  {
-                     "targetIdentification" : {
-                        "elementName" : "battle",
-                        "type" : "atPosition",
-                        "counterName" : "testCounter"
-                     }
-                  }
-               ]
-            },
-            "first" : "loop"
-         },
-         "createTroop" : {
-            "first" : "next",
-            "adjustmentData" : {
-               "makeElements" : [
-                  {
-                     "elementName" : "troop",
-                     "mapName" : "testMap",
-                     "positionType" : "selectedPosition",
-                     "instanceDetails" : {
-                        "name" : "new",
-                        "mapMap" : {
-                           "testMap" : {
-                              "x" : 2,
-                              "y" : 2
-                           }
-                        },
-                        "numberMap" : {
-                           "quantity" : 30
-                        },
-                        "stringMap" : {
-                           "faction" : "player"
-                        }
-                     }
-                  }
-               ]
-            }
-         }
-      },
-      "randomRedirects" : {},
       "panels" : {
          "mapPanel" : {
             "x" : 0,
@@ -614,6 +183,447 @@
          },
          "computerLossSum" : {
             "numberReference" : "combatResult:computerLoss"
+         }
+      },
+      "packageMap" : {
+         "main" : {
+            "pages" : {
+               "initial" : {
+                  "value" : "TEST",
+                  "panelName" : "mapPanel",
+                  "choices" : [
+                     {
+                        "value" : "next",
+                        "first" : "Order Route Wait ",
+                        "elementChoice" : {
+                           "elementName" : "troop",
+                           "second" : "",
+                           "type" : "routeSelectionWait",
+                           "elementQuality" : "name",
+                           "rangeAttribute" : "move"
+                        }
+                     },
+                     {
+                        "value" : "next",
+                        "first" : "Order Route Return ",
+                        "elementChoice" : {
+                           "elementName" : "troop",
+                           "second" : "",
+                           "type" : "routeSelectionReturn",
+                           "elementQuality" : "name",
+                           "rangeAttribute" : "move"
+                        }
+                     },
+                     {
+                        "value" : "loop",
+                        "first" : "Loop",
+                        "elementChoice" : {
+                           "elementName" : "troop",
+                           "second" : "",
+                           "type" : "menu",
+                           "elementQuality" : "name"
+                        }
+                     },
+                     {
+                        "value" : "createTroop",
+                        "first" : "Create Troop",
+                        "elementChoice" : {
+                           "elementName" : "village",
+                           "second" : "",
+                           "type" : "menu"
+                        }
+                     }
+                  ],
+                  "adjustmentData" : {
+                     "counterInitialisations" : [
+                        {
+                           "counterName" : "testCounter",
+                           "mapName" : "testMap",
+                           "counterSecondaryType" : "all",
+                           "counterPrimaryType" : "position"
+                        }
+                     ],
+                     "makeElements" : [
+                        {
+                           "elementName" : "village",
+                           "instanceDetails" : {
+                              "name" : "one",
+                              "stringMap" : {
+                                 "name" : "One",
+                                 "faction" : "player"
+                              },
+                              "mapMap" : {
+                                 "testMap" : {
+                                    "x" : 3,
+                                    "y" : 3
+                                 }
+                              }
+                           }
+                        },
+                        {
+                           "elementName" : "village",
+                           "instanceDetails" : {
+                              "name" : "two",
+                              "stringMap" : {
+                                 "name" : "Two",
+                                 "faction" : "player"
+                              },
+                              "mapMap" : {
+                                 "testMap" : {
+                                    "x" : 6,
+                                    "y" : 6
+                                 }
+                              }
+                           }
+                        },
+                        {
+                           "elementName" : "troop",
+                           "instanceDetails" : {
+                              "name" : "one",
+                              "mapMap" : {
+                                 "testMap" : {
+                                    "x" : 2,
+                                    "y" : 2
+                                 }
+                              },
+                              "numberMap" : {
+                                 "quantity" : 30
+                              },
+                              "stringMap" : {
+                                 "faction" : "computer"
+                              }
+                           }
+                        },
+                        {
+                           "elementName" : "troop",
+                           "instanceDetails" : {
+                              "name" : "one",
+                              "mapMap" : {
+                                 "testMap" : {
+                                    "x" : 1,
+                                    "y" : 1
+                                 }
+                              },
+                              "numberMap" : {
+                                 "quantity" : 30
+                              },
+                              "stringMap" : {
+                                 "faction" : "player"
+                              }
+                           }
+                        },
+                        {
+                           "elementName" : "troop",
+                           "instanceDetails" : {
+                              "name" : "one",
+                              "mapMap" : {
+                                 "testMap" : {
+                                    "x" : 2,
+                                    "y" : 2
+                                 }
+                              },
+                              "numberMap" : {
+                                 "quantity" : 30
+                              },
+                              "stringMap" : {
+                                 "faction" : "player"
+                              }
+                           }
+                        },
+                        {
+                           "elementName" : "self",
+                           "instanceDetails" : {
+                              "name" : "one",
+                              "mapMap" : {
+                                 "testMap" : {
+                                    "x" : 2,
+                                    "y" : 3
+                                 }
+                              },
+                              "stringMap" : {
+                                 "faction" : "player"
+                              }
+                           }
+                        },
+                        {
+                           "elementName" : "combatResult",
+                           "instanceDetails" : {
+                              "numberMap" : {
+                                 "computerLoss" : 0,
+                                 "playerLoss" : -2
+                              },
+                              "stringMap" : {
+                                 "type" : "playerLoss",
+                                 "name" : "Loss"
+                              }
+                           },
+                           "uniqueName" : "playerLoss"
+                        },
+                        {
+                           "elementName" : "combatResult",
+                           "instanceDetails" : {
+                              "numberMap" : {
+                                 "computerLoss" : -2,
+                                 "playerLoss" : 0
+                              },
+                              "stringMap" : {
+                                 "type" : "computerLoss",
+                                 "name" : "Victory"
+                              }
+                           },
+                           "uniqueName" : "computerLoss"
+                        },
+                        {
+                           "elementName" : "combatResult",
+                           "instanceDetails" : {
+                              "numberMap" : {
+                                 "computerLoss" : -1,
+                                 "playerLoss" : -1
+                              },
+                              "stringMap" : {
+                                 "type" : "draw",
+                                 "name" : "Draw"
+                              }
+                           },
+                           "uniqueName" : "draw"
+                        }
+                     ]
+                  }
+               },
+               "next" : {
+                  "value" : "",
+                  "panelName" : "mapPanel",
+                  "choices" : [
+                     {
+                        "value" : "routeWalking",
+                        "first" : "Move ",
+                        "elementChoice" : {
+                           "elementName" : "self",
+                           "second" : "",
+                           "type" : "menuRange",
+                           "elementQuality" : "name",
+                           "rangeAttribute" : "move"
+                        }
+                     },
+                     {
+                        "value" : "routeWalking",
+                        "first" : "Wait",
+                        "elementChoice" : {
+                           "elementName" : "self",
+                           "second" : "",
+                           "type" : "menu",
+                           "elementQuality" : "name"
+                        }
+                     }
+                  ]
+               },
+               "showCombatResult" : {
+                  "panelName" : "textPanel",
+                  "choices" : [
+                     {
+                        "first" : "Next",
+                        "value" : "combat.nextCombat"
+                     }
+                  ],
+                  "value" : "<report:adjustment:troop>Troop Adjusted: <reportInner:name>\r\nAdjustment Amount:<reportInner:quantity></report>",
+                  "secondaryPanelName" : "mapPanel"
+               }
+            },
+            "redirects" : {
+               "routeWalking" : {
+                  "adjustmentData" : {
+                     "positionAdjustments" : [
+                        {
+                           "mapName" : "testMap",
+                           "elementName" : "troop",
+                           "adjustmentType" : "route"
+                        },
+                        {
+                           "mapName" : "testMap",
+                           "elementName" : "self",
+                           "adjustmentType" : "direct"
+                        }
+                     ]
+                  },
+                  "first" : "loop"
+               },
+               "loop" : {
+                  "adjustmentData" : {
+                     "counterAdjustments" : [
+                        {
+                           "counterName" : "testCounter",
+                           "counterAdjustmentType" : "increment"
+                        }
+                     ]
+                  },
+                  "first" : "next",
+                  "second" : "combat.combatCheck",
+                  "contextConditions" : [
+                     {
+                        "counterName" : "testCounter",
+                        "counterCondition" : "completed"
+                     }
+                  ]
+               },
+               "createTroop" : {
+                  "first" : "next",
+                  "adjustmentData" : {
+                     "makeElements" : [
+                        {
+                           "elementName" : "troop",
+                           "mapName" : "testMap",
+                           "positionType" : "selectedPosition",
+                           "instanceDetails" : {
+                              "name" : "new",
+                              "mapMap" : {
+                                 "testMap" : {
+                                    "x" : 2,
+                                    "y" : 2
+                                 }
+                              },
+                              "numberMap" : {
+                                 "quantity" : 30
+                              },
+                              "stringMap" : {
+                                 "faction" : "player"
+                              }
+                           }
+                        }
+                     ]
+                  }
+               }
+            },
+            "randomRedirects" : {}
+         },
+         "combat" : {
+            "pages" : {},
+            "redirects" : {
+               "combatCheck" : {
+                  "first" : "combatDrawCheck",
+                  "second" : "main.loop",
+                  "contextConditions" : [
+                     {
+                        "groupConditionType" : "factionConflictCheck",
+                        "mapName" : "testMap"
+                     }
+                  ],
+                  "contextChanges" : [
+                     {
+                        "counterToGroup" : "testCounter"
+                     }
+                  ],
+                  "adjustmentData" : {
+                     "counterInitialisations" : [
+                        {
+                           "counterName" : "groupCounter",
+                           "counterPrimaryType" : "group",
+                           "counterSecondaryType" : "all"
+                        }
+                     ]
+                  }
+               },
+               "combatDrawCheck" : {
+                  "first" : "combatDraw",
+                  "second" : "combatWinCheck",
+                  "contextConditions" : [
+                     {
+                        "groupConditionType" : "factionContest",
+                        "elementQuality" : "quantity",
+                        "type" : "=",
+                        "mapName" : "testMap"
+                     }
+                  ],
+                  "adjustmentData" : {
+                     "makeElements" : [
+                        {
+                           "elementName" : "battle",
+                           "positionType" : "positioncounter",
+                           "positionCounterName" : "testCounter",
+                           "instanceDetails" : {}
+                        }
+                     ]
+                  }
+               },
+               "combatWinCheck" : {
+                  "first" : "combatWin",
+                  "second" : "combatLose",
+                  "contextConditions" : [
+                     {
+                        "groupConditionType" : "factionContest",
+                        "elementQuality" : "quantity",
+                        "type" : ">",
+                        "mapName" : "testMap"
+                     }
+                  ]
+               },
+               "combatLose" : {
+                  "first" : "testRemoval"
+               },
+               "combatWin" : {
+                  "first" : "testRemoval"
+               },
+               "combatDraw" : {
+                  "first" : "testRemoval"
+               },
+               "combatResult" : {
+                  "first" : "playerLossAdjustment",
+                  "second" : "computerLossAdjustment",
+                  "contextConditions" : [
+                     {
+                        "stringValue" : "player",
+                        "elementQuality" : "faction",
+                        "selectionType" : "fromGroup",
+                        "type" : "=",
+                        "groupName" : "groupCounter"
+                     }
+                  ]
+               },
+               "testRemoval" : {
+                  "adjustmentData" : {
+                     "counterAdjustments" : [
+                        {
+                           "counterName" : "groupCounter",
+                           "counterAdjustmentType" : "increment"
+                        }
+                     ],
+                     "elementAdjustments" : [
+                        {
+                           "targetIdentification" : {
+                              "elementName" : "troop",
+                              "type" : "group",
+                              "counterName" : "groupCounter"
+                           },
+                           "elementQuality" : "quantity",
+                           "numberValue" : 10,
+                           "sumSign" : "+"
+                        }
+                     ]
+                  },
+                  "first" : "main.showCombatResult",
+                  "second" : "testRemoval",
+                  "contextConditions" : [
+                     {
+                        "counterName" : "groupCounter",
+                        "counterCondition" : "completed"
+                     }
+                  ]
+               },
+               "nextCombat" : {
+                  "adjustmentData" : {
+                     "removeElements" : [
+                        {
+                           "targetIdentification" : {
+                              "elementName" : "battle",
+                              "type" : "atPosition",
+                              "counterName" : "testCounter"
+                           }
+                        }
+                     ]
+                  },
+                  "first" : "main.loop"
+               }
+            },
+            "randomRedirects" : {}
          }
       }
    }

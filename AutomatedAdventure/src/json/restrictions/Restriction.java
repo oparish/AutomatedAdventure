@@ -129,7 +129,8 @@ public enum Restriction
 	PANELS("panels", RestrictionType.PANEL, JsonDim.MAP),
 	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO),
 	RANGE_ATTRIBUTE("rangeAttribute", STRING, JsonDim.MONO),
-	MAP_ELEMENT_TYPE("mapElementType", STRING, JsonDim.MONO);
+	MAP_ELEMENT_TYPE("mapElementType", STRING, JsonDim.MONO),
+	PACKAGEMAP("packageMap", RestrictionType.PACKAGE, JsonDim.MAP);
 	
 	private final JsonDim jsonDim;
 	private final JsonType jsonType;

@@ -20,6 +20,7 @@ import frontEnd.PageWindow;
 import json.JsonEntityMap;
 import json.JsonEntityString;
 import json.RestrictedJson;
+import json.restrictions.PackageRestriction;
 import json.restrictions.PageRestriction;
 import json.restrictions.PanelRestriction;
 import json.restrictions.RedirectRestriction;
@@ -27,6 +28,7 @@ import json.restrictions.ScenarioRestriction;
 
 public class Pages
 {
+	private static final String MAIN = "main";
 	private static final String INITIAL = "initial";
 	private static Scenario scenario;
 	private static PageWindow pageWindow;
@@ -40,9 +42,14 @@ public class Pages
 				new RestrictedJson<ScenarioRestriction>(jsonObject.getJsonObject("scenario"), ScenarioRestriction.class);
 		Pages.scenario = new Scenario(scenarioJson);	
 		
-		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PAGES, PageRestriction.class);
+		JsonEntityMap<RestrictedJson<PackageRestriction>> packageMap = 
+				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PACKAGEMAP, PackageRestriction.class);
+		RestrictedJson<PackageRestriction> packageRestriction = packageMap.getMemberBy(MAIN);
+		JsonEntityMap<RestrictedJson<PageRestriction>> pageTemplateMap = 
+				packageRestriction.getRestrictedJsonMap(PackageRestriction.PAGES, PageRestriction.class);
 		RestrictedJson<PageRestriction> pageJson = pageTemplateMap.getMemberBy(INITIAL);
 		PageInstance pageInstance = new PageInstance(Pages.scenario, new PageContext(INITIAL), pageJson, null);
+		Pages.scenario.setCurrentPackage(MAIN);
 		JsonEntityMap<RestrictedJson<PanelRestriction>> panelMap = 
 				scenarioJson.getRestrictedJsonMap(ScenarioRestriction.PANELS, PanelRestriction.class);
 		
