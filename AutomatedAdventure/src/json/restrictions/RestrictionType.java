@@ -64,6 +64,7 @@ public enum RestrictionType implements JsonType
 	PANEL(PanelRestriction.class),
 	INSTANCE_DETAILS(InstanceDetailsRestriction.class),
 	CONNECTION(ConnectionRestriction.class),
+	REVEAL(RevealRestriction.class),
 	PACKAGE(PackageRestriction.class);
 	
 	private final Class<? extends RestrictionPointer> clazz;

@@ -190,6 +190,16 @@
             "pages" : {
                "initial" : {
                   "value" : "TEST",
+                  "panelName" : "textPanel",
+                  "choices" : [
+                     {
+                        "value" : "revealMapStart",
+                        "first" : "Start"
+                     }
+                  ]
+               },
+               "start" : {
+                  "value" : "TEST",
                   "panelName" : "mapPanel",
                   "choices" : [
                      {
@@ -491,6 +501,45 @@
                         }
                      ]
                   }
+               },
+               "revealMapStart" : {
+                  "first" : "revealMapLoop",
+                  "adjustmentData" : {
+                     "counterInitialisations" : [
+                        {
+                           "counterName" : "revealCounter",
+                           "counterPrimaryType" : "position",
+                           "counterSecondaryType" : "all",
+                           "mapName" : "testMap"
+                        }
+                     ]
+                  }
+               },
+               "revealMapLoop" : {
+                  "first" : "start",
+                  "second" : "revealMapLoop",
+                  "adjustmentData" : {
+                     "counterAdjustments" : [
+                        {
+                           "counterName" : "revealCounter",
+                           "counterAdjustmentType" : "increment"
+                        }
+                     ],
+                     "reveals" : [
+                        {
+                           "positionType" : "positionCounter",
+                           "positionCounterName" : "revealCounter",
+                           "mapName" : "testMap",
+                           "booleanValue" : true
+                        }
+                     ]
+                  },
+                  "contextConditions" : [
+                     {
+                        "counterName" : "revealCounter",
+                        "counterCondition" : "completed"
+                     }
+                  ]
                }
             },
             "randomRedirects" : {}

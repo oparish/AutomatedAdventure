@@ -73,7 +73,6 @@ public class MapPanel extends JPanel implements ActionListener
 	private static final String CANCEL = "Cancel";
 	private static final Pattern tooltipElementPattern = Pattern.compile("<element:(.*)>");
 	private static final Pattern tooltipConnectionPattern = Pattern.compile("<connection:([^<>]*):([^<>]*)>");
-	
 	ArrayList<LocationButton> locationButtons;
 	HashMap<ElementInstance, HashMap<String, ElementChoice>> elementMap;
 	Map map;
@@ -410,7 +409,7 @@ public class MapPanel extends JPanel implements ActionListener
 			MapPosition position = locationButton.getPosition();
 			if (!this.checkInRange(position))
 			{
-				locationButton.setEnabled(false);
+				locationButton.tryToEnable(false);
 			}
 		}
 	}
@@ -419,7 +418,7 @@ public class MapPanel extends JPanel implements ActionListener
 	{
 		for (LocationButton locationButton : this.locationButtons)
 		{
-			locationButton.setEnabled(true);
+			locationButton.update();
 		}
 	}
 	
@@ -826,10 +825,7 @@ public class MapPanel extends JPanel implements ActionListener
 	public void setEnabled(boolean value)
 	{
 		super.setEnabled(value);
-		for (LocationButton mapButton : locationButtons)
-		{
-			mapButton.setEnabled(value);
-		}
+		this.enableAllButtons();
 	}
 	
 	private enum MapMode
@@ -849,11 +845,25 @@ public class MapPanel extends JPanel implements ActionListener
 			this.position = position;
 			if (position == null)
 				throw new Exception("A MapButton should never be at a NULL position.");
+			this.tryToEnable(false);
 		}
 		
 		public MapPosition getPosition()
 		{
 			return this.position;
+		}
+		
+		public void tryToEnable(boolean value)
+		{
+			if (this.position.revealed)
+			{
+				this.setEnabled(value);
+			}
+		}
+		
+		public void update()
+		{
+			this.setEnabled(this.position.revealed);
 		}
 	}
 	

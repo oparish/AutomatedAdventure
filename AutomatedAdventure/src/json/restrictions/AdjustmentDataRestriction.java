@@ -5,7 +5,7 @@ public enum AdjustmentDataRestriction implements RestrictionPointer
 	ELEMENT_ADJUSTMENTS(Restriction.ELEMENT_ADJUSTMENTS, true), POSITION_ADJUSTMENTS(Restriction.POSITION_ADJUSTMENTS, true), 
 		COUNTER_ADJUSTMENTS(Restriction.COUNTER_ADJUSTMENTS, true), COUNTER_INITIALISATIONS(Restriction.COUNTER_INITIALISATIONS, true), 
 		MAKE_ELEMENTS(Restriction.MAKE_ELEMENTS, true), REMOVE_ELEMENTS(Restriction.REMOVE_ELEMENTS, true),	
-		MAKE_CONNECTIONS(Restriction.MAKE_CONNECTIONS, true);
+		MAKE_CONNECTIONS(Restriction.MAKE_CONNECTIONS, true), REVEALS(Restriction.REVEALS, true);
 	
 	private Restriction restriction;
 	private boolean optional;

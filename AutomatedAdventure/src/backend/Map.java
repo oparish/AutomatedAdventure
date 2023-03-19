@@ -125,6 +125,7 @@ public class Map
 	{
 		public int x;
 		public int y;
+		public boolean revealed = false;
 		ArrayList<ElementInstance> elementInstances;
 		
 		public MapPosition(int x, int y)
@@ -142,6 +143,11 @@ public class Map
 		public Map getMap()
 		{
 			return Map.this;
+		}
+		
+		public void reveal(boolean value)
+		{
+			this.revealed = value;
 		}
 	}
 	

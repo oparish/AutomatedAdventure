@@ -9,6 +9,7 @@ import json.JsonType;
 
 public enum Restriction
 {	
+	BOOLEAN_VALUE("booleanValue", BOOLEAN, JsonDim.MONO),
 	NAME("name", STRING, JsonDim.MONO),
 	CONNECTION_NAME("connectionName", STRING, JsonDim.MONO),
 	FACTION_IDENTIFIER("factionIdentifier", STRING, JsonDim.MONO),
@@ -130,6 +131,7 @@ public enum Restriction
 	MULTIPLIER("multiplier", NUMBER, JsonDim.MONO),
 	RANGE_ATTRIBUTE("rangeAttribute", STRING, JsonDim.MONO),
 	MAP_ELEMENT_TYPE("mapElementType", STRING, JsonDim.MONO),
+	REVEALS("reveals", RestrictionType.REVEAL, JsonDim.ARRAY),
 	PACKAGEMAP("packageMap", RestrictionType.PACKAGE, JsonDim.MAP);
 	
 	private final JsonDim jsonDim;

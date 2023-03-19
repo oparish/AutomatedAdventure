@@ -29,6 +29,7 @@ import json.restrictions.PageRestriction;
 import json.restrictions.PositionAdjustmentRestriction;
 import json.restrictions.PositionAdjustmentType;
 import json.restrictions.RemoveElementRestriction;
+import json.restrictions.RevealRestriction;
 import json.restrictions.SumComponentRestriction;
 import json.restrictions.SumRestriction;
 import json.restrictions.TargetIdentificationRestriction;
@@ -170,6 +171,8 @@ public abstract class AbstractPageInstance
 				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.COUNTER_INITIALISATIONS, CounterInitialisationRestriction.class);
 		JsonEntityArray<RestrictedJson<RemoveElementRestriction>> removeElementArray = 
 				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.REMOVE_ELEMENTS, RemoveElementRestriction.class);
+		JsonEntityArray<RestrictedJson<RevealRestriction>> revealArray = 
+				adjustmentData.getRestrictedJsonArray(AdjustmentDataRestriction.REVEALS, RevealRestriction.class);
 		
 		this.makeConnections(makeConnectionArray);
 		this.makeElements(makeElementArray);
@@ -177,7 +180,41 @@ public abstract class AbstractPageInstance
 		this.makePositionAdjustments(positionAdjustmentArray);
 		this.initialiseCounters(counterInitialisationArray);
 		this.removeElements(removeElementArray);
+		this.makeReveals(revealArray);
+		//The following needs to be last in the sequence
 		this.makeCounterAdjustments(counterAdjustmentArray);
+	}
+	
+	private void makeReveals(JsonEntityArray<RestrictedJson<RevealRestriction>> revealArray) throws Exception
+	{
+		if (revealArray == null)
+			return;
+		
+		for (int i = 0; i < revealArray.getLength(); i++)
+		{
+			RestrictedJson<RevealRestriction> revealRestriction = revealArray.getMemberAt(i);
+			String mapName = revealRestriction.getString(RevealRestriction.MAP_NAME);
+			Map map = this.scenario.getMapByName(mapName);
+			String positionTypeString = revealRestriction.getString(RevealRestriction.POSITION_TYPE);
+			PositionType positionType = PositionType.valueOf(positionTypeString.toUpperCase());
+			boolean value = revealRestriction.getBoolean(RevealRestriction.BOOLEAN_VALUE);
+			MapPosition mapPosition;
+			switch(positionType)
+			{
+				case POSITIONCOUNTER:
+					String positionCounterName = revealRestriction.getString(RevealRestriction.POSITION_COUNTER_NAME);
+					PositionCounter positionCounter = this.scenario.getPositionCounter(positionCounterName);
+					mapPosition = positionCounter.getMapPosition();
+					mapPosition.reveal(value);
+					break;
+				case SELECTEDPOSITION:
+					mapPosition = map.getSelectedPosition();
+					break;
+				default:
+					throw new Exception("Unrecognised position type.");
+			}
+			mapPosition.reveal(value);
+		}
 	}
 	
 	private void makeConnections(JsonEntityArray<RestrictedJson<MakeConnectionRestriction>> makeConnectionArray) throws Exception
