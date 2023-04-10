@@ -171,7 +171,7 @@ public class Element
 			Map map = Pages.getScenario().getMapByName(key);
 			int x = mapPositionData.getNumber(MapPositionRestriction.X);
 			int y = mapPositionData.getNumber(MapPositionRestriction.Y);
-			MapPosition mapPosition = map.getMapPosition(x, y);
+			MapPosition mapPosition = map.getOpenMapPosition(x, y);
 			positionMap.put(map, mapPosition);
 		}
 		return positionMap;
@@ -543,7 +543,7 @@ public class Element
 		
 		public void setMapPosition(Map map, MapPosition position) throws Exception
 		{
-			MapPosition mapPosition = map.getMapPosition(position.x, position.y);
+			MapPosition mapPosition = map.getOpenMapPosition(position.x, position.y);
 			MapPosition prevPosition = this.getMapPosition(map);
 			if (prevPosition != mapPosition)
 			{

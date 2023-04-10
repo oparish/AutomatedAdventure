@@ -1,7 +1,7 @@
 package json.restrictions;
 
 public enum GroupConditionType {
-	FACTION_CONTEST("factionContest"), FACTION_CONFLICT_CHECK("factionConflictCheck");
+	FACTION_CONTEST("factionContest"), FACTION_CONFLICT_CHECK("factionConflictCheck"), COUNT("count");
 	
 	String name;
 	

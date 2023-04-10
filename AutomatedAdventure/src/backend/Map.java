@@ -33,6 +33,7 @@ public class Map
 		return mapData;
 	}
 
+	ArrayList<MapPosition> allMapPositions = new ArrayList<MapPosition>();
 	ArrayList<MapPosition> openMapPositions = new ArrayList<MapPosition>();
 	HashMap<ElementInstance, ChangeInPosition> changeInPositionMap = new HashMap<ElementInstance, ChangeInPosition>();
 	
@@ -82,7 +83,7 @@ public class Map
 		return this.openMapPositions;
 	}
 	
-	public MapPosition getMapPosition(int x, int y)
+	public MapPosition getOpenMapPosition(int x, int y)
 	{
 		for(MapPosition mapPosition : this.openMapPositions)
 		{
@@ -90,6 +91,26 @@ public class Map
 				return mapPosition;
 		}
 		return null;
+	}
+	
+	public MapPosition getMapPosition(int x, int y)
+	{
+		for(MapPosition mapPosition : this.allMapPositions)
+		{
+			if (mapPosition.x == x && mapPosition.y == y)
+				return mapPosition;
+		}
+		return null;
+	}
+	
+	public boolean checkXValidity(int x)
+	{
+		return x >= 0 && x < this.getWidth();
+	}
+	
+	public boolean checkYValidity(int y)
+	{
+		return y >= 0 && y < this.getHeight();
 	}
 	
 	public int getWidth()
@@ -133,6 +154,7 @@ public class Map
 			this.x = x;
 			this.y = y;
 			this.elementInstances = new ArrayList<ElementInstance>();
+			Map.this.allMapPositions.add(this);
 		}
 		
 		public ArrayList<ElementInstance> getElementInstances()

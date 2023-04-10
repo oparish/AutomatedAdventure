@@ -26,4 +26,9 @@ public class ElementGroup
 	{
 		this.elementInstances = elementInstances;
 	}
+	
+	public void addInstances(ArrayList<ElementInstance> elementInstances)
+	{
+		this.elementInstances.addAll(elementInstances);
+	}
 }

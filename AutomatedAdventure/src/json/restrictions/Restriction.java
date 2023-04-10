@@ -71,6 +71,7 @@ public enum Restriction
 	PAGES("pages", RestrictionType.PAGE, JsonDim.MAP),
 	REDIRECTS("redirects", RestrictionType.REDIRECT, JsonDim.MAP),
 	RANDOM_REDIRECTS("randomRedirects", RestrictionType.RANDOM_REDIRECT, JsonDim.MAP),
+	RANGE_FOR_GROUP("rangeForGroup", NUMBER, JsonDim.MONO),
 	CHOICES("choices", RestrictionType.CHOICE, JsonDim.ARRAY),
 	RETURN_TO("returnTo", STRING, JsonDim.MONO),
 	WITH_CONTEXT("withContext", BOOLEAN, JsonDim.MONO),

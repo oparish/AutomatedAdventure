@@ -61,7 +61,7 @@ public class PositionCounter implements Counter
 	
 	public MapPosition getMapPosition()
 	{
-		return map.getMapPosition(this.x, this.y);
+		return map.getOpenMapPosition(this.x, this.y);
 	}
 	
 	public int getX() {

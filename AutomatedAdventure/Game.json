@@ -196,63 +196,8 @@
                         "value" : "revealMapStart",
                         "first" : "Start"
                      }
-                  ]
-               },
-               "start" : {
-                  "value" : "TEST",
-                  "panelName" : "mapPanel",
-                  "choices" : [
-                     {
-                        "value" : "next",
-                        "first" : "Order Route Wait ",
-                        "elementChoice" : {
-                           "elementName" : "troop",
-                           "second" : "",
-                           "type" : "routeSelectionWait",
-                           "elementQuality" : "name",
-                           "rangeAttribute" : "move"
-                        }
-                     },
-                     {
-                        "value" : "next",
-                        "first" : "Order Route Return ",
-                        "elementChoice" : {
-                           "elementName" : "troop",
-                           "second" : "",
-                           "type" : "routeSelectionReturn",
-                           "elementQuality" : "name",
-                           "rangeAttribute" : "move"
-                        }
-                     },
-                     {
-                        "value" : "loop",
-                        "first" : "Loop",
-                        "elementChoice" : {
-                           "elementName" : "troop",
-                           "second" : "",
-                           "type" : "menu",
-                           "elementQuality" : "name"
-                        }
-                     },
-                     {
-                        "value" : "createTroop",
-                        "first" : "Create Troop",
-                        "elementChoice" : {
-                           "elementName" : "village",
-                           "second" : "",
-                           "type" : "menu"
-                        }
-                     }
                   ],
                   "adjustmentData" : {
-                     "counterInitialisations" : [
-                        {
-                           "counterName" : "testCounter",
-                           "mapName" : "testMap",
-                           "counterSecondaryType" : "all",
-                           "counterPrimaryType" : "position"
-                        }
-                     ],
                      "makeElements" : [
                         {
                            "elementName" : "village",
@@ -400,6 +345,63 @@
                      ]
                   }
                },
+               "start" : {
+                  "value" : "TEST",
+                  "panelName" : "mapPanel",
+                  "choices" : [
+                     {
+                        "value" : "next",
+                        "first" : "Order Route Wait ",
+                        "elementChoice" : {
+                           "elementName" : "troop",
+                           "second" : "",
+                           "type" : "routeSelectionWait",
+                           "elementQuality" : "name",
+                           "rangeAttribute" : "move"
+                        }
+                     },
+                     {
+                        "value" : "next",
+                        "first" : "Order Route Return ",
+                        "elementChoice" : {
+                           "elementName" : "troop",
+                           "second" : "",
+                           "type" : "routeSelectionReturn",
+                           "elementQuality" : "name",
+                           "rangeAttribute" : "move"
+                        }
+                     },
+                     {
+                        "value" : "loop",
+                        "first" : "Loop",
+                        "elementChoice" : {
+                           "elementName" : "troop",
+                           "second" : "",
+                           "type" : "menu",
+                           "elementQuality" : "name"
+                        }
+                     },
+                     {
+                        "value" : "createTroop",
+                        "first" : "Create Troop",
+                        "elementChoice" : {
+                           "elementName" : "village",
+                           "second" : "",
+                           "type" : "menu"
+                        }
+                     }
+                  ],
+                  "adjustmentData" : {
+                     "counterInitialisations" : [
+                        {
+                           "counterName" : "testCounter",
+                           "mapName" : "testMap",
+                           "counterSecondaryType" : "all",
+                           "counterPrimaryType" : "position"
+                        }
+                     ]
+                  }
+               },
                "next" : {
                   "value" : "",
                   "panelName" : "mapPanel",
@@ -517,14 +519,31 @@
                },
                "revealMapLoop" : {
                   "first" : "start",
-                  "second" : "revealMapLoop",
+                  "second" : "revealMapCheck",
+                  "contextConditions" : [
+                     {
+                        "counterName" : "revealCounter",
+                        "counterCondition" : "completed"
+                     }
+                  ]
+               },
+               "revealMapCheck" : {
+                  "first" : "revealMapReveal",
+                  "second" : "revealMapHide",
+                  "contextConditions" : [
+                     {
+                        "numberValue" : 1,
+                        "stringValue" : "player",
+                        "elementQuality" : "faction",
+                        "rangeForGroup" : 3,
+                        "positionType" : "positionCounter",
+                        "positionCounterName" : "revealCounter",
+                        "groupConditionType" : "count"
+                     }
+                  ]
+               },
+               "revealMapReveal" : {
                   "adjustmentData" : {
-                     "counterAdjustments" : [
-                        {
-                           "counterName" : "revealCounter",
-                           "counterAdjustmentType" : "increment"
-                        }
-                     ],
                      "reveals" : [
                         {
                            "positionType" : "positionCounter",
@@ -534,12 +553,31 @@
                         }
                      ]
                   },
-                  "contextConditions" : [
-                     {
-                        "counterName" : "revealCounter",
-                        "counterCondition" : "completed"
-                     }
-                  ]
+                  "first" : "revealMapEnd"
+               },
+               "revealMapHide" : {
+                  "adjustmentData" : {
+                     "reveals" : [
+                        {
+                           "positionType" : "positionCounter",
+                           "positionCounterName" : "revealCounter",
+                           "mapName" : "testMap",
+                           "booleanValue" : false
+                        }
+                     ]
+                  },
+                  "first" : "revealMapEnd"
+               },
+               "revealMapEnd" : {
+                  "adjustmentData" : {
+                     "counterAdjustments" : [
+                        {
+                           "counterName" : "revealCounter",
+                           "counterAdjustmentType" : "increment"
+                        }
+                     ]
+                  },
+                  "first" : "revealMapLoop"
                }
             },
             "randomRedirects" : {}
