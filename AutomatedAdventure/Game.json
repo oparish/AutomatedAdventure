@@ -468,7 +468,7 @@
                         }
                      ]
                   },
-                  "first" : "next",
+                  "first" : "revealMapStart",
                   "second" : "combat.combatCheck",
                   "contextConditions" : [
                      {
