@@ -44,6 +44,7 @@ public class PageWithMapPanel extends PagePanel
 	public void secondaryUpdate(PageInstance pageInstance) throws Exception
 	{
 		this.mapPanel.repaintMap();
+		this.mapPanel.secondaryUpdate();
 	}
 	
 	public void update(PageInstance pageInstance) throws Exception

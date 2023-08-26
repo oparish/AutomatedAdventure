@@ -414,12 +414,25 @@ public class MapPanel extends JPanel implements ActionListener
 		}
 	}
 	
+	public void disableAllButtons()
+	{
+		for (LocationButton locationButton : this.locationButtons)
+		{
+			locationButton.tryToEnable(false);
+		}
+	}
+	
 	private void enableAllButtons()
 	{
 		for (LocationButton locationButton : this.locationButtons)
 		{
 			locationButton.update();
 		}
+	}
+	
+	public void secondaryUpdate()
+	{
+		this.clearChoices();
 	}
 	
 	private void endAction()
@@ -820,6 +833,11 @@ public class MapPanel extends JPanel implements ActionListener
 			}		
 			choices.put(entry.getKey(), elementChoice);			
 		}
+	}
+	
+	private void clearChoices()
+	{
+		this.elementMap = new HashMap<ElementInstance, HashMap<String, ElementChoice>>();
 	}
 	
 	public void setEnabled(boolean value)
